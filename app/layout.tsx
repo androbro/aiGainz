@@ -53,6 +53,7 @@ export default function RootLayout({
             setInitialLoad(false);
         }, 500); // Adjust the delay as needed
     }, [initialLoad]);
+
     return (
         <html lang="en">
             <PrimeReactProvider>

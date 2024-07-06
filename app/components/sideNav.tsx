@@ -6,8 +6,8 @@ import Link from 'next/link';
 import { createTitleFromName } from '@/app/functions/stringMorpher';
 import { APP_NAME, DASHBOARD } from '@/app/constants/ui';
 import { useLoaderStore } from '@/app/store/loaderStore';
-import { useLoading } from '@/app/components/useLoading';
 import SignOut from '@/app/components/signOut';
+import { useLoading } from '@/hooks/useLoading';
 
 interface NavItemProps {
     href: string;
