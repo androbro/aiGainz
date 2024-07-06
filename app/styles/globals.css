@@ -1,3 +1,67 @@
 ﻿@import 'primereact/resources/themes/lara-light-indigo/theme.css';
 @import 'primereact/resources/primereact.min.css';
 @import 'primeicons/primeicons.css';
+@import 'primeflex/primeflex.css';
+
+/* RootLayout.module.css */
+.bodyStyle {
+    margin: 30px;
+    padding: 30px;
+}
+
+.input-field-width {
+    width: 23rem;
+}
+
+.spinner-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    z-index: 9999;
+}
+
+.spinner-container.dark {
+    background-color: rgba(0, 0, 0, 0.5); /* semi-transparent black */
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f100;
+}
+
+::-webkit-scrollbar-thumb {
+    background: lightgray;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+a {
+    color: inherit; /* The color of the text will be the same as the parent element */
+    text-decoration: none; /* Removes the underline */
+}
+
+.no-padding .p-card-body {
+    padding: 0 !important;
+}
+
+.w-45rem {
+    width: 45rem;
+}
+
+.scrollable-pane {
+    overflow-x: auto;
+    white-space: nowrap;
+    display: flex;
+}
