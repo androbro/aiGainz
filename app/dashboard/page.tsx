@@ -1,9 +1,11 @@
 ﻿interface PageProps {}
 
-export default function Page({}: PageProps) {
+export default function Dashboard({}: PageProps) {
     return (
         <>
-            <h1>Welcome to the Dashboard</h1>
+            <div className="layout-container layout-light layout-colorscheme-menu layout-static layout-static-inactive p-ripple-disabled">
+                <div></div>
+            </div>
         </>
     );
 }

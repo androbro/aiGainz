@@ -19,7 +19,15 @@ export default function RootLayout({
     return (
         <PrimeReactProvider>
             <html lang="en">
-                <body className={inter.className}>{children}</body>
+                <body className="surface-50">
+                    <div className="layout-container layout-light layout-colorscheme-menu layout-static layout-static-inactive p-ripple-disabled">
+                        <div>{/*sidebar*/}</div>
+                        <div>
+                            {/*top bar*/}
+                            {children}
+                        </div>
+                    </div>
+                </body>
             </html>
         </PrimeReactProvider>
     );
