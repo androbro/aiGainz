@@ -1,7 +1,9 @@
 ﻿// lib/db.ts
 import { neon } from '@neondatabase/serverless';
 
-const sql = neon(process.env.DATABASE_URL!);
+const url = process.env.DATABASE_URL ? process.env.DATABASE_URL : 'postgresql';
+
+const sql = neon(url);
 
 export async function getData() {
     const response = await sql`SELECT version()`;
