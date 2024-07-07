@@ -126,7 +126,7 @@ export default function SideNav({ navClosed }: NavProps) {
                     visible={true}
                     onHide={() => setVisible(false)}
                     className="w-full sm:max-w-min md:max-w-min lg:max-w-min"
-                    content={({ hide }) => (
+                    content={() => (
                         <div className="min-h-screen flex relative">
                             <div
                                 id="app-sidebar-2"

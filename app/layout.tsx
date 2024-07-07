@@ -63,18 +63,24 @@ export default function RootLayout({
                     <meta name="Reason Codes" content="width=device-width, initial-scale=1.0" />
                     <title>{APP_NAME}</title>
                 </head>
-                <body>
-                    {/*empty div to push content to the right when nav is opened*/}
-                    <div></div>
-                    <Button
-                        type="button"
-                        onClick={() => setShowNav(!showNav)}
-                        icon="pi pi-bars"
-                        rounded
-                        text
-                        raised
-                        className="h-2rem w-2rem"
-                    />
+                <body className="flex ml-4 mr-4 mb-4 mt-4">
+                    <div>
+                        <Button
+                            type="button"
+                            onClick={() => setShowNav(!showNav)}
+                            icon="pi pi-bars"
+                            rounded
+                            text
+                            raised
+                            className="h-2rem w-2rem"
+                        />
+                    </div>
+                    <div className="w-full ml-3">
+                        <div className="mb-3">
+                            <TopBar />
+                        </div>
+                        <ReactQueryProvider>{children}</ReactQueryProvider>
+                    </div>
                     <div>
                         <div>
                             {initialLoad ||
@@ -85,10 +91,6 @@ export default function RootLayout({
                                 ))}
                             {showNav && <SideNav navClosed={() => setShowNav(false)} />}
                         </div>
-                    </div>
-                    <div>
-                        <TopBar />
-                        <ReactQueryProvider>{children}</ReactQueryProvider>
                     </div>
                 </body>
             </PrimeReactProvider>
