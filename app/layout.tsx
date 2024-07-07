@@ -63,7 +63,7 @@ export default function RootLayout({
                     <meta name="Reason Codes" content="width=device-width, initial-scale=1.0" />
                     <title>{APP_NAME}</title>
                 </head>
-                <body className="flex ml-4 mr-4 mb-4 mt-4">
+                <body className="flex ml-4 mr-4 mb-4 mt-4 surface-100">
                     <div>
                         <Button
                             type="button"
