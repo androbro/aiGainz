@@ -125,12 +125,12 @@ export default function SideNav({ navClosed }: NavProps) {
                 <Sidebar
                     visible={true}
                     onHide={() => setVisible(false)}
+                    className="w-full sm:max-w-min md:max-w-min lg:max-w-min"
                     content={({ hide }) => (
-                        <div className="min-h-screen flex relative lg:static surface-ground">
+                        <div className="min-h-screen flex relative">
                             <div
                                 id="app-sidebar-2"
-                                className="surface-section h-screen hidden block flex-shrink-0 absolute lg:static left-0 top-0 right-0 z-1 border-right-1 surface-border select-none"
-                                style={{ width: '320px' }}
+                                className="surface-section h-screen hidden block flex-shrink-0 surface-border select-none w-full"
                             >
                                 <div className="flex flex-column h-full">
                                     <div className="flex align-items-center justify-content-between px-4 pt-3 flex-shrink-0">

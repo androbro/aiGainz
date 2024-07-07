@@ -65,3 +65,11 @@ a {
     white-space: nowrap;
     display: flex;
 }
+
+.relativeImportant{
+    position: relative !important;
+}
+
+.sidebar-width{
+    width: 300px;
+}

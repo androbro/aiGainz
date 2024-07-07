@@ -9,6 +9,7 @@ import { useLoaderStore } from '@/app/store/loaderStore';
 import { ReactQueryProvider } from '@/app/reactQueryProvider';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Button } from 'primereact/button';
+import TopBar from '@/app/components/topBar';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -62,20 +63,31 @@ export default function RootLayout({
                     <meta name="Reason Codes" content="width=device-width, initial-scale=1.0" />
                     <title>{APP_NAME}</title>
                 </head>
-                <body className="surface-50">
+                <body>
+                    {/*empty div to push content to the right when nav is opened*/}
+                    <div></div>
                     <Button
-                        style={{ marginLeft: -12, position: 'fixed' }}
-                        icon="pi pi-angle-double-right"
+                        type="button"
                         onClick={() => setShowNav(!showNav)}
+                        icon="pi pi-bars"
+                        rounded
+                        text
+                        raised
+                        className="h-2rem w-2rem"
                     />
-                    <div className={`${inter.className} input-field-width bodyStyle`}>
-                        {initialLoad ||
-                            (showSpinner && (
-                                <div className="spinner-container dark">
-                                    <ProgressSpinner />
-                                </div>
-                            ))}
-                        {showNav && <SideNav navClosed={() => setShowNav(false)} />}
+                    <div>
+                        <div>
+                            {initialLoad ||
+                                (showSpinner && (
+                                    <div className="spinner-container dark">
+                                        <ProgressSpinner />
+                                    </div>
+                                ))}
+                            {showNav && <SideNav navClosed={() => setShowNav(false)} />}
+                        </div>
+                    </div>
+                    <div>
+                        <TopBar />
                         <ReactQueryProvider>{children}</ReactQueryProvider>
                     </div>
                 </body>

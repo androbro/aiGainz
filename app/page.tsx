@@ -7,11 +7,6 @@ export default function Home() {
         <div className="m-4">
             <div className="">
                 <div>
-                    {/*sidebar*/}
-                    test
-                </div>
-                <div>
-                    {/*top bar*/}
                     <Dashboard />
                 </div>
             </div>
