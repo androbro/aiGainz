@@ -1,6 +1,5 @@
 import { Sidebar } from 'primereact/sidebar';
 import { Button } from 'primereact/button';
-import { StyleClass } from 'primereact/StyleClass';
 import React, { useRef, useState } from 'react';
 import Link from 'next/link';
 import { createTitleFromName } from '@/app/functions/stringMorpher';
@@ -69,25 +68,15 @@ export default function SideNav({ navClosed }: NavProps) {
     );
 
     const NavGroup = ({ name }: NavGroupProps) => (
-        <StyleClass
-            nodeRef={btnRef2}
-            selector="@next"
-            enterClassName="hidden"
-            enterActiveClassName="slidedown"
-            leaveToClassName="hidden"
-            leaveActiveClassName="slideup"
+        <a
+            ref={btnRef2}
+            className="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full"
         >
-            <a
-                ref={btnRef2}
-                className="flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full"
-            >
-                <i className="pi pi-cog mr-2"></i>
-                <span className="font-medium">{name}</span>
-                <i className="pi pi-chevron-down ml-auto mr-1"></i>
-            </a>
-        </StyleClass>
+            <i className="pi pi-cog mr-2"></i>
+            <span className="font-medium">{name}</span>
+            <i className="pi pi-chevron-down ml-auto mr-1"></i>
+        </a>
     );
-
     const NavSection = ({ name, items }: NavSectionProps) => (
         <li>
             <NavGroup name={name} />
