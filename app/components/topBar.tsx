@@ -1,5 +1,6 @@
 ﻿import React from 'react';
 import { Button } from 'primereact/button';
+import { Image } from 'primereact/image';
 
 export default function TopBar() {
     return (
@@ -11,7 +12,7 @@ export default function TopBar() {
                 </div>
                 <div className="align-self-center">
                     <Button className="p-button-link p-0" rounded>
-                        <img alt="logo" src="https://apollo.primereact.org/layout/images/avatar/avatar.png" className="h-2rem" />
+                        <Image alt="logo" src="https://apollo.primereact.org/layout/images/avatar/avatar.png" className="h-2rem" />
                     </Button>
                 </div>
             </div>
