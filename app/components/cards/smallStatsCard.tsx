@@ -1,10 +1,11 @@
-﻿import React, { useEffect, useState } from 'react';
-import { Card } from 'primereact/card';
-import { Chart } from 'primereact/chart';
+﻿import React, {useEffect, useState} from 'react';
+import {Card} from 'primereact/card';
+import {Chart} from 'primereact/chart';
 
 export interface smallStatsCardProps {
     title: string;
     data: smallStatsCardData;
+    charts: any;
 }
 
 interface smallStatsCardData {
@@ -12,7 +13,7 @@ interface smallStatsCardData {
     currentScore: number;
 }
 
-export default function SmallStatsCard({ title, data }: smallStatsCardProps) {
+export default function SmallStatsCard({title, data, charts}: smallStatsCardProps) {
     const [difference, setDifference] = useState<number>(0);
     const isPositive = data.currentScore >= data.prevScore;
     const [chartData, setChartData] = useState({});
@@ -25,23 +26,15 @@ export default function SmallStatsCard({ title, data }: smallStatsCardProps) {
         const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
         const data = {
             labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-            datasets: [
-                {
-                    label: 'First Dataset',
-                    data: [65, 59, 80, 81, 56, 55, 40],
-                    fill: false,
-                    borderColor: documentStyle.getPropertyValue('--blue-500'),
-                    tension: 0.4,
-                },
-            ],
+            datasets: [chartData],
         };
         const options = {
             plugins: {
-                legend: { display: false },
+                legend: {display: false},
             },
             scales: {
-                x: { display: false },
-                y: { display: false },
+                x: {display: false},
+                y: {display: false},
             },
         };
 
@@ -69,12 +62,13 @@ export default function SmallStatsCard({ title, data }: smallStatsCardProps) {
                             <div>{isPositive ? '+' : '-'}</div>
                             <div>{difference}</div>
                             <div>%</div>
-                            <div>{isPositive ? <i className="pi pi-arrow-up"></i> : <i className="pi pi-arrow-down"></i>}</div>
+                            <div>{isPositive ? <i className="pi pi-arrow-up"></i> :
+                                <i className="pi pi-arrow-down"></i>}</div>
                         </div>
                     </div>
                 </div>
                 <div className="col-6">
-                    <Chart type="line" data={chartData} options={chartOptions} />
+                    <Chart type="line" data={chartData} options={chartOptions}/>
                 </div>
             </div>
         </Card>
