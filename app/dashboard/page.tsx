@@ -16,12 +16,13 @@ export default function Dashboard({}: PageProps) {
                 prevScore: 10,
                 currentScore: 2,
             },
-            charts: {
+            chartsData: {
                 label: 'First Dataset',
                 data: [65, 59, 80, 81, 56, 55, 40],
                 fill: false,
-                borderColor: '--blue-500',
+                borderColor: undefined,
                 tension: 0.4,
+                pointRadius: 0,
             },
         },
         {
@@ -30,12 +31,13 @@ export default function Dashboard({}: PageProps) {
                 prevScore: 10,
                 currentScore: 44,
             },
-            charts: {
+            chartsData: {
                 label: 'First Dataset',
                 data: [65, 59, 80, 81, 56, 55, 40],
                 fill: false,
-                borderColor: '--blue-500',
+                borderColor: undefined,
                 tension: 0.4,
+                pointRadius: 0,
             },
         },
         {
@@ -44,12 +46,13 @@ export default function Dashboard({}: PageProps) {
                 prevScore: 10,
                 currentScore: 41,
             },
-            charts: {
+            chartsData: {
                 label: 'First Dataset',
                 data: [65, 59, 80, 81, 56, 55, 40],
                 fill: false,
-                borderColor: '--blue-500',
+                borderColor: undefined,
                 tension: 0.4,
+                pointRadius: 0,
             },
         },
         {
@@ -58,12 +61,13 @@ export default function Dashboard({}: PageProps) {
                 prevScore: 10,
                 currentScore: 4,
             },
-            charts: {
+            chartsData: {
                 label: 'First Dataset',
                 data: [65, 59, 80, 81, 56, 55, 40],
                 fill: false,
-                borderColor: '--blue-500',
+                borderColor: undefined,
                 tension: 0.4,
+                pointRadius: 0,
             },
         },
     ];
@@ -78,7 +82,7 @@ export default function Dashboard({}: PageProps) {
                     {smallCardData.map((card, index) => {
                         return (
                             <div key={index} className="col-3 col-md-3">
-                                <SmallStatsCard title={card.title} data={card.data} charts={card.charts}/>
+                                <SmallStatsCard title={card.title} data={card.data} chartsData={card.chartsData}/>
                             </div>
                         );
                     })}
