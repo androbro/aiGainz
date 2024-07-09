@@ -85,7 +85,7 @@ export default function SmallStatsCard({title, data, chartsData}: smallStatsCard
     return (
         <Card header={Header}>
             <div className="grid ">
-                <div className="align-content-center col-6 ">
+                <div className="align-content-center col-6 pb-0 pt-0">
                     <div className="font-bold black text-4xl">{data.currentScore}KG</div>
                     <div>
                         <div
@@ -105,7 +105,7 @@ export default function SmallStatsCard({title, data, chartsData}: smallStatsCard
                     </div>
                 </div>
                 <div className="col-6">
-                    <Chart ref={chartRef} type="line" data={chartData} options={chartOptions}/>
+                    <Chart height="3rem" ref={chartRef} type="line" data={chartData} options={chartOptions}/>
                 </div>
             </div>
         </Card>
