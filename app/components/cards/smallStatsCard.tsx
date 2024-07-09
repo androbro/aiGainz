@@ -1,4 +1,5 @@
-﻿import { useEffect, useRef, useState } from 'react';
+﻿'use client';
+import { useEffect, useRef, useState } from 'react';
 import { Card } from 'primereact/card';
 import { Chart } from 'primereact/chart';
 
