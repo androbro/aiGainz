@@ -29,7 +29,7 @@ export default function Dashboard({}: PageProps) {
 
     useEffect(() => {
         const handleResize = () => {
-            setIsMobile(window.innerWidth < 768);
+            setIsMobile(window.innerWidth < 575);
         };
 
         // Set initial value
@@ -150,7 +150,7 @@ export default function Dashboard({}: PageProps) {
                 ) : (
                     <div className="flex flex-wrap justify-content-center">
                         {smallCardData.map((card, index) => (
-                            <div key={index} className="lg:col-3 md:col-3 sm:col-6">
+                            <div key={index} className="sm:col-6 md:col-6 lg:col-3">
                                 <SmallStatsCard
                                     title={card.title}
                                     data={card.data}
