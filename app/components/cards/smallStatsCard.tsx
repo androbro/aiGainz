@@ -1,12 +1,11 @@
-﻿'use client';
-
-import { useEffect, useRef, useState } from 'react';
+﻿import React, { useEffect, useRef, useState } from 'react';
 import { Card } from 'primereact/card';
 import { Chart } from 'primereact/chart';
+import { useResizeObserver } from '@/hooks/useResizeObserver';
 
-export interface smallStatsCardProps {
+export interface SmallStatsCardProps {
     title: string;
-    data: smallStatsCardData;
+    data: SmallStatsCardData;
     chartsData: ChartData;
 }
 
@@ -19,29 +18,21 @@ export interface ChartData {
     pointRadius: number;
 }
 
-interface smallStatsCardData {
+interface SmallStatsCardData {
     prevScore: number;
     currentScore: number;
 }
 
-export default function SmallStatsCard({ title, data, chartsData }: smallStatsCardProps) {
+export default function SmallStatsCard({ title, data, chartsData }: SmallStatsCardProps) {
     const [difference, setDifference] = useState<number>(0);
     const isPositive = data.currentScore >= data.prevScore;
     const [chartData, setChartData] = useState({});
     const [chartOptions, setChartOptions] = useState({});
-    const chartRef = useRef<any | null>(null);
-
-    const updateChartSize = () => {
-        if (chartRef.current) {
-            chartRef.current.resize();
-        }
-    };
+    const chartContainerRef = useRef(null);
+    const { width, height } = useResizeObserver(chartContainerRef);
 
     useEffect(() => {
         const documentStyle = getComputedStyle(document.documentElement);
-        const textColor = documentStyle.getPropertyValue('--text-color');
-        const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
-        const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
         chartsData.borderColor = isPositive
             ? documentStyle.getPropertyValue('--green-500')
             : documentStyle.getPropertyValue('--red-500');
@@ -59,7 +50,7 @@ export default function SmallStatsCard({ title, data, chartsData }: smallStatsCa
                 x: { display: false },
                 y: { display: false },
             },
-            maintainAspectRatio: false, // Ensure the chart is responsive
+            maintainAspectRatio: false,
             responsive: true,
         };
 
@@ -75,13 +66,6 @@ export default function SmallStatsCard({ title, data, chartsData }: smallStatsCa
         }
     }, [data.currentScore, data.prevScore]);
 
-    useEffect(() => {
-        window.addEventListener('resize', updateChartSize);
-        return () => {
-            window.removeEventListener('resize', updateChartSize);
-        };
-    }, []);
-
     const Header = <div className="pt-4 pl-4 font-bold black">{title}</div>;
 
     return (
@@ -94,7 +78,7 @@ export default function SmallStatsCard({ title, data, chartsData }: smallStatsCa
                             className={`${isPositive ? 'text-green-500' : 'text-red-500'} mt-2 flex`}
                         >
                             <div>{isPositive ? '+' : '-'}</div>
-                            <div>{difference}</div>
+                            <div>{difference.toFixed(2)}</div>
                             <div>%</div>
                             <div>
                                 {isPositive ? (
@@ -106,13 +90,13 @@ export default function SmallStatsCard({ title, data, chartsData }: smallStatsCa
                         </div>
                     </div>
                 </div>
-                <div className="col-6">
+                <div className="col-6" ref={chartContainerRef} style={{ height: '100px' }}>
                     <Chart
-                        height="3rem"
-                        ref={chartRef}
                         type="line"
                         data={chartData}
                         options={chartOptions}
+                        width="100%"
+                        height="100%"
                     />
                 </div>
             </div>
