@@ -32,7 +32,7 @@ export default function SmallStatsCard({ title, data, chartsData }: smallStatsCa
     const chartRef = useRef<any | null>(null);
 
     const updateChartSize = () => {
-        if (chartRef.current && typeof chartRef.current.resize === 'function') {
+        if (chartRef.current) {
             chartRef.current.resize();
         }
     };
@@ -76,16 +76,13 @@ export default function SmallStatsCard({ title, data, chartsData }: smallStatsCa
     }, [data.currentScore, data.prevScore]);
 
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            window.addEventListener('resize', updateChartSize);
-            return () => {
-                window.removeEventListener('resize', updateChartSize);
-            };
-        }
+        window.addEventListener('resize', updateChartSize);
+        return () => {
+            window.removeEventListener('resize', updateChartSize);
+        };
     }, []);
 
     const Header = <div className="pt-4 pl-4 font-bold black">{title}</div>;
-    ``;
 
     return (
         <Card header={Header}>
