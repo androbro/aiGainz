@@ -181,28 +181,30 @@ export default function Dashboard({}: PageProps) {
                         itemTemplate={productTemplate}
                     />
                 ) : (
-                    <div>
-                        <div className="flex flex-wrap justify-content-center">
-                            {smallCardData.map((card, index) => (
-                                <div key={index} className="sm:col-6 md:col-6 lg:col-3">
-                                    <SmallStatsCard
-                                        title={card.title}
-                                        data={card.data}
-                                        chartsData={card.chartsData}
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                        <div className="flex flex-wrap justify-content-center">
-                            {bigCardData.map((card, index) => (
-                                <div key={index} className="sm:col-12 md:col-12 lg:col-6">
-                                    <BigCardChart
-                                        title={card.title}
-                                        data={card.data}
-                                        chartsData={card.chartsData}
-                                    />
-                                </div>
-                            ))}
+                    <div className="xl:center-horizontally flex">
+                        <div className="w-full xl:max-w-110rem px-4">
+                            <div className="flex flex-wrap justify-content-center">
+                                {smallCardData.map((card, index) => (
+                                    <div key={index} className="sm:col-6 md:col-6 lg:col-3">
+                                        <SmallStatsCard
+                                            title={card.title}
+                                            data={card.data}
+                                            chartsData={card.chartsData}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="flex flex-wrap justify-content-center">
+                                {bigCardData.map((card, index) => (
+                                    <div key={index} className="sm:col-12 md:col-12 lg:col-6">
+                                        <BigCardChart
+                                            title={card.title}
+                                            data={card.data}
+                                            chartsData={card.chartsData}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 )}
