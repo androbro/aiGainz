@@ -1,15 +1,31 @@
 ﻿'use client';
 import { useLoaderStore } from '@/app/store/loaderStore';
 import { useLoading } from '@/hooks/useLoading';
-import SmallStatsCard, { smallStatsCardProps } from '@/app/components/cards/smallStatsCard';
 import React from 'react';
 import { Carousel } from 'primereact/carousel';
+import SmallStatsCard from '@/app/components/cards/smallStatsCard';
 
 interface PageProps {}
 
+interface SmallStatsCardProps {
+    title: string;
+    data: {
+        prevScore: number;
+        currentScore: number;
+    };
+    chartsData: {
+        label: string;
+        data: number[];
+        fill: boolean;
+        borderColor: string | undefined;
+        tension: number;
+        pointRadius: number;
+    };
+}
+
 export default function Dashboard({}: PageProps) {
     const { setIsLoading } = useLoaderStore();
-    const smallCardData: smallStatsCardProps[] = [
+    const smallCardData: SmallStatsCardProps[] = [
         {
             title: 'Overall Strength',
             data: {
@@ -95,7 +111,7 @@ export default function Dashboard({}: PageProps) {
     ];
     useLoading(false, setIsLoading);
 
-    const productTemplate = (card: smallStatsCardProps) => {
+    const productTemplate = (card: SmallStatsCardProps) => {
         return (
             <div>
                 <SmallStatsCard title={card.title} data={card.data} chartsData={card.chartsData} />
