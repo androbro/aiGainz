@@ -1,11 +1,11 @@
-﻿import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Card } from 'primereact/card';
 import { Chart } from 'primereact/chart';
 import { useResizeObserver } from '@/hooks/useResizeObserver';
 
-export interface SmallStatsCardProps {
+export interface BigStatsCardProps {
     title: string;
-    data: SmallStatsCardData;
+    data: BigStatsCardData;
     chartsData: ChartData;
 }
 
@@ -18,12 +18,12 @@ export interface ChartData {
     pointRadius: number;
 }
 
-interface SmallStatsCardData {
+interface BigStatsCardData {
     prevScore: number;
     currentScore: number;
 }
 
-export default function SmallStatsCard({ title, data, chartsData }: SmallStatsCardProps) {
+export default function BigCardChart({ title, data, chartsData }: BigStatsCardProps) {
     const [difference, setDifference] = useState<number>(0);
     const isPositive = data.currentScore >= data.prevScore;
     const [chartData, setChartData] = useState({});
@@ -33,6 +33,9 @@ export default function SmallStatsCard({ title, data, chartsData }: SmallStatsCa
 
     useEffect(() => {
         const documentStyle = getComputedStyle(document.documentElement);
+        const textColor = documentStyle.getPropertyValue('--text-color');
+        const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
+        const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
         chartsData.borderColor = isPositive
             ? documentStyle.getPropertyValue('--green-500')
             : documentStyle.getPropertyValue('--red-500');
@@ -47,8 +50,22 @@ export default function SmallStatsCard({ title, data, chartsData }: SmallStatsCa
                 legend: { display: false },
             },
             scales: {
-                x: { display: false },
-                y: { display: false },
+                x: {
+                    ticks: {
+                        color: textColorSecondary,
+                    },
+                    grid: {
+                        color: surfaceBorder,
+                    },
+                },
+                y: {
+                    ticks: {
+                        color: textColorSecondary,
+                    },
+                    grid: {
+                        color: surfaceBorder,
+                    },
+                },
             },
             maintainAspectRatio: false,
             responsive: true,
@@ -71,7 +88,7 @@ export default function SmallStatsCard({ title, data, chartsData }: SmallStatsCa
     return (
         <Card header={Header}>
             <div className="grid">
-                <div className="align-content-center col-6 pb-0 pt-0">
+                <div className="align-content-center col-3 pb-0 pt-0">
                     <div className="font-bold black text-4xl">{data.currentScore}KG</div>
                     <div>
                         <div
@@ -90,7 +107,7 @@ export default function SmallStatsCard({ title, data, chartsData }: SmallStatsCa
                         </div>
                     </div>
                 </div>
-                <div className="col-6" ref={chartContainerRef} style={{ height: '75px' }}>
+                <div className="col-9" ref={chartContainerRef}>
                     <Chart
                         type="line"
                         data={chartData}
