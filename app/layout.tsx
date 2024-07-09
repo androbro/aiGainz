@@ -63,23 +63,25 @@ export default function RootLayout({
                     <meta name="Reason Codes" content="width=device-width, initial-scale=1.0" />
                     <title>{APP_NAME}</title>
                 </head>
-                <body className="flex ml-4 mr-4 mb-4 mt-4 surface-100">
+                <body className="surface-100">
                     <div>
-                        <Button
-                            type="button"
-                            onClick={() => setShowNav(!showNav)}
-                            icon="pi pi-bars"
-                            rounded
-                            text
-                            raised
-                            className="h-2rem w-2rem"
-                        />
-                    </div>
-                    <div className="w-full ml-3">
-                        <div className="mb-3">
-                            <TopBar />
+                        <div className="flex m-4">
+                            <Button
+                                type="button"
+                                onClick={() => setShowNav(!showNav)}
+                                icon="pi pi-bars"
+                                rounded
+                                text
+                                raised
+                                className="h-2rem w-2rem"
+                            />
+                            <div className="w-full">
+                                <TopBar />
+                            </div>
                         </div>
-                        <ReactQueryProvider>{children}</ReactQueryProvider>
+                        <div className="w-full">
+                            <ReactQueryProvider>{children}</ReactQueryProvider>
+                        </div>
                     </div>
                     <div>
                         <div>

@@ -1,6 +1,6 @@
-﻿import {useEffect, useRef, useState} from 'react';
-import {Card} from 'primereact/card';
-import {Chart} from 'primereact/chart';
+﻿import { useEffect, useRef, useState } from 'react';
+import { Card } from 'primereact/card';
+import { Chart } from 'primereact/chart';
 
 export interface smallStatsCardProps {
     title: string;
@@ -22,7 +22,7 @@ interface smallStatsCardData {
     currentScore: number;
 }
 
-export default function SmallStatsCard({title, data, chartsData}: smallStatsCardProps) {
+export default function SmallStatsCard({ title, data, chartsData }: smallStatsCardProps) {
     const [difference, setDifference] = useState<number>(0);
     const isPositive = data.currentScore >= data.prevScore;
     const [chartData, setChartData] = useState({});
@@ -30,7 +30,7 @@ export default function SmallStatsCard({title, data, chartsData}: smallStatsCard
     const chartRef = useRef<any | null>(null);
 
     const updateChartSize = () => {
-        if (chartRef.current) {
+        if (chartRef.current && typeof chartRef.current.resize === 'function') {
             chartRef.current.resize();
         }
     };
@@ -51,11 +51,11 @@ export default function SmallStatsCard({title, data, chartsData}: smallStatsCard
 
         const options = {
             plugins: {
-                legend: {display: false},
+                legend: { display: false },
             },
             scales: {
-                x: {display: false},
-                y: {display: false},
+                x: { display: false },
+                y: { display: false },
             },
             maintainAspectRatio: false, // Ensure the chart is responsive
             responsive: true,
@@ -84,7 +84,7 @@ export default function SmallStatsCard({title, data, chartsData}: smallStatsCard
 
     return (
         <Card header={Header}>
-            <div className="grid ">
+            <div className="grid">
                 <div className="align-content-center col-6 pb-0 pt-0">
                     <div className="font-bold black text-4xl">{data.currentScore}KG</div>
                     <div>
@@ -105,7 +105,13 @@ export default function SmallStatsCard({title, data, chartsData}: smallStatsCard
                     </div>
                 </div>
                 <div className="col-6">
-                    <Chart height="3rem" ref={chartRef} type="line" data={chartData} options={chartOptions}/>
+                    <Chart
+                        height="3rem"
+                        ref={chartRef}
+                        type="line"
+                        data={chartData}
+                        options={chartOptions}
+                    />
                 </div>
             </div>
         </Card>
