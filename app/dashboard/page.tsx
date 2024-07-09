@@ -18,7 +18,7 @@ export default function Dashboard({}: PageProps) {
             },
             chartsData: {
                 label: 'First Dataset',
-                data: [65, 59, 80, 81, 56, 55, 40],
+                data: [25, 29, 30, 42, 35, 34, 50],
                 fill: false,
                 borderColor: undefined,
                 tension: 0.4,
