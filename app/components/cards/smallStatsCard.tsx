@@ -1,4 +1,5 @@
 ﻿'use client';
+
 import { useEffect, useRef, useState } from 'react';
 import { Card } from 'primereact/card';
 import { Chart } from 'primereact/chart';
@@ -75,13 +76,16 @@ export default function SmallStatsCard({ title, data, chartsData }: smallStatsCa
     }, [data.currentScore, data.prevScore]);
 
     useEffect(() => {
-        window.addEventListener('resize', updateChartSize);
-        return () => {
-            window.removeEventListener('resize', updateChartSize);
-        };
+        if (typeof window !== 'undefined') {
+            window.addEventListener('resize', updateChartSize);
+            return () => {
+                window.removeEventListener('resize', updateChartSize);
+            };
+        }
     }, []);
 
     const Header = <div className="pt-4 pl-4 font-bold black">{title}</div>;
+    ``;
 
     return (
         <Card header={Header}>
