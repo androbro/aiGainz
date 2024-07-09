@@ -1,7 +1,7 @@
 ﻿'use client';
 import { useLoaderStore } from '@/app/store/loaderStore';
 import { useLoading } from '@/hooks/useLoading';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Carousel } from 'primereact/carousel';
 import SmallStatsCard from '@/app/components/cards/smallStatsCard';
 
@@ -25,6 +25,23 @@ interface SmallStatsCardProps {
 
 export default function Dashboard({}: PageProps) {
     const { setIsLoading } = useLoaderStore();
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+
+        // Set initial value
+        handleResize();
+
+        // Add event listener
+        window.addEventListener('resize', handleResize);
+
+        // Remove event listener on cleanup
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     const smallCardData: SmallStatsCardProps[] = [
         {
             title: 'Overall Strength',
@@ -118,12 +135,11 @@ export default function Dashboard({}: PageProps) {
             </div>
         );
     };
+
     return (
         <>
             <div className="layout-container layout-light layout-colorscheme-menu layout-static layout-static-inactive p-ripple-disabled">
-                {/*top 4 stats cards*/}
-                {/*if smartphone, then place cards in carousel*/}
-                {window.innerWidth < 768 ? (
+                {isMobile ? (
                     <Carousel
                         value={smallCardData}
                         numVisible={3}
@@ -133,18 +149,15 @@ export default function Dashboard({}: PageProps) {
                     />
                 ) : (
                     <div className="flex flex-wrap justify-content-center">
-                        {/*here 4 small cards will be aligned next to each other on a fullhd screen*/}
-                        {smallCardData.map((card, index) => {
-                            return (
-                                <div key={index} className="lg:col-3 md:col-3 sm:col-6">
-                                    <SmallStatsCard
-                                        title={card.title}
-                                        data={card.data}
-                                        chartsData={card.chartsData}
-                                    />
-                                </div>
-                            );
-                        })}
+                        {smallCardData.map((card, index) => (
+                            <div key={index} className="lg:col-3 md:col-3 sm:col-6">
+                                <SmallStatsCard
+                                    title={card.title}
+                                    data={card.data}
+                                    chartsData={card.chartsData}
+                                />
+                            </div>
+                        ))}
                     </div>
                 )}
             </div>
