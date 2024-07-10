@@ -10,6 +10,7 @@ import { ReactQueryProvider } from '@/app/reactQueryProvider';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Button } from 'primereact/button';
 import TopBar from '@/app/components/topBar';
+import {UserProvider} from "@auth0/nextjs-auth0/client";
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -57,6 +58,7 @@ export default function RootLayout({
 
     return (
         <html lang="en">
+        <UserProvider>
             <PrimeReactProvider>
                 <head>
                     <meta charSet="UTF-8" />
@@ -96,6 +98,7 @@ export default function RootLayout({
                     </div>
                 </body>
             </PrimeReactProvider>
+            </UserProvider>
         </html>
     );
 }
