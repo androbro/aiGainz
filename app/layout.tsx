@@ -10,7 +10,8 @@ import { ReactQueryProvider } from '@/app/reactQueryProvider';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Button } from 'primereact/button';
 import TopBar from '@/app/components/topBar';
-import {UserProvider} from "@auth0/nextjs-auth0/client";
+import { UserProvider, useUser } from '@auth0/nextjs-auth0/client';
+import { AuthenticatedQueryProvider } from '@/app/providers/authenticatedQueryProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -58,46 +59,50 @@ export default function RootLayout({
 
     return (
         <html lang="en">
-        <UserProvider>
-            <PrimeReactProvider>
-                <head>
-                    <meta charSet="UTF-8" />
-                    <meta name="Reason Codes" content="width=device-width, initial-scale=1.0" />
-                    <title>{APP_NAME}</title>
-                </head>
-                <body className="surface-100">
-                    <div>
-                        <div className="flex m-4">
-                            <Button
-                                type="button"
-                                onClick={() => setShowNav(!showNav)}
-                                icon="pi pi-bars"
-                                rounded
-                                text
-                                raised
-                                className="h-2rem w-2rem"
-                            />
-                            <div className="w-full">
-                                <TopBar />
+            <UserProvider>
+                <PrimeReactProvider>
+                    <head>
+                        <meta charSet="UTF-8" />
+                        <meta name="Reason Codes" content="width=device-width, initial-scale=1.0" />
+                        <title>{APP_NAME}</title>
+                    </head>
+                    <body className="surface-100">
+                        <div>
+                            <div>
+                                <div className="flex m-4">
+                                    <Button
+                                        type="button"
+                                        onClick={() => setShowNav(!showNav)}
+                                        icon="pi pi-bars"
+                                        rounded
+                                        text
+                                        raised
+                                        className="h-2rem w-2rem"
+                                    />
+                                    <div className="w-full">
+                                        <TopBar />
+                                    </div>
+                                </div>
+                                <div className="w-full">
+                                    <AuthenticatedQueryProvider>
+                                        {children}
+                                    </AuthenticatedQueryProvider>
+                                </div>
+                            </div>
+                            <div>
+                                <div>
+                                    {initialLoad ||
+                                        (showSpinner && (
+                                            <div className="spinner-container dark">
+                                                <ProgressSpinner />
+                                            </div>
+                                        ))}
+                                    {showNav && <SideNav navClosed={() => setShowNav(false)} />}
+                                </div>
                             </div>
                         </div>
-                        <div className="w-full">
-                            <ReactQueryProvider>{children}</ReactQueryProvider>
-                        </div>
-                    </div>
-                    <div>
-                        <div>
-                            {initialLoad ||
-                                (showSpinner && (
-                                    <div className="spinner-container dark">
-                                        <ProgressSpinner />
-                                    </div>
-                                ))}
-                            {showNav && <SideNav navClosed={() => setShowNav(false)} />}
-                        </div>
-                    </div>
-                </body>
-            </PrimeReactProvider>
+                    </body>
+                </PrimeReactProvider>
             </UserProvider>
         </html>
     );

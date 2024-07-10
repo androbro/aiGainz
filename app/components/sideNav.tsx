@@ -7,6 +7,7 @@ import { APP_NAME, DASHBOARD } from '@/app/constants/ui';
 import { useLoaderStore } from '@/app/store/loaderStore';
 import SignOut from '@/app/components/signOut';
 import { useLoading } from '@/hooks/useLoading';
+import { useUser } from '@auth0/nextjs-auth0/client';
 
 interface NavItemProps {
     href: string;
@@ -31,8 +32,11 @@ export default function SideNav({ navClosed }: NavProps) {
     const [isLoadingNewPage, setIsLoadingNewPage] = useState<boolean>(false);
     const { setIsLoading } = useLoaderStore();
     useLoading(false, setIsLoading);
+    const { user, error, isLoading } = useUser();
 
-    const configurations: LinkProps[] = [{ name: createTitleFromName(DASHBOARD), href: '/config/subprocess' }];
+    const configurations: LinkProps[] = [
+        { name: createTitleFromName(DASHBOARD), href: '/config/subprocess' },
+    ];
     // const user = useCurrentUser();
     // const userName = user?.name ?? 'Username not found.';
     //
@@ -99,7 +103,7 @@ export default function SideNav({ navClosed }: NavProps) {
                     }}
                     className="m-3 flex align-items-center cursor-pointer p-3 gap-2 border-round text-700 hover:surface-100 transition-duration-150 transition-colors "
                 >
-                    <span className="font-bold">username</span>
+                    <span className="font-bold">{user?.name}</span>
                 </a>
             </div>
             <div className="mr-4">
@@ -135,7 +139,13 @@ export default function SideNav({ navClosed }: NavProps) {
                                 <div className="flex flex-column h-full">
                                     <div className="flex align-items-center justify-content-between px-4 pt-3 flex-shrink-0">
                                         <span className="inline-flex align-items-center gap-2">
-                                            <svg width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <svg
+                                                width="35"
+                                                height="35"
+                                                viewBox="0 0 35 35"
+                                                fill="none"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
                                                 <g mask="url(#mask0_2642_713)">
                                                     <path
                                                         fillRule="evenodd"
@@ -189,7 +199,9 @@ export default function SideNav({ navClosed }: NavProps) {
                                                     fill="var(--primary-color)"
                                                 />
                                             </svg>
-                                            <span className="font-semibold text-2xl text-primary">{APP_NAME}</span>
+                                            <span className="font-semibold text-2xl text-primary">
+                                                {APP_NAME}
+                                            </span>
                                         </span>
                                         <span>
                                             <Button
@@ -206,7 +218,9 @@ export default function SideNav({ navClosed }: NavProps) {
                                         <ul className="list-none p-3 m-0">
                                             <li>
                                                 <ul className="list-none p-0 m-0 overflow-hidden">
-                                                    <NavItem href="/dashboard">{createTitleFromName(DASHBOARD)}</NavItem>
+                                                    <NavItem href="/dashboard">
+                                                        {createTitleFromName(DASHBOARD)}
+                                                    </NavItem>
                                                     {/*{renderConfigurationSection()}*/}
                                                 </ul>
                                             </li>
