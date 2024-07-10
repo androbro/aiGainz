@@ -4,7 +4,7 @@ import { useLoading } from '@/hooks/useLoading';
 import React, { useState, useEffect } from 'react';
 import { Carousel } from 'primereact/carousel';
 import SmallStatsCard from '@/app/components/cards/smallStatsCard';
-import BigCardChart, { BigStatsCardProps } from '@/app/components/cards/bigCardChart';
+import BigCardChart, {BigStatsCardProps, CardBody} from '@/app/components/cards/bigCardChart';
 
 interface PageProps {}
 
@@ -105,7 +105,7 @@ export default function Dashboard({}: PageProps) {
             },
         },
     ];
-    const bigCardData: BigStatsCardProps[] = [
+    const bigCardData: CardBody[] = [
         {
             title: '(DB) Bench Press',
             data: {
@@ -198,9 +198,8 @@ export default function Dashboard({}: PageProps) {
                                 {bigCardData.map((card, index) => (
                                     <div key={index} className="sm:col-12 md:col-12 lg:col-6">
                                         <BigCardChart
-                                            title={card.title}
-                                            data={card.data}
-                                            chartsData={card.chartsData}
+                                            body={card}
+                                            changedChart={() => {}}
                                         />
                                     </div>
                                 ))}
