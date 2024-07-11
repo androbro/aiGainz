@@ -67,39 +67,35 @@ export default function RootLayout({
                         <title>{APP_NAME}</title>
                     </head>
                     <body className="surface-100">
-                        <div>
-                            <div>
-                                <div className="flex m-4">
-                                    <Button
-                                        type="button"
-                                        onClick={() => setShowNav(!showNav)}
-                                        icon="pi pi-bars"
-                                        rounded
-                                        text
-                                        raised
-                                        className="h-2rem w-2rem"
-                                    />
-                                    <div className="w-full">
-                                        <TopBar />
-                                    </div>
-                                </div>
-                                <div className="w-full">
-                                    <AuthenticatedQueryProvider>
-                                        {children}
-                                    </AuthenticatedQueryProvider>
-                                </div>
-                            </div>
+                        <AuthenticatedQueryProvider>
                             <div>
                                 <div>
-                                    {initialLoad ||
-                                        (showSpinner && (
-                                            <div className="spinner-container dark">
-                                                <ProgressSpinner />
-                                            </div>
-                                        ))}
                                     {showNav && <SideNav navClosed={() => setShowNav(false)} />}
+                                    <div className="flex m-4">
+                                        <Button
+                                            type="button"
+                                            onClick={() => setShowNav(!showNav)}
+                                            icon="pi pi-bars"
+                                            rounded
+                                            text
+                                            raised
+                                            className="h-2rem w-2rem"
+                                        />
+                                        <div className="w-full">
+                                            <TopBar />
+                                        </div>
+                                    </div>
+                                    <div className="w-full">{children}</div>
                                 </div>
                             </div>
+                        </AuthenticatedQueryProvider>
+                        <div>
+                            {initialLoad ||
+                                (showSpinner && (
+                                    <div className="spinner-container dark">
+                                        <ProgressSpinner />
+                                    </div>
+                                ))}
                         </div>
                     </body>
                 </PrimeReactProvider>

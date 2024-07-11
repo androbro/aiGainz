@@ -26,7 +26,7 @@ export const AuthenticatedQueryProvider = ({ children }: AuthenticatedQueryProvi
         // User is not authenticated, render a fallback or redirect to login
         return (
             <div>
-                <div className="flex align-items-center justify-content-center">
+                <div className="flex align-items-center justify-content-center mt-8 ">
                     <div className="surface-card p-4 shadow-2 border-round w-full lg:w-3">
                         <div className="text-center mb-5">
                             <img src="../favicon.ico" alt="hyper" height={50} className="mb-3" />

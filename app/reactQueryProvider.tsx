@@ -1,8 +1,10 @@
 ﻿import React, { useRef } from 'react';
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
+import {useUser} from "@auth0/nextjs-auth0/client";
 
 export function ReactQueryProvider({ children }: React.PropsWithChildren) {
+    const { user } = useUser();
     const toast = useRef<Toast>(null);
     const queryClient = new QueryClient({
         queryCache: new QueryCache({
@@ -30,7 +32,7 @@ export function ReactQueryProvider({ children }: React.PropsWithChildren) {
     return (
         <QueryClientProvider client={queryClient}>
             <Toast ref={toast} />
-            {children}
+            {user && children}
             {/*<ReactQueryDevtools initialIsOpen={false} />*/}
         </QueryClientProvider>
     );
