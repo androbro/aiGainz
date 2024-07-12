@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@/generated/client';
 
 const prisma = new PrismaClient();
 
@@ -10,14 +10,14 @@ export async function GET(request: Request) {
     if (id) {
         const muscleType = await prisma.muscleType.findUnique({
             where: { id: parseInt(id) },
-            include: { primaryExercises: true, secondaryExercises: true }
+            include: { primaryExercises: true, secondaryExercises: true },
         });
         return muscleType
             ? NextResponse.json(muscleType)
             : NextResponse.json({ error: 'MuscleType not found' }, { status: 404 });
     } else {
         const muscleTypes = await prisma.muscleType.findMany({
-            include: { primaryExercises: true, secondaryExercises: true }
+            include: { primaryExercises: true, secondaryExercises: true },
         });
         return NextResponse.json(muscleTypes);
     }
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const muscleType = await prisma.muscleType.create({
         data: body,
-        include: { primaryExercises: true, secondaryExercises: true }
+        include: { primaryExercises: true, secondaryExercises: true },
     });
     return NextResponse.json(muscleType, { status: 201 });
 }
@@ -45,7 +45,7 @@ export async function PUT(request: Request) {
         const updatedMuscleType = await prisma.muscleType.update({
             where: { id: parseInt(id) },
             data: body,
-            include: { primaryExercises: true, secondaryExercises: true }
+            include: { primaryExercises: true, secondaryExercises: true },
         });
         return NextResponse.json(updatedMuscleType);
     } catch (error) {
@@ -63,7 +63,7 @@ export async function DELETE(request: Request) {
 
     try {
         await prisma.muscleType.delete({
-            where: { id: parseInt(id) }
+            where: { id: parseInt(id) },
         });
         return NextResponse.json({ message: 'MuscleType deleted successfully' });
     } catch (error) {
