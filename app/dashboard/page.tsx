@@ -170,18 +170,16 @@ export default function Dashboard({}: PageProps) {
         );
     };
 
-    // const saveEmployee = async (employee: any) => {
-    //     const response = await fetch('/api/employee', {
-    //         method: 'POST',
-    //         body: JSON.stringify(employee),
-    //     });
-    //
-    //     if (!response.ok) {
-    //         throw new Error(response.statusText);
-    //     }
-    //
-    //     return await response.json();
-    // };
+    const saveEmployee = async () => {
+        const data = await fetch('/api/employee', {
+            method: 'POST',
+            body: JSON.stringify({
+                name: 'John Doe',
+                email: 'john@doe.be',
+                role: 'ADMIN',
+            }),
+        });
+    };
 
     const callApi = async () => {
         const data = await fetch('/api/employee', {
@@ -191,7 +189,8 @@ export default function Dashboard({}: PageProps) {
 
     return (
         <>
-            <Button onClick={() => callApi()}>Save Employee</Button>
+            <Button onClick={() => saveEmployee()}>Save Employee</Button>
+            <Button onClick={() => callApi()}>get Employees</Button>
             <div className="layout-container layout-light layout-colorscheme-menu layout-static layout-static-inactive p-ripple-disabled">
                 {isMobile ? (
                     <Carousel
