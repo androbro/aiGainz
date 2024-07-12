@@ -21,7 +21,7 @@ interface StrengthScoreParams {
     difficultyMultiplier: number;
 }
 
-interface StrengthScoreResult {
+export interface StrengthScoreResult {
     totalScore: number;
     dataPoints: { date: Date; score: number }[];
     percentageChange: number;

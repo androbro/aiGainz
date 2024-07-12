@@ -2,10 +2,12 @@
 import { Card } from 'primereact/card';
 import { Chart } from 'primereact/chart';
 import { useResizeObserver } from '@/hooks/useResizeObserver';
+import { StrengthScoreResult } from '@/hooks/useStrengthScore';
+import CardSkeleton from '@/app/components/cardSkeleton';
 
 export interface SmallStatsCardProps {
     title: string;
-    data: SmallStatsCardData;
+    data: StrengthScoreResult;
     chartsData: ChartData;
     labels: string[];
 }
@@ -19,14 +21,8 @@ export interface ChartData {
     pointRadius: number;
 }
 
-interface SmallStatsCardData {
-    prevScore: number;
-    currentScore: number;
-}
-
 export default function SmallStatsCard({ title, data, chartsData, labels }: SmallStatsCardProps) {
     const [difference, setDifference] = useState<number>(0);
-    const isPositive = data.currentScore >= data.prevScore;
     const [chartData, setChartData] = useState({});
     const [chartOptions, setChartOptions] = useState({});
     const chartContainerRef = useRef(null);
@@ -34,73 +30,76 @@ export default function SmallStatsCard({ title, data, chartsData, labels }: Smal
 
     useEffect(() => {
         const documentStyle = getComputedStyle(document.documentElement);
-        chartsData.borderColor = isPositive
-            ? documentStyle.getPropertyValue('--green-500')
-            : documentStyle.getPropertyValue('--red-500');
+        if (data) {
+            chartsData.borderColor =
+                data.percentageChange >= 0
+                    ? documentStyle.getPropertyValue('--green-500')
+                    : documentStyle.getPropertyValue('--red-500');
 
-        const data = {
-            labels: labels,
-            datasets: [chartsData],
-        };
+            const chartData = {
+                labels: data.dataPoints,
+                datasets: [chartsData],
+            };
 
-        const options = {
-            plugins: {
-                legend: { display: false },
-            },
-            scales: {
-                x: { display: false },
-                y: { display: false },
-            },
-            maintainAspectRatio: false,
-            responsive: true,
-        };
+            const options = {
+                plugins: {
+                    legend: { display: false },
+                },
+                scales: {
+                    x: { display: false },
+                    y: { display: false },
+                },
+                maintainAspectRatio: false,
+                responsive: true,
+            };
 
-        setChartData(data);
-        setChartOptions(options);
-    }, [chartsData, isPositive]);
-
-    useEffect(() => {
-        if (data.prevScore > 0) {
-            const diff = (data.currentScore - data.prevScore) / data.prevScore;
-            const diffPercentage = Math.abs(diff) * 100;
-            setDifference(diffPercentage);
+            setChartData(chartData);
+            setChartOptions(options);
         }
-    }, [data.currentScore, data.prevScore]);
+    }, [chartsData]);
 
     const Header = <div className="pt-4 pl-4 font-bold black">{title}</div>;
 
     return (
-        <Card header={Header}>
-            <div className="grid">
-                <div className="align-content-center col-6 pb-0 pt-0">
-                    <div className="font-bold black text-4xl">{data.currentScore}KG</div>
-                    <div>
-                        <div
-                            className={`${isPositive ? 'text-green-500' : 'text-red-500'} mt-2 flex`}
-                        >
-                            <div>{isPositive ? '+' : '-'}</div>
-                            <div>{difference.toFixed(2)}</div>
-                            <div>%</div>
+        <>
+            {data ? (
+                <Card header={Header}>
+                    <div className="grid">
+                        <div className="align-content-center col-6 pb-0 pt-0">
+                            <div className="font-bold black text-4xl">
+                                {data?.totalScore.toFixed(0)}
+                            </div>
                             <div>
-                                {isPositive ? (
-                                    <i className="pi pi-arrow-up"></i>
-                                ) : (
-                                    <i className="pi pi-arrow-down"></i>
-                                )}
+                                <div
+                                    className={`${data?.percentageChange >= 0 ? 'text-green-500' : 'text-red-500'} mt-2 flex`}
+                                >
+                                    <div>{data?.percentageChange >= 0 ? '+' : '-'}</div>
+                                    <div>{data?.percentageChange.toFixed(0)}</div>
+                                    <div>%</div>
+                                    <div>
+                                        {data?.percentageChange >= 0 ? (
+                                            <i className="pi pi-arrow-up"></i>
+                                        ) : (
+                                            <i className="pi pi-arrow-down"></i>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                        <div className="col-6" ref={chartContainerRef} style={{ height: '75px' }}>
+                            <Chart
+                                type="line"
+                                data={chartData}
+                                options={chartOptions}
+                                width="100%"
+                                height="100%"
+                            />
+                        </div>
                     </div>
-                </div>
-                <div className="col-6" ref={chartContainerRef} style={{ height: '75px' }}>
-                    <Chart
-                        type="line"
-                        data={chartData}
-                        options={chartOptions}
-                        width="100%"
-                        height="100%"
-                    />
-                </div>
-            </div>
-        </Card>
+                </Card>
+            ) : (
+                <CardSkeleton />
+            )}
+        </>
     );
 }

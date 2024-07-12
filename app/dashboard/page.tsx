@@ -6,16 +6,13 @@ import { Carousel } from 'primereact/carousel';
 import SmallStatsCard from '@/app/components/carts/smallStatsCard';
 import BigCardChart, { BigStatsCardProps, CardBody } from '@/app/components/carts/bigCardChart';
 import { Button } from 'primereact/button';
-import { useStrengthScore } from '@/hooks/useStrengthScore';
+import { StrengthScoreResult, useStrengthScore } from '@/hooks/useStrengthScore';
 
 interface PageProps {}
 
 interface SmallStatsCardProps {
     title: string;
-    data: {
-        prevScore: number;
-        currentScore: number;
-    };
+    data: StrengthScoreResult;
     chartsData: {
         label: string;
         data: number[];
@@ -30,6 +27,17 @@ interface SmallStatsCardProps {
 export default function Dashboard({}: PageProps) {
     const { setIsLoading } = useLoaderStore();
     const [isMobile, setIsMobile] = useState(false);
+    const { result, isLoading, error, updateParams } = useStrengthScore({
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-06-30'),
+        weightMultiplier: 1,
+        volumeMultiplier: 0.5,
+        difficultyMultiplier: 1.2,
+    });
+
+    useEffect(() => {
+        setIsLoading(isLoading);
+    }, [isLoading]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -46,28 +54,13 @@ export default function Dashboard({}: PageProps) {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const initialParams = {
-        startDate: new Date('2024-01-01'),
-        endDate: new Date('2024-06-30'),
-        weightMultiplier: 1,
-        volumeMultiplier: 0.5,
-        difficultyMultiplier: 1.2,
-    };
-    const { result, isLoading, error, updateParams } = useStrengthScore(initialParams);
-    // if (isLoading) return <div>Loading...</div>;
-    // if (error) return <div>Error: {error.message}</div>;
-    // if (!result) return null;
-
     const smallCardData: SmallStatsCardProps[] = [
         {
             title: 'Overall Strength',
-            data: {
-                prevScore: 10,
-                currentScore: 2,
-            },
+            data: result!,
             chartsData: {
                 label: 'First Dataset',
-                data: [25, 29, 30, 42, 35, 34, 50],
+                data: result?.dataPoints.map((dataPoint) => dataPoint.score) || [],
                 fill: false,
                 borderColor: undefined,
                 tension: 0.4,
@@ -75,54 +68,54 @@ export default function Dashboard({}: PageProps) {
             },
             labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
         },
-        {
-            title: 'Workout Consistency',
-            data: {
-                prevScore: 10,
-                currentScore: 44,
-            },
-            chartsData: {
-                label: 'First Dataset',
-                data: [65, 59, 80, 81, 56, 55, 40],
-                fill: false,
-                borderColor: undefined,
-                tension: 0.4,
-                pointRadius: 0,
-            },
-            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        },
-        {
-            title: 'Nutrition Consistency',
-            data: {
-                prevScore: 10,
-                currentScore: 41,
-            },
-            chartsData: {
-                label: 'First Dataset',
-                data: [65, 59, 80, 81, 56, 55, 40],
-                fill: false,
-                borderColor: undefined,
-                tension: 0.4,
-                pointRadius: 0,
-            },
-            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        },
-        {
-            title: 'Sleep Consistency',
-            data: {
-                prevScore: 10,
-                currentScore: 4,
-            },
-            chartsData: {
-                label: 'First Dataset',
-                data: [65, 59, 80, 81, 56, 55, 40],
-                fill: false,
-                borderColor: undefined,
-                tension: 0.4,
-                pointRadius: 0,
-            },
-            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        },
+        // {
+        //     title: 'Workout Consistency',
+        //     data: {
+        //         prevScore: 10,
+        //         currentScore: 44,
+        //     },
+        //     chartsData: {
+        //         label: 'First Dataset',
+        //         data: [65, 59, 80, 81, 56, 55, 40],
+        //         fill: false,
+        //         borderColor: undefined,
+        //         tension: 0.4,
+        //         pointRadius: 0,
+        //     },
+        //     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        // },
+        // {
+        //     title: 'Nutrition Consistency',
+        //     data: {
+        //         prevScore: 10,
+        //         currentScore: 41,
+        //     },
+        //     chartsData: {
+        //         label: 'First Dataset',
+        //         data: [65, 59, 80, 81, 56, 55, 40],
+        //         fill: false,
+        //         borderColor: undefined,
+        //         tension: 0.4,
+        //         pointRadius: 0,
+        //     },
+        //     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        // },
+        // {
+        //     title: 'Sleep Consistency',
+        //     data: {
+        //         prevScore: 10,
+        //         currentScore: 4,
+        //     },
+        //     chartsData: {
+        //         label: 'First Dataset',
+        //         data: [65, 59, 80, 81, 56, 55, 40],
+        //         fill: false,
+        //         borderColor: undefined,
+        //         tension: 0.4,
+        //         pointRadius: 0,
+        //     },
+        //     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        // },
     ];
     const bigCardData: CardBody[] = [
         {
