@@ -76,10 +76,11 @@ export function useStrengthScore(initialParams: StrengthScoreParams) {
                     }
 
                     const exerciseScore =
-                        weight * params.weightMultiplier +
-                        volume *
-                            params.volumeMultiplier *
-                            (difficultyFactor * params.difficultyMultiplier);
+                        (weight * params.weightMultiplier +
+                            volume *
+                                params.volumeMultiplier *
+                                (difficultyFactor * params.difficultyMultiplier)) /
+                        10;
 
                     workoutScore += exerciseScore;
                 }
