@@ -1,14 +1,11 @@
-/*
-  Warnings:
+-- CreateEnum
+CREATE TYPE "EquipmentType" AS ENUM ('BODYWEIGHT', 'MACHINE', 'CABLE', 'OTHER');
 
-  - You are about to drop the `Employee` table. If the table is not empty, all the data it contains will be lost.
+-- CreateEnum
+CREATE TYPE "EquipmentCategory" AS ENUM ('CARDIO', 'STRENGTH', 'BALANCE', 'FLEXIBILITY', 'RECOVERY');
 
-*/
--- DropTable
-DROP TABLE "Employee";
-
--- DropEnum
-DROP TYPE "Role";
+-- CreateEnum
+CREATE TYPE "EquipmentLocation" AS ENUM ('HOME', 'GYM', 'OUTDOOR');
 
 -- CreateTable
 CREATE TABLE "Exercise" (
@@ -37,6 +34,9 @@ CREATE TABLE "MuscleType" (
 CREATE TABLE "WorkoutEquipment" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
+    "type" "EquipmentType" NOT NULL,
+    "category" "EquipmentCategory" NOT NULL,
+    "location" "EquipmentLocation" NOT NULL,
 
     CONSTRAINT "WorkoutEquipment_pkey" PRIMARY KEY ("id")
 );
@@ -60,6 +60,7 @@ CREATE TABLE "WorkoutExercise" (
     "order" INTEGER NOT NULL,
     "sets" INTEGER NOT NULL,
     "reps" INTEGER NOT NULL,
+    "weight" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "minutesToComplete" INTEGER NOT NULL,
     "restBetweenSets" INTEGER NOT NULL,
     "notes" TEXT,

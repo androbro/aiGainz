@@ -31,8 +31,11 @@ model MuscleType {
 }
 
 model WorkoutEquipment {
-  id        Int        @id @default(autoincrement())
-  name      String     @unique
+  id        Int               @id @default(autoincrement())
+  name      String            @unique
+  type      EquipmentType
+  category  EquipmentCategory
+  location  EquipmentLocation
   exercises Exercise[]
 }
 
@@ -54,7 +57,38 @@ model WorkoutExercise {
   order             Int
   sets              Int
   reps              Int
+  weight            Float    @default(0)
   minutesToComplete Int
   restBetweenSets   Int
   notes             String?
+}
+
+enum EquipmentType {
+  MACHINE
+  CABLE
+  SMITH_MACHINE
+  TRAP_BAR
+  BARBELL
+  EZ_BAR
+  DUMBELLS
+  KETTLEBELLS
+  RESISTANCE_BANDS
+  TRX
+  BODYWEIGHT
+  MISC
+  CARDIO
+}
+
+enum EquipmentCategory {
+  CARDIO
+  STRENGTH
+  BALANCE
+  FLEXIBILITY
+  RECOVERY
+}
+
+enum EquipmentLocation {
+  HOME
+  GYM
+  OUTDOOR
 }

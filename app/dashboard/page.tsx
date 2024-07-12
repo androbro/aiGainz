@@ -3,9 +3,10 @@ import { useLoaderStore } from '@/app/store/loaderStore';
 import { useLoading } from '@/hooks/useLoading';
 import React, { useState, useEffect } from 'react';
 import { Carousel } from 'primereact/carousel';
-import SmallStatsCard from '@/app/components/cards/smallStatsCard';
-import BigCardChart, { BigStatsCardProps, CardBody } from '@/app/components/cards/bigCardChart';
+import SmallStatsCard from '@/app/components/carts/smallStatsCard';
+import BigCardChart, { BigStatsCardProps, CardBody } from '@/app/components/carts/bigCardChart';
 import { Button } from 'primereact/button';
+import { Workout } from '@prisma/client';
 
 interface PageProps {}
 

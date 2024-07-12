@@ -1,0 +1,155 @@
+import { $Enums, EquipmentLocation, EquipmentType, WorkoutEquipment } from '@prisma/client';
+import EquipmentCategory = $Enums.EquipmentCategory;
+
+export const workoutEquipment = [
+    {
+        name: 'Leg Press Machine',
+        type: EquipmentType.MACHINE,
+        category: EquipmentCategory.STRENGTH,
+        location: EquipmentLocation.GYM,
+    },
+    {
+        name: 'Treadmill',
+        type: EquipmentType.CARDIO,
+        category: EquipmentCategory.CARDIO,
+        location: EquipmentLocation.GYM,
+    },
+    {
+        name: 'Dumbbells',
+        type: EquipmentType.DUMBELLS,
+        category: EquipmentCategory.STRENGTH,
+        location: EquipmentLocation.GYM,
+    },
+    {
+        name: 'Pull-up Bar',
+        type: EquipmentType.BODYWEIGHT,
+        category: EquipmentCategory.STRENGTH,
+        location: EquipmentLocation.GYM,
+    },
+    {
+        name: 'Yoga Mat',
+        type: EquipmentType.MISC,
+        category: EquipmentCategory.FLEXIBILITY,
+        location: EquipmentLocation.HOME,
+    },
+    {
+        name: 'Resistance Bands',
+        type: EquipmentType.RESISTANCE_BANDS,
+        category: EquipmentCategory.STRENGTH,
+        location: EquipmentLocation.HOME,
+    },
+    {
+        name: 'Elliptical Machine',
+        type: EquipmentType.CARDIO,
+        category: EquipmentCategory.CARDIO,
+        location: EquipmentLocation.GYM,
+    },
+    {
+        name: 'Bench Press',
+        type: EquipmentType.BARBELL,
+        category: EquipmentCategory.STRENGTH,
+        location: EquipmentLocation.GYM,
+    },
+    {
+        name: 'Smith Machine',
+        type: EquipmentType.SMITH_MACHINE,
+        category: EquipmentCategory.STRENGTH,
+        location: EquipmentLocation.GYM,
+    },
+    {
+        name: 'Kettlebells',
+        type: EquipmentType.KETTLEBELLS,
+        category: EquipmentCategory.STRENGTH,
+        location: EquipmentLocation.GYM,
+    },
+    {
+        name: 'Stability Ball',
+        type: EquipmentType.MISC,
+        category: EquipmentCategory.BALANCE,
+        location: EquipmentLocation.HOME,
+    },
+    {
+        name: 'Battle Ropes',
+        type: EquipmentType.MISC,
+        category: EquipmentCategory.STRENGTH,
+        location: EquipmentLocation.GYM,
+    },
+    {
+        name: 'TRX Suspension Trainer',
+        type: EquipmentType.TRX,
+        category: EquipmentCategory.STRENGTH,
+        location: EquipmentLocation.GYM,
+    },
+    {
+        name: 'Rowing Machine',
+        type: EquipmentType.CARDIO,
+        category: EquipmentCategory.CARDIO,
+        location: EquipmentLocation.GYM,
+    },
+    {
+        name: 'Leg Extension Machine',
+        type: EquipmentType.MACHINE,
+        category: EquipmentCategory.STRENGTH,
+        location: EquipmentLocation.GYM,
+    },
+    {
+        name: 'Foam Roller',
+        type: EquipmentType.MISC,
+        category: EquipmentCategory.RECOVERY,
+        location: EquipmentLocation.HOME,
+    },
+    {
+        name: 'Barbell Plates',
+        type: EquipmentType.BARBELL,
+        category: EquipmentCategory.STRENGTH,
+        location: EquipmentLocation.GYM,
+    },
+    {
+        name: 'Jump Rope',
+        type: EquipmentType.MISC,
+        category: EquipmentCategory.CARDIO,
+        location: EquipmentLocation.HOME,
+    },
+    {
+        name: 'Dip Bars',
+        type: EquipmentType.MISC,
+        category: EquipmentCategory.STRENGTH,
+        location: EquipmentLocation.GYM,
+    },
+    {
+        name: 'Medicine Ball',
+        type: EquipmentType.MISC,
+        category: EquipmentCategory.STRENGTH,
+        location: EquipmentLocation.GYM,
+    },
+    {
+        name: 'Leg Curl Machine',
+        type: EquipmentType.MACHINE,
+        category: EquipmentCategory.STRENGTH,
+        location: EquipmentLocation.GYM,
+    },
+    {
+        name: 'Pilates Reformer',
+        type: EquipmentType.MACHINE,
+        category: EquipmentCategory.FLEXIBILITY,
+        location: EquipmentLocation.GYM,
+    },
+    {
+        name: 'Outdoor Pull-up Bar',
+        type: EquipmentType.BODYWEIGHT,
+        category: EquipmentCategory.STRENGTH,
+        location: EquipmentLocation.OUTDOOR,
+    },
+    {
+        name: 'Cable Crossover Machine',
+        type: EquipmentType.CABLE,
+        category: EquipmentCategory.STRENGTH,
+        location: EquipmentLocation.GYM,
+    },
+    {
+        name: 'Ankle Weights',
+        type: EquipmentType.MISC,
+        category: EquipmentCategory.STRENGTH,
+        location: EquipmentLocation.HOME,
+    },
+];

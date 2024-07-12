@@ -2,7 +2,7 @@
   "name": "aigainz",
   "version": "0.1.0",
   "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seeding/seedMuscleAndEquipment.ts"
   },
   "private": true,
   "scripts": {
@@ -10,8 +10,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "migrate": "prisma migrate dev --preview-feature",
     "format:prisma": "prisma format",
-    "seed": "prisma db seed --preview-feature"
+    "seed": "prisma db seed"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^3.5.0",
@@ -20,8 +21,8 @@
     "@tanstack/react-query": "^5.50.1",
     "@vercel/postgres": "^0.9.0",
     "chart.js": "^4.4.3",
+    "faker": "^6.6.6",
     "lucide-react": "^0.400.0",
-    "nest-cli": "^0.0.5",
     "next": "14.2.4",
     "next-auth": "^4.24.7",
     "prettier": "^3.3.2",
