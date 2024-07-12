@@ -12,7 +12,8 @@
     "lint": "next lint",
     "migrate": "prisma migrate dev --preview-feature",
     "format:prisma": "prisma format",
-    "seed": "prisma db seed"
+    "seed": "prisma db seed",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^3.5.0",
