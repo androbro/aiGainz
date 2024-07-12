@@ -6,7 +6,7 @@ import { Carousel } from 'primereact/carousel';
 import SmallStatsCard from '@/app/components/carts/smallStatsCard';
 import BigCardChart, { BigStatsCardProps, CardBody } from '@/app/components/carts/bigCardChart';
 import { Button } from 'primereact/button';
-import { Workout } from '@prisma/client';
+import { useStrengthScore } from '@/hooks/useStrengthScore';
 
 interface PageProps {}
 
@@ -24,6 +24,7 @@ interface SmallStatsCardProps {
         tension: number;
         pointRadius: number;
     };
+    labels: string[];
 }
 
 export default function Dashboard({}: PageProps) {
@@ -45,6 +46,18 @@ export default function Dashboard({}: PageProps) {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    const initialParams = {
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-06-30'),
+        weightMultiplier: 1,
+        volumeMultiplier: 0.5,
+        difficultyMultiplier: 1.2,
+    };
+    const { result, isLoading, error, updateParams } = useStrengthScore(initialParams);
+    // if (isLoading) return <div>Loading...</div>;
+    // if (error) return <div>Error: {error.message}</div>;
+    // if (!result) return null;
+
     const smallCardData: SmallStatsCardProps[] = [
         {
             title: 'Overall Strength',
@@ -60,6 +73,7 @@ export default function Dashboard({}: PageProps) {
                 tension: 0.4,
                 pointRadius: 0,
             },
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
         },
         {
             title: 'Workout Consistency',
@@ -75,6 +89,7 @@ export default function Dashboard({}: PageProps) {
                 tension: 0.4,
                 pointRadius: 0,
             },
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
         },
         {
             title: 'Nutrition Consistency',
@@ -90,6 +105,7 @@ export default function Dashboard({}: PageProps) {
                 tension: 0.4,
                 pointRadius: 0,
             },
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
         },
         {
             title: 'Sleep Consistency',
@@ -105,6 +121,7 @@ export default function Dashboard({}: PageProps) {
                 tension: 0.4,
                 pointRadius: 0,
             },
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
         },
     ];
     const bigCardData: CardBody[] = [
@@ -166,32 +183,18 @@ export default function Dashboard({}: PageProps) {
     const productTemplate = (card: SmallStatsCardProps) => {
         return (
             <div>
-                <SmallStatsCard title={card.title} data={card.data} chartsData={card.chartsData} />
+                <SmallStatsCard
+                    title={card.title}
+                    data={card.data}
+                    chartsData={card.chartsData}
+                    labels={card.labels}
+                />
             </div>
         );
     };
 
-    const saveEmployee = async () => {
-        const data = await fetch('/api/employee', {
-            method: 'POST',
-            body: JSON.stringify({
-                name: 'John Doe',
-                email: 'john@doe.be',
-                role: 'ADMIN',
-            }),
-        });
-    };
-
-    const callApi = async () => {
-        const data = await fetch('/api/employee', {
-            method: 'GET',
-        });
-    };
-
     return (
         <>
-            <Button onClick={() => saveEmployee()}>Save Employee</Button>
-            <Button onClick={() => callApi()}>get Employees</Button>
             <div className="layout-container layout-light layout-colorscheme-menu layout-static layout-static-inactive p-ripple-disabled">
                 {isMobile ? (
                     <Carousel
@@ -211,6 +214,7 @@ export default function Dashboard({}: PageProps) {
                                             title={card.title}
                                             data={card.data}
                                             chartsData={card.chartsData}
+                                            labels={card.labels}
                                         />
                                     </div>
                                 ))}

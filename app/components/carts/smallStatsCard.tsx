@@ -7,6 +7,7 @@ export interface SmallStatsCardProps {
     title: string;
     data: SmallStatsCardData;
     chartsData: ChartData;
+    labels: string[];
 }
 
 export interface ChartData {
@@ -23,7 +24,7 @@ interface SmallStatsCardData {
     currentScore: number;
 }
 
-export default function SmallStatsCard({ title, data, chartsData }: SmallStatsCardProps) {
+export default function SmallStatsCard({ title, data, chartsData, labels }: SmallStatsCardProps) {
     const [difference, setDifference] = useState<number>(0);
     const isPositive = data.currentScore >= data.prevScore;
     const [chartData, setChartData] = useState({});
@@ -38,7 +39,7 @@ export default function SmallStatsCard({ title, data, chartsData }: SmallStatsCa
             : documentStyle.getPropertyValue('--red-500');
 
         const data = {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+            labels: labels,
             datasets: [chartsData],
         };
 

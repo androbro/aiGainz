@@ -66,11 +66,19 @@ async function seedExercises(): Promise<Exercise[]> {
 }
 
 async function seedWorkoutsAndExercises(exercises: Exercise[]) {
+    // Generate dates for the last 6 months
+    const endDate = new Date();
+    const startDate = new Date(endDate.getTime() - 6 * 30 * 24 * 60 * 60 * 1000); // Approximately 6 months ago
+
     for (let i = 0; i < 10; i++) {
+        const workoutDate = faker.date.between({ from: startDate, to: endDate });
+
         const workout = await prisma.workout.create({
             data: {
                 name: faker.lorem.words(3),
                 description: faker.lorem.sentence(),
+                createdAt: workoutDate,
+                updatedAt: workoutDate,
             },
         });
 
@@ -95,7 +103,7 @@ async function seedWorkoutsAndExercises(exercises: Exercise[]) {
             });
         }
 
-        console.log(`Created workout: ${workout.name} with ${shuffledExercises.length} exercises`);
+        console.log(`Created workout: ${workout.name} with ${shuffledExercises.length} exercises on ${workoutDate.toISOString()}`);
     }
 }
 
