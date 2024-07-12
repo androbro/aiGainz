@@ -4,7 +4,8 @@ import { useLoading } from '@/hooks/useLoading';
 import React, { useState, useEffect } from 'react';
 import { Carousel } from 'primereact/carousel';
 import SmallStatsCard from '@/app/components/cards/smallStatsCard';
-import BigCardChart, {BigStatsCardProps, CardBody} from '@/app/components/cards/bigCardChart';
+import BigCardChart, { BigStatsCardProps, CardBody } from '@/app/components/cards/bigCardChart';
+import { Button } from 'primereact/button';
 
 interface PageProps {}
 
@@ -169,8 +170,28 @@ export default function Dashboard({}: PageProps) {
         );
     };
 
+    // const saveEmployee = async (employee: any) => {
+    //     const response = await fetch('/api/employee', {
+    //         method: 'POST',
+    //         body: JSON.stringify(employee),
+    //     });
+    //
+    //     if (!response.ok) {
+    //         throw new Error(response.statusText);
+    //     }
+    //
+    //     return await response.json();
+    // };
+
+    const callApi = async () => {
+        const data = await fetch('/api/employee', {
+            method: 'GET',
+        });
+    };
+
     return (
         <>
+            <Button onClick={() => callApi()}>Save Employee</Button>
             <div className="layout-container layout-light layout-colorscheme-menu layout-static layout-static-inactive p-ripple-disabled">
                 {isMobile ? (
                     <Carousel
@@ -197,10 +218,7 @@ export default function Dashboard({}: PageProps) {
                             <div className="flex flex-wrap justify-content-center">
                                 {bigCardData.map((card, index) => (
                                     <div key={index} className="sm:col-12 md:col-12 lg:col-6">
-                                        <BigCardChart
-                                            body={card}
-                                            changedChart={() => {}}
-                                        />
+                                        <BigCardChart body={card} changedChart={() => {}} />
                                     </div>
                                 ))}
                             </div>
