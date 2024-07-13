@@ -1,68 +1,76 @@
 ﻿'use client';
 import { useLoaderStore } from '@/app/store/loaderStore';
 import { useLoading } from '@/hooks/useLoading';
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Carousel } from 'primereact/carousel';
-import { CardPropData, useStrengthScore } from '@/hooks/useStrengthScore';
-import { Nullable } from 'primereact/ts-helpers';
 import { useMobileChecker } from '@/hooks/useMobileChecker';
-import SmallStatsCard, { Chart, SmallStatsCardProps } from '@/app/components/cards/chartCard';
+import { CardInformation } from '@/app/interfaces/card';
+import SmallStatsCard from '@/app/components/cards/chartCard';
+import { cardTypes } from '@/app/mappers/cardTypeMap';
 
 export default function Dashboard() {
     const { setIsLoading } = useLoaderStore();
-    const { result, isLoading, error, updateParams } = useStrengthScore({
-        startDate: new Date('2024-01-01'),
-        endDate: new Date('2024-06-30'),
-        weightMultiplier: 1,
-        volumeMultiplier: 0.5,
-        difficultyMultiplier: 1.2,
-    });
     const isMobile = useMobileChecker();
+    useLoading(false, setIsLoading);
+    const [cardData, setCardData] = useState<CardInformation[]>([]);
 
-    useEffect(() => {
-        setIsLoading(isLoading);
-    }, [isLoading]);
+    const calculateDataForCards = async (
+        cardConfigs: CardInformation[]
+    ): Promise<CardInformation[]> => {
+        const calculatedCards = await Promise.all(
+            cardConfigs.map(async (config: CardInformation) => {
+                const cardType = cardTypes[config.title];
+                if (!cardType) {
+                    console.error(`Unknown card type: ${config.title}`);
+                    return null;
+                }
 
-    const chartData: Chart = {
-        label: 'First Dataset',
-        data: result?.dataPoints.map((dataPoint) => dataPoint.score) || [],
-        fill: false,
-        borderColor: undefined,
-        tension: 0.4,
-        pointRadius: 0,
-        settings: {
-            showLegend: false,
-            showXAxis: false,
-            showYAxis: false,
-            maintainAspectRatio: false,
-            responsive: false,
-            width: 75,
-        },
+                try {
+                    const data = await cardType.calculationFunction(config.period);
+
+                    return {
+                        title: config.title || cardType.title,
+                        data,
+                        chart: {
+                            ...cardType.chartSettings,
+                            label: config.title || cardType.title,
+                            data: data.dataPoints.map((dataPoint) => dataPoint.score),
+                        },
+                        period: config.period,
+                    };
+                } catch (error) {
+                    console.error(`Error calculating data for card ${config.title}:`, error);
+                    return null;
+                }
+            })
+        );
+
+        return calculatedCards.filter((card): card is CardInformation => card !== null);
     };
 
-    const smallCardData: SmallStatsCardProps[] = [
-        {
-            title: 'Overall Strength',
-            data: result!,
-            chart: {
-                label: 'First Dataset',
-                data: result?.dataPoints.map((dataPoint) => dataPoint.score) || [],
-                fill: false,
-                borderColor: undefined,
-                tension: 0.4,
-                pointRadius: 0,
-                settings: {
-                    showLegend: false,
-                    showXAxis: false,
-                    showYAxis: false,
-                    maintainAspectRatio: false,
-                    responsive: true,
-                    height: 75,
-                },
-            },
-            period: new Date('2024-01-01'),
-        },
-    ];
+    useEffect(() => {
+        async function fetchCardData() {
+            setIsLoading(true);
+            try {
+                // Fetch card configurations from the database
+                const response = await fetch('/api/card');
+                const cardConfigs = await response.json();
+
+                // Calculate data for each card
+                const calculatedCardData = await calculateDataForCards(cardConfigs);
+
+                // Update state with calculated card data
+                setCardData(calculatedCardData);
+            } catch (error) {
+                console.error('Error fetching card data:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        fetchCardData();
+    }, [setIsLoading]);
+
     const responsiveOptions = [
         {
             breakpoint: '1400px',
@@ -85,9 +93,7 @@ export default function Dashboard() {
             numScroll: 1,
         },
     ];
-    useLoading(false, setIsLoading);
-
-    const productTemplate = (card: SmallStatsCardProps) => {
+    const productTemplate = (card: CardInformation) => {
         return (
             <div>
                 <SmallStatsCard
@@ -105,7 +111,7 @@ export default function Dashboard() {
             <div className="layout-container layout-light layout-colorscheme-menu layout-static layout-static-inactive p-ripple-disabled">
                 {isMobile ? (
                     <Carousel
-                        value={smallCardData}
+                        value={cardData}
                         numVisible={3}
                         numScroll={3}
                         responsiveOptions={responsiveOptions}
@@ -115,7 +121,7 @@ export default function Dashboard() {
                     <div className="xl:center-horizontally flex">
                         <div className="w-full xl:max-w-110rem px-4">
                             <div className="flex flex-wrap justify-content-center">
-                                {smallCardData.map((card, index) => (
+                                {cardData.map((card, index) => (
                                     <div key={index} className="sm:col-6 md:col-6 lg:col-3">
                                         <SmallStatsCard
                                             title={card.title}
@@ -125,18 +131,6 @@ export default function Dashboard() {
                                         />
                                     </div>
                                 ))}
-                            </div>
-                            <div className="flex flex-wrap justify-content-center">
-                                {/*{bigCardData.map((card, index) => (*/}
-                                {/*    <div key={index} className="sm:col-12 md:col-12 lg:col-6">*/}
-                                {/*        <SmallStatsCard*/}
-                                {/*            title={card.title}*/}
-                                {/*            data={card.data}*/}
-                                {/*            chart={card.chart}*/}
-                                {/*            period={card.period}*/}
-                                {/*        />*/}
-                                {/*    </div>*/}
-                                {/*))}*/}
                             </div>
                         </div>
                     </div>

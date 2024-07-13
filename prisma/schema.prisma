@@ -75,8 +75,9 @@ model Card {
   // Relation to CardDataPoint
   dataPoints CardDataPoint[]
 
-  // Relation to CardChartData
-  chartData CardChartData?
+  // Relation to CardChart
+  chart         CardChart?
+  CardChartData CardChartData?
 }
 
 model CardDataPoint {
@@ -85,6 +86,25 @@ model CardDataPoint {
   score  Float
   cardId Int
   card   Card     @relation(fields: [cardId], references: [id])
+}
+
+model CardChart {
+  id                  Int     @id @default(autoincrement())
+  label               String
+  data                Float[]
+  fill                Boolean
+  borderColor         String?
+  tension             Float
+  pointRadius         Float
+  showLegend          Boolean @default(true)
+  showXAxis           Boolean @default(true)
+  showYAxis           Boolean @default(true)
+  maintainAspectRatio Boolean @default(true)
+  responsive          Boolean @default(true)
+  width               Int?
+  height              Int?
+  cardId              Int     @unique
+  card                Card    @relation(fields: [cardId], references: [id])
 }
 
 model CardChartData {

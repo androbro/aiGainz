@@ -1,39 +1,14 @@
 ﻿import React, { useEffect, useRef, useState } from 'react';
 import { Card } from 'primereact/card';
 import { Chart as ChartComponent } from 'primereact/chart';
-import { CardPropData } from '@/hooks/useStrengthScore';
 import CardSkeleton from '@/app/components/cardSkeleton';
 import { Calendar } from 'primereact/calendar';
 import { Nullable } from 'primereact/ts-helpers';
 import { useMobileChecker } from '@/hooks/useMobileChecker';
 import CustomInplace from '@/app/components/customInplace';
+import { CardInformation } from '@/app/interfaces/card';
 
-export interface SmallStatsCardProps {
-    title: string;
-    data: CardPropData;
-    chart: Chart;
-    period?: Nullable<Date>;
-}
-
-export interface Chart {
-    label: string;
-    data: number[];
-    fill: boolean;
-    borderColor: string | undefined;
-    tension: number;
-    pointRadius: number;
-    settings: {
-        showLegend?: boolean;
-        showXAxis?: boolean;
-        showYAxis?: boolean;
-        maintainAspectRatio?: boolean;
-        responsive?: boolean;
-        width?: number;
-        height?: number;
-    };
-}
-
-export default function SmallStatsCard({ data, chart, period, title }: SmallStatsCardProps) {
+export default function SmallStatsCard({ data, chart, period, title }: CardInformation) {
     const [difference, setDifference] = useState<number>(0);
     const [chartData, setChartData] = useState({});
     const [chartOptions, setChartOptions] = useState({});

@@ -113,34 +113,40 @@ async function seedWorkoutsAndExercises(exercises: Exercise[]) {
 }
 
 async function seedCards() {
-    for (let i = 0; i < 4; i++) {
-        let title = '';
-        if (i === 0) title = 'Overall Strength';
-        if (i === 1) title = 'Nutrition Consistency';
-        if (i === 2) title = 'Workout Volume';
-        if (i === 3) title = 'Workout Difficulty';
+    const cardTitles = [
+        'Overall Strength',
+        'Bench Press',
+        'Customer Satisfaction',
+        'Product Usage',
+        'Conversion Rate',
+        'Churn Rate',
+    ];
+
+    for (let i = 0; i < 6; i++) {
         const card = await prisma.card.create({
             data: {
-                title: title,
+                title: cardTitles[i],
                 totalScore: faker.number.float({ min: 0, max: 1000, precision: 0.01 }),
                 percentageChange: faker.number.float({ min: -100, max: 100, precision: 0.01 }),
-                period: faker.date.recent(),
-                dataPoints: {
-                    create: Array.from({ length: 7 }, () => ({
-                        date: faker.date.recent(),
-                        score: faker.number.float({ min: 0, max: 100, precision: 0.01 }),
-                    })),
-                },
-                chartData: {
+                period: faker.date.recent(180),
+                dataPoints: {},
+                chart: {
                     create: {
-                        label: faker.lorem.word(),
-                        data: Array.from({ length: 7 }, () =>
+                        label: cardTitles[i],
+                        data: Array.from({ length: 30 }, () =>
                             faker.number.float({ min: 0, max: 100, precision: 0.01 })
                         ),
                         fill: faker.datatype.boolean(),
                         borderColor: faker.color.rgb(),
                         tension: faker.number.float({ min: 0, max: 1, precision: 0.1 }),
                         pointRadius: faker.number.float({ min: 0, max: 5, precision: 0.1 }),
+                        showLegend: faker.datatype.boolean(),
+                        showXAxis: faker.datatype.boolean(),
+                        showYAxis: faker.datatype.boolean(),
+                        maintainAspectRatio: faker.datatype.boolean(),
+                        responsive: faker.datatype.boolean(),
+                        width: faker.helpers.maybe(() => faker.number.int({ min: 200, max: 800 })),
+                        height: faker.helpers.maybe(() => faker.number.int({ min: 200, max: 600 })),
                     },
                 },
             },
