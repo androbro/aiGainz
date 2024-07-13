@@ -1,7 +1,7 @@
 ﻿import React, { useEffect, useRef, useState } from 'react';
 import { Card } from 'primereact/card';
-import { Chart } from 'primereact/chart';
-import { cardPropData } from '@/hooks/useStrengthScore';
+import { Chart as ChartComponent } from 'primereact/chart';
+import { CardPropData } from '@/hooks/useStrengthScore';
 import CardSkeleton from '@/app/components/cardSkeleton';
 import { Calendar } from 'primereact/calendar';
 import { Nullable } from 'primereact/ts-helpers';
@@ -10,21 +10,30 @@ import CustomInplace from '@/app/components/customInplace';
 
 export interface SmallStatsCardProps {
     title: string;
-    data: cardPropData;
-    chartsData: ChartData;
+    data: CardPropData;
+    chart: Chart;
     period?: Nullable<Date>;
 }
 
-export interface ChartData {
+export interface Chart {
     label: string;
     data: number[];
     fill: boolean;
     borderColor: string | undefined;
     tension: number;
     pointRadius: number;
+    settings: {
+        showLegend?: boolean;
+        showXAxis?: boolean;
+        showYAxis?: boolean;
+        maintainAspectRatio?: boolean;
+        responsive?: boolean;
+        width?: number;
+        height?: number;
+    };
 }
 
-export default function SmallStatsCard({ title, data, chartsData, period }: SmallStatsCardProps) {
+export default function SmallStatsCard({ data, chart, period, title }: SmallStatsCardProps) {
     const [difference, setDifference] = useState<number>(0);
     const [chartData, setChartData] = useState({});
     const [chartOptions, setChartOptions] = useState({});
@@ -47,32 +56,32 @@ export default function SmallStatsCard({ title, data, chartsData, period }: Smal
     useEffect(() => {
         const documentStyle = getComputedStyle(document.documentElement);
         if (data) {
-            chartsData.borderColor =
+            chart.borderColor =
                 data.percentageChange >= 0
                     ? documentStyle.getPropertyValue('--green-500')
                     : documentStyle.getPropertyValue('--red-500');
 
             const chartData = {
                 labels: data.dataPoints,
-                datasets: [chartsData],
+                datasets: [chart],
             };
 
             const options = {
                 plugins: {
-                    legend: { display: false },
+                    legend: { display: chart.settings.showLegend },
                 },
                 scales: {
-                    x: { display: false },
-                    y: { display: false },
+                    x: { display: chart.settings.showXAxis },
+                    y: { display: chart.settings.showYAxis },
                 },
-                maintainAspectRatio: false,
-                responsive: true,
+                maintainAspectRatio: chart.settings.maintainAspectRatio,
+                responsive: chart.settings.responsive,
             };
 
             setChartData(chartData);
             setChartOptions(options);
         }
-    }, [chartsData]);
+    }, [chart]);
 
     const Header = <div className="pt-4 pl-4 font-bold black">{title}</div>;
 
@@ -109,7 +118,6 @@ export default function SmallStatsCard({ title, data, chartsData, period }: Smal
                                 <div
                                     className={`${data?.percentageChange >= 0 ? 'text-green-500' : 'text-red-500'} mt-2 flex`}
                                 >
-                                    <div>{data?.percentageChange >= 0 ? '+' : '-'}</div>
                                     <div>{data?.percentageChange.toFixed(0)}</div>
                                     <div>%</div>
                                     <div>
@@ -122,8 +130,12 @@ export default function SmallStatsCard({ title, data, chartsData, period }: Smal
                                 </div>
                             </div>
                         </div>
-                        <div className="col-6" ref={chartContainerRef} style={{ height: '75px' }}>
-                            <Chart
+                        <div
+                            className="col-6 "
+                            ref={chartContainerRef}
+                            style={{ height: `${chart.settings.height}px` }}
+                        >
+                            <ChartComponent
                                 type="line"
                                 data={chartData}
                                 options={chartOptions}

@@ -3,25 +3,10 @@ import { useLoaderStore } from '@/app/store/loaderStore';
 import { useLoading } from '@/hooks/useLoading';
 import React, { useState, useEffect } from 'react';
 import { Carousel } from 'primereact/carousel';
-import SmallStatsCard from '@/app/components/cards/smallStatsCard';
-import BigCardChart, { CardBody } from '@/app/components/cards/bigCardChart';
-import { cardPropData, useStrengthScore } from '@/hooks/useStrengthScore';
+import { CardPropData, useStrengthScore } from '@/hooks/useStrengthScore';
 import { Nullable } from 'primereact/ts-helpers';
 import { useMobileChecker } from '@/hooks/useMobileChecker';
-
-interface SmallStatsCardProps {
-    title: string;
-    data: cardPropData;
-    chartsData: {
-        label: string;
-        data: number[];
-        fill: boolean;
-        borderColor: string | undefined;
-        tension: number;
-        pointRadius: number;
-    };
-    period: Nullable<Date>;
-}
+import SmallStatsCard, { Chart, SmallStatsCardProps } from '@/app/components/cards/chartCard';
 
 export default function Dashboard() {
     const { setIsLoading } = useLoaderStore();
@@ -38,51 +23,44 @@ export default function Dashboard() {
         setIsLoading(isLoading);
     }, [isLoading]);
 
+    const chartData: Chart = {
+        label: 'First Dataset',
+        data: result?.dataPoints.map((dataPoint) => dataPoint.score) || [],
+        fill: false,
+        borderColor: undefined,
+        tension: 0.4,
+        pointRadius: 0,
+        settings: {
+            showLegend: false,
+            showXAxis: false,
+            showYAxis: false,
+            maintainAspectRatio: false,
+            responsive: false,
+            width: 75,
+        },
+    };
+
     const smallCardData: SmallStatsCardProps[] = [
         {
             title: 'Overall Strength',
             data: result!,
-            chartsData: {
+            chart: {
                 label: 'First Dataset',
                 data: result?.dataPoints.map((dataPoint) => dataPoint.score) || [],
                 fill: false,
                 borderColor: undefined,
                 tension: 0.4,
                 pointRadius: 0,
+                settings: {
+                    showLegend: false,
+                    showXAxis: false,
+                    showYAxis: false,
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    height: 75,
+                },
             },
             period: new Date('2024-01-01'),
-        },
-    ];
-    const bigCardData: CardBody[] = [
-        {
-            title: '(DB) Bench Press',
-            data: {
-                prevScore: 10,
-                currentScore: 2,
-            },
-            chartsData: {
-                label: 'First Dataset',
-                data: [25, 29, 30, 42, 35, 34, 50],
-                fill: false,
-                borderColor: 'black',
-                tension: 0.4,
-                pointRadius: 3,
-            },
-        },
-        {
-            title: 'Lat Pulldown',
-            data: {
-                prevScore: 10,
-                currentScore: 44,
-            },
-            chartsData: {
-                label: 'First Dataset',
-                data: [65, 59, 80, 81, 56, 55, 40],
-                fill: false,
-                borderColor: undefined,
-                tension: 0.4,
-                pointRadius: 3,
-            },
         },
     ];
     const responsiveOptions = [
@@ -115,7 +93,7 @@ export default function Dashboard() {
                 <SmallStatsCard
                     title={card.title}
                     data={card.data}
-                    chartsData={card.chartsData}
+                    chart={card.chart}
                     period={card.period}
                 />
             </div>
@@ -142,18 +120,23 @@ export default function Dashboard() {
                                         <SmallStatsCard
                                             title={card.title}
                                             data={card.data}
-                                            chartsData={card.chartsData}
+                                            chart={card.chart}
                                             period={card.period}
                                         />
                                     </div>
                                 ))}
                             </div>
                             <div className="flex flex-wrap justify-content-center">
-                                {bigCardData.map((card, index) => (
-                                    <div key={index} className="sm:col-12 md:col-12 lg:col-6">
-                                        <BigCardChart body={card} changedChart={() => {}} />
-                                    </div>
-                                ))}
+                                {/*{bigCardData.map((card, index) => (*/}
+                                {/*    <div key={index} className="sm:col-12 md:col-12 lg:col-6">*/}
+                                {/*        <SmallStatsCard*/}
+                                {/*            title={card.title}*/}
+                                {/*            data={card.data}*/}
+                                {/*            chart={card.chart}*/}
+                                {/*            period={card.period}*/}
+                                {/*        />*/}
+                                {/*    </div>*/}
+                                {/*))}*/}
                             </div>
                         </div>
                     </div>
