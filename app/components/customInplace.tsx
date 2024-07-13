@@ -1,60 +1,50 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Button } from 'primereact/button';
 
 interface CustomInplaceProps {
     display: React.ReactNode;
     content: React.ReactNode;
-    className?: string;
     escapeUsingEscKey?: boolean;
-    escapeUsingClickOutside?: boolean;
 }
 
-const CustomInplace: React.FC<CustomInplaceProps> = ({
-    display,
-    content,
-    className,
-    escapeUsingEscKey = false,
-    escapeUsingClickOutside = false,
-}) => {
+const CustomInplace: React.FC<CustomInplaceProps> = ({ display, content }) => {
     const [isEditing, setIsEditing] = useState(false);
     const inplaceRef = useRef<HTMLDivElement>(null);
 
     const toggleEdit = () => setIsEditing(!isEditing);
 
     useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (inplaceRef.current && !inplaceRef.current.contains(event.target as Node)) {
-                setIsEditing(false);
-            }
-        };
-
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
                 setIsEditing(false);
             }
         };
 
-        if (escapeUsingClickOutside) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
-        if (escapeUsingEscKey) {
-            document.addEventListener('keydown', handleKeyDown);
-        }
+        document.addEventListener('keydown', handleKeyDown);
 
         return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
             document.removeEventListener('keydown', handleKeyDown);
         };
     }, []);
 
     return (
-        <div ref={inplaceRef} className={className}>
+        <div ref={inplaceRef}>
             {!isEditing ? (
-                <div onClick={toggleEdit}>{display}</div>
+                <div onClick={toggleEdit} className="hover:surface-100 border-round cursor-pointer">
+                    {display}
+                </div>
             ) : (
-                <div>
-                    {content}
-                    {/* Optionally, add a button or mechanism to close the editor */}
-                    {/* <button onClick={toggleEdit}>Done</button> */}
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div>{content}</div>
+                    <Button
+                        icon="pi pi-times"
+                        className="h-2rem w-2rem"
+                        rounded
+                        text
+                        severity="danger"
+                        aria-label="Cancel"
+                        onClick={toggleEdit}
+                    />
                 </div>
             )}
         </div>

@@ -3,8 +3,6 @@ import { Card } from 'primereact/card';
 import { Chart } from 'primereact/chart';
 import { StrengthScoreResult } from '@/hooks/useStrengthScore';
 import CardSkeleton from '@/app/components/cardSkeleton';
-import { Inplace, InplaceContent, InplaceDisplay } from 'primereact/inplace';
-import { InputText } from 'primereact/inputtext';
 import { Calendar } from 'primereact/calendar';
 import { Nullable } from 'primereact/ts-helpers';
 import { useMobileChecker } from '@/hooks/useMobileChecker';
@@ -14,7 +12,7 @@ export interface SmallStatsCardProps {
     title: string;
     data: StrengthScoreResult;
     chartsData: ChartData;
-    period?: Nullable<(Date | null)[]>;
+    period?: Nullable<Date>;
 }
 
 export interface ChartData {
@@ -30,9 +28,21 @@ export default function SmallStatsCard({ title, data, chartsData, period }: Smal
     const [difference, setDifference] = useState<number>(0);
     const [chartData, setChartData] = useState({});
     const [chartOptions, setChartOptions] = useState({});
-    const [periodValues, setPeriodValues] = useState<Nullable<(Date | null)[]>>(period!);
+    const [selectedDate, setSelectedDate] = useState<Nullable<Date>>(period!);
+    const [months, setMonths] = useState<number>(1);
     const chartContainerRef = useRef(null);
     const isMobile = useMobileChecker();
+
+    useEffect(() => {
+        if (selectedDate instanceof Date) {
+            const current = new Date();
+            const months =
+                (selectedDate.getFullYear() - current.getFullYear()) * 12 +
+                selectedDate.getMonth() -
+                current.getMonth();
+            setMonths(Math.abs(months));
+        }
+    }, [selectedDate]);
 
     useEffect(() => {
         const documentStyle = getComputedStyle(document.documentElement);
@@ -80,29 +90,18 @@ export default function SmallStatsCard({ title, data, chartsData, period }: Smal
                                     <CustomInplace
                                         display={
                                             <>
-                                                {' '}
                                                 {'Last '}
-                                                {Math.abs(
-                                                    periodValues![0]!.getMonth() -
-                                                        periodValues![1]!.getMonth()
-                                                )}
-                                                {' Months'}
+                                                {months > 1 && months}
+                                                {` month${months > 1 ? 's' : ''}`}
                                             </>
                                         }
                                         content={
                                             <Calendar
-                                                value={periodValues}
-                                                onChange={(e) => setPeriodValues(e.value)}
-                                                className="p-inputtext-sm"
-                                                selectionMode="range"
-                                                readOnlyInput
-                                                hideOnRangeSelection
-                                                dateFormat={'dd/mm/yy'}
+                                                value={selectedDate}
+                                                onChange={(e) => setSelectedDate(e.value)}
                                                 touchUI={isMobile}
                                             />
                                         }
-                                        className="hover:surface-100 border-round cursor-pointer"
-                                        escapeUsingClickOutside
                                         escapeUsingEscKey
                                     />
                                 </div>

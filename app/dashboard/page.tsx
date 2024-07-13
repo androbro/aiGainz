@@ -20,7 +20,7 @@ interface SmallStatsCardProps {
         tension: number;
         pointRadius: number;
     };
-    period: Nullable<(Date | null)[]>;
+    period: Nullable<Date>;
 }
 
 export default function Dashboard() {
@@ -50,7 +50,7 @@ export default function Dashboard() {
                 tension: 0.4,
                 pointRadius: 0,
             },
-            period: [new Date('2024-01-01'), new Date('2024-06-30')],
+            period: new Date('2024-01-01'),
         },
         // {
         //     title: 'Workout Consistency',

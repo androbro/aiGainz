@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Card } from 'primereact/card';
 import { Chart } from 'primereact/chart';
-import { useResizeObserver } from '@/hooks/useResizeObserver';
 import { Inplace, InplaceContent, InplaceDisplay } from 'primereact/inplace';
 import { InputText } from 'primereact/inputtext';
 
