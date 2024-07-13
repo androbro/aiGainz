@@ -5,13 +5,13 @@ import React, { useState, useEffect } from 'react';
 import { Carousel } from 'primereact/carousel';
 import SmallStatsCard from '@/app/components/cards/smallStatsCard';
 import BigCardChart, { CardBody } from '@/app/components/cards/bigCardChart';
-import { StrengthScoreResult, useStrengthScore } from '@/hooks/useStrengthScore';
+import { cardPropData, useStrengthScore } from '@/hooks/useStrengthScore';
 import { Nullable } from 'primereact/ts-helpers';
 import { useMobileChecker } from '@/hooks/useMobileChecker';
 
 interface SmallStatsCardProps {
     title: string;
-    data: StrengthScoreResult;
+    data: cardPropData;
     chartsData: {
         label: string;
         data: number[];
@@ -52,54 +52,6 @@ export default function Dashboard() {
             },
             period: new Date('2024-01-01'),
         },
-        // {
-        //     title: 'Workout Consistency',
-        //     data: {
-        //         prevScore: 10,
-        //         currentScore: 44,
-        //     },
-        //     chartsData: {
-        //         label: 'First Dataset',
-        //         data: [65, 59, 80, 81, 56, 55, 40],
-        //         fill: false,
-        //         borderColor: undefined,
-        //         tension: 0.4,
-        //         pointRadius: 0,
-        //     },
-        //     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        // },
-        // {
-        //     title: 'Nutrition Consistency',
-        //     data: {
-        //         prevScore: 10,
-        //         currentScore: 41,
-        //     },
-        //     chartsData: {
-        //         label: 'First Dataset',
-        //         data: [65, 59, 80, 81, 56, 55, 40],
-        //         fill: false,
-        //         borderColor: undefined,
-        //         tension: 0.4,
-        //         pointRadius: 0,
-        //     },
-        //     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        // },
-        // {
-        //     title: 'Sleep Consistency',
-        //     data: {
-        //         prevScore: 10,
-        //         currentScore: 4,
-        //     },
-        //     chartsData: {
-        //         label: 'First Dataset',
-        //         data: [65, 59, 80, 81, 56, 55, 40],
-        //         fill: false,
-        //         borderColor: undefined,
-        //         tension: 0.4,
-        //         pointRadius: 0,
-        //     },
-        //     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        // },
     ];
     const bigCardData: CardBody[] = [
         {

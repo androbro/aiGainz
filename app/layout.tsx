@@ -6,12 +6,12 @@ import './styles/globals.css';
 import { APP_NAME } from '@/app/constants/ui';
 import SideNav from '@/app/components/sideNav';
 import { useLoaderStore } from '@/app/store/loaderStore';
-import { ReactQueryProvider } from '@/app/reactQueryProvider';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Button } from 'primereact/button';
 import TopBar from '@/app/components/topBar';
 import { UserProvider, useUser } from '@auth0/nextjs-auth0/client';
 import { AuthenticatedQueryProvider } from '@/app/providers/authenticatedQueryProvider';
+// import 'primereact/resources/themes/lara-dark-purple/theme.css';
 
 const inter = Inter({ subsets: ['latin'] });
 

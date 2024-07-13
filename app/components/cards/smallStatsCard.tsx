@@ -1,7 +1,7 @@
 ﻿import React, { useEffect, useRef, useState } from 'react';
 import { Card } from 'primereact/card';
 import { Chart } from 'primereact/chart';
-import { StrengthScoreResult } from '@/hooks/useStrengthScore';
+import { cardPropData } from '@/hooks/useStrengthScore';
 import CardSkeleton from '@/app/components/cardSkeleton';
 import { Calendar } from 'primereact/calendar';
 import { Nullable } from 'primereact/ts-helpers';
@@ -10,7 +10,7 @@ import CustomInplace from '@/app/components/customInplace';
 
 export interface SmallStatsCardProps {
     title: string;
-    data: StrengthScoreResult;
+    data: cardPropData;
     chartsData: ChartData;
     period?: Nullable<Date>;
 }
@@ -97,6 +97,7 @@ export default function SmallStatsCard({ title, data, chartsData, period }: Smal
                                         }
                                         content={
                                             <Calendar
+                                                className="max-w-7rem"
                                                 value={selectedDate}
                                                 onChange={(e) => setSelectedDate(e.value)}
                                                 touchUI={isMobile}

@@ -63,6 +63,42 @@ model WorkoutExercise {
   notes             String?
 }
 
+model Card {
+  id               Int       @id @default(autoincrement())
+  title            String
+  totalScore       Float
+  percentageChange Float
+  period           DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  // Relation to CardDataPoint
+  dataPoints CardDataPoint[]
+
+  // Relation to CardChartData
+  chartData CardChartData?
+}
+
+model CardDataPoint {
+  id     Int      @id @default(autoincrement())
+  date   DateTime
+  score  Float
+  cardId Int
+  card   Card     @relation(fields: [cardId], references: [id])
+}
+
+model CardChartData {
+  id          Int     @id @default(autoincrement())
+  label       String
+  data        Float[]
+  fill        Boolean
+  borderColor String?
+  tension     Float
+  pointRadius Float
+  cardId      Int     @unique
+  card        Card    @relation(fields: [cardId], references: [id])
+}
+
 enum EquipmentType {
   MACHINE
   CABLE

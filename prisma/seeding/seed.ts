@@ -37,6 +37,9 @@ async function main() {
 
     // Seed Workouts and WorkoutExercises
     await seedWorkoutsAndExercises(exercises);
+
+    // Seed Cards
+    await seedCards();
 }
 
 async function seedExercises(): Promise<Exercise[]> {
@@ -103,7 +106,47 @@ async function seedWorkoutsAndExercises(exercises: Exercise[]) {
             });
         }
 
-        console.log(`Created workout: ${workout.name} with ${shuffledExercises.length} exercises on ${workoutDate.toISOString()}`);
+        console.log(
+            `Created workout: ${workout.name} with ${shuffledExercises.length} exercises on ${workoutDate.toISOString()}`
+        );
+    }
+}
+
+async function seedCards() {
+    for (let i = 0; i < 4; i++) {
+        let title = '';
+        if (i === 0) title = 'Overall Strength';
+        if (i === 1) title = 'Nutrition Consistency';
+        if (i === 2) title = 'Workout Volume';
+        if (i === 3) title = 'Workout Difficulty';
+        const card = await prisma.card.create({
+            data: {
+                title: title,
+                totalScore: faker.number.float({ min: 0, max: 1000, precision: 0.01 }),
+                percentageChange: faker.number.float({ min: -100, max: 100, precision: 0.01 }),
+                period: faker.date.recent(),
+                dataPoints: {
+                    create: Array.from({ length: 7 }, () => ({
+                        date: faker.date.recent(),
+                        score: faker.number.float({ min: 0, max: 100, precision: 0.01 }),
+                    })),
+                },
+                chartData: {
+                    create: {
+                        label: faker.lorem.word(),
+                        data: Array.from({ length: 7 }, () =>
+                            faker.number.float({ min: 0, max: 100, precision: 0.01 })
+                        ),
+                        fill: faker.datatype.boolean(),
+                        borderColor: faker.color.rgb(),
+                        tension: faker.number.float({ min: 0, max: 1, precision: 0.1 }),
+                        pointRadius: faker.number.float({ min: 0, max: 5, precision: 0.1 }),
+                    },
+                },
+            },
+        });
+
+        console.log(`Created card: ${card.title}`);
     }
 }
 

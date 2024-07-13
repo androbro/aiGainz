@@ -38,7 +38,7 @@ const CustomInplace: React.FC<CustomInplaceProps> = ({ display, content }) => {
                     <div>{content}</div>
                     <Button
                         icon="pi pi-times"
-                        className="h-2rem w-2rem"
+                        className="h-2rem w-2rem ml-1"
                         rounded
                         text
                         severity="danger"

@@ -21,7 +21,7 @@ interface StrengthScoreParams {
     difficultyMultiplier: number;
 }
 
-export interface StrengthScoreResult {
+export interface cardPropData {
     totalScore: number;
     dataPoints: { date: Date; score: number }[];
     percentageChange: number;
@@ -29,7 +29,7 @@ export interface StrengthScoreResult {
 
 export function useStrengthScore(initialParams: StrengthScoreParams) {
     const [params, setParams] = useState<StrengthScoreParams>(initialParams);
-    const [result, setResult] = useState<StrengthScoreResult | null>(null);
+    const [result, setResult] = useState<cardPropData | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
 
@@ -51,7 +51,7 @@ export function useStrengthScore(initialParams: StrengthScoreParams) {
     );
 
     const calculateStrengthScore = useCallback(
-        (workouts: Workout[], params: StrengthScoreParams): StrengthScoreResult => {
+        (workouts: Workout[], params: StrengthScoreParams): cardPropData => {
             const dataPoints: { date: Date; score: number }[] = [];
             let totalScore = 0;
 
