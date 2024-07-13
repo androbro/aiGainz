@@ -1,9 +1,9 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {Card} from 'primereact/card';
-import {Chart} from 'primereact/chart';
-import {useResizeObserver} from '@/hooks/useResizeObserver';
-import {Inplace, InplaceContent, InplaceDisplay} from 'primereact/inplace';
-import {InputText} from 'primereact/inputtext';
+import React, { useEffect, useRef, useState } from 'react';
+import { Card } from 'primereact/card';
+import { Chart } from 'primereact/chart';
+import { useResizeObserver } from '@/hooks/useResizeObserver';
+import { Inplace, InplaceContent, InplaceDisplay } from 'primereact/inplace';
+import { InputText } from 'primereact/inputtext';
 
 export interface BigStatsCardProps {
     body: CardBody;
@@ -30,13 +30,12 @@ interface BigStatsCardData {
     currentScore: number;
 }
 
-export default function BigCardChart({body, changedChart}: BigStatsCardProps) {
+export default function BigCardChart({ body, changedChart }: BigStatsCardProps) {
     const [difference, setDifference] = useState<number>(0);
     const isPositive = body.data.currentScore >= body.data.prevScore;
     const [chartData, setChartData] = useState({});
     const [chartOptions, setChartOptions] = useState({});
     const chartContainerRef = useRef(null);
-    const {width, height} = useResizeObserver(chartContainerRef);
 
     useEffect(() => {
         const documentStyle = getComputedStyle(document.documentElement);
@@ -54,7 +53,7 @@ export default function BigCardChart({body, changedChart}: BigStatsCardProps) {
 
         const options = {
             plugins: {
-                legend: {display: false},
+                legend: { display: false },
             },
             scales: {
                 x: {

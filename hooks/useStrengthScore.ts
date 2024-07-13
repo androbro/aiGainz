@@ -80,7 +80,7 @@ export function useStrengthScore(initialParams: StrengthScoreParams) {
                             volume *
                                 params.volumeMultiplier *
                                 (difficultyFactor * params.difficultyMultiplier)) /
-                        10;
+                        100;
 
                     workoutScore += exerciseScore;
                 }

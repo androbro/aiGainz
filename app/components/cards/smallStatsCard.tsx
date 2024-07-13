@@ -1,15 +1,20 @@
 ﻿import React, { useEffect, useRef, useState } from 'react';
 import { Card } from 'primereact/card';
 import { Chart } from 'primereact/chart';
-import { useResizeObserver } from '@/hooks/useResizeObserver';
 import { StrengthScoreResult } from '@/hooks/useStrengthScore';
 import CardSkeleton from '@/app/components/cardSkeleton';
+import { Inplace, InplaceContent, InplaceDisplay } from 'primereact/inplace';
+import { InputText } from 'primereact/inputtext';
+import { Calendar } from 'primereact/calendar';
+import { Nullable } from 'primereact/ts-helpers';
+import { useMobileChecker } from '@/hooks/useMobileChecker';
+import CustomInplace from '@/app/components/customInplace';
 
 export interface SmallStatsCardProps {
     title: string;
     data: StrengthScoreResult;
     chartsData: ChartData;
-    labels: string[];
+    period?: Nullable<(Date | null)[]>;
 }
 
 export interface ChartData {
@@ -21,12 +26,13 @@ export interface ChartData {
     pointRadius: number;
 }
 
-export default function SmallStatsCard({ title, data, chartsData, labels }: SmallStatsCardProps) {
+export default function SmallStatsCard({ title, data, chartsData, period }: SmallStatsCardProps) {
     const [difference, setDifference] = useState<number>(0);
     const [chartData, setChartData] = useState({});
     const [chartOptions, setChartOptions] = useState({});
+    const [periodValues, setPeriodValues] = useState<Nullable<(Date | null)[]>>(period!);
     const chartContainerRef = useRef(null);
-    const { width, height } = useResizeObserver(chartContainerRef);
+    const isMobile = useMobileChecker();
 
     useEffect(() => {
         const documentStyle = getComputedStyle(document.documentElement);
@@ -70,6 +76,36 @@ export default function SmallStatsCard({ title, data, chartsData, labels }: Smal
                                 {data?.totalScore.toFixed(0)}
                             </div>
                             <div>
+                                <div>
+                                    <CustomInplace
+                                        display={
+                                            <>
+                                                {' '}
+                                                {'Last '}
+                                                {Math.abs(
+                                                    periodValues![0]!.getMonth() -
+                                                        periodValues![1]!.getMonth()
+                                                )}
+                                                {' Months'}
+                                            </>
+                                        }
+                                        content={
+                                            <Calendar
+                                                value={periodValues}
+                                                onChange={(e) => setPeriodValues(e.value)}
+                                                className="p-inputtext-sm"
+                                                selectionMode="range"
+                                                readOnlyInput
+                                                hideOnRangeSelection
+                                                dateFormat={'dd/mm/yy'}
+                                                touchUI={isMobile}
+                                            />
+                                        }
+                                        className="hover:surface-100 border-round cursor-pointer"
+                                        escapeUsingClickOutside
+                                        escapeUsingEscKey
+                                    />
+                                </div>
                                 <div
                                     className={`${data?.percentageChange >= 0 ? 'text-green-500' : 'text-red-500'} mt-2 flex`}
                                 >

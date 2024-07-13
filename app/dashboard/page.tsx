@@ -3,12 +3,11 @@ import { useLoaderStore } from '@/app/store/loaderStore';
 import { useLoading } from '@/hooks/useLoading';
 import React, { useState, useEffect } from 'react';
 import { Carousel } from 'primereact/carousel';
-import SmallStatsCard from '@/app/components/carts/smallStatsCard';
-import BigCardChart, { BigStatsCardProps, CardBody } from '@/app/components/carts/bigCardChart';
-import { Button } from 'primereact/button';
+import SmallStatsCard from '@/app/components/cards/smallStatsCard';
+import BigCardChart, { CardBody } from '@/app/components/cards/bigCardChart';
 import { StrengthScoreResult, useStrengthScore } from '@/hooks/useStrengthScore';
-
-interface PageProps {}
+import { Nullable } from 'primereact/ts-helpers';
+import { useMobileChecker } from '@/hooks/useMobileChecker';
 
 interface SmallStatsCardProps {
     title: string;
@@ -21,12 +20,11 @@ interface SmallStatsCardProps {
         tension: number;
         pointRadius: number;
     };
-    labels: string[];
+    period: Nullable<(Date | null)[]>;
 }
 
-export default function Dashboard({}: PageProps) {
+export default function Dashboard() {
     const { setIsLoading } = useLoaderStore();
-    const [isMobile, setIsMobile] = useState(false);
     const { result, isLoading, error, updateParams } = useStrengthScore({
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-06-30'),
@@ -34,25 +32,11 @@ export default function Dashboard({}: PageProps) {
         volumeMultiplier: 0.5,
         difficultyMultiplier: 1.2,
     });
+    const isMobile = useMobileChecker();
 
     useEffect(() => {
         setIsLoading(isLoading);
     }, [isLoading]);
-
-    useEffect(() => {
-        const handleResize = () => {
-            setIsMobile(window.innerWidth < 575);
-        };
-
-        // Set initial value
-        handleResize();
-
-        // Add event listener
-        window.addEventListener('resize', handleResize);
-
-        // Remove event listener on cleanup
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
 
     const smallCardData: SmallStatsCardProps[] = [
         {
@@ -66,7 +50,7 @@ export default function Dashboard({}: PageProps) {
                 tension: 0.4,
                 pointRadius: 0,
             },
-            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+            period: [new Date('2024-01-01'), new Date('2024-06-30')],
         },
         // {
         //     title: 'Workout Consistency',
@@ -180,7 +164,7 @@ export default function Dashboard({}: PageProps) {
                     title={card.title}
                     data={card.data}
                     chartsData={card.chartsData}
-                    labels={card.labels}
+                    period={card.period}
                 />
             </div>
         );
@@ -207,7 +191,7 @@ export default function Dashboard({}: PageProps) {
                                             title={card.title}
                                             data={card.data}
                                             chartsData={card.chartsData}
-                                            labels={card.labels}
+                                            period={card.period}
                                         />
                                     </div>
                                 ))}
