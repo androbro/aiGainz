@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -43,16 +43,21 @@ export async function POST(request: Request) {
     return NextResponse.json(card, { status: 201 });
 }
 
-export async function PUT(request: Request) {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
-    const body = await request.json();
+export async function PUT(req: NextRequest) {
+    console.log('PUT request received');
+    const url = new URL(req.url);
+    const id = url.searchParams.get('id');
+    console.log('Received ID:', id);
 
     if (!id) {
         return NextResponse.json({ error: 'ID is required' }, { status: 400 });
     }
 
     try {
+        const body = await req.json();
+        console.log('Received body:', JSON.stringify(body, null, 2));
+
+        console.log('Attempting to update card with ID:', id);
         const updatedCard = await prisma.card.update({
             where: { id: parseInt(id) },
             data: {
@@ -60,19 +65,38 @@ export async function PUT(request: Request) {
                 period: body.period,
                 chartData: {
                     update: {
-                        ...body.chartData,
+                        label: body.chartData.label,
+                        fill: body.chartData.fill,
+                        borderColor: body.chartData.borderColor,
+                        tension: body.chartData.tension,
+                        pointRadius: body.chartData.pointRadius,
+                        showLegend: body.chartData.showLegend,
+                        showXAxis: body.chartData.showXAxis,
+                        showYAxis: body.chartData.showYAxis,
+                        maintainAspectRatio: body.chartData.maintainAspectRatio,
+                        responsive: body.chartData.responsive,
+                        width: body.chartData.width,
+                        height: body.chartData.height,
                         dataPoints: {
                             deleteMany: {},
-                            create: body.chartData.dataPoints,
+                            create: body.chartData.dataPoints.map((dp: any) => ({
+                                date: dp.date,
+                                score: dp.score,
+                            })),
                         },
                     },
                 },
             },
             include: { chartData: { include: { dataPoints: true } } },
         });
+        console.log('Card updated successfully');
         return NextResponse.json(updatedCard);
     } catch (error) {
-        return NextResponse.json({ error: 'Card not found' }, { status: 404 });
+        console.error('Error updating card:', error);
+        return NextResponse.json(
+            { error: 'Card not found or update failed', details: error },
+            { status: 500 }
+        );
     }
 }
 

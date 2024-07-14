@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState, useCallback } from 'react';
 import { Card } from 'primereact/card';
 import CardSkeleton from '@/app/components/cardSkeleton';
 import { useMobileChecker } from '@/hooks/useMobileChecker';
@@ -7,29 +7,49 @@ import { parseDate } from '@/app/utils/utils';
 import { CardHeader } from '@/app/components/cards/components/cardHeader';
 import { StatisticsDisplay } from '@/app/components/cards/components/statisticsDisplay';
 import { PeriodSelector } from '@/app/components/cards/components/periodSelector';
-import { Chart as ChartComponent } from 'primereact/chart';
-import { ChartDisplay } from '@/app/components/cards/components/chartDisplay'; // Import the actual Chart component
-
-// function ChartDisplay({ chartOptions, chartData }: { chartOptions: ExtendedCard['chartData']; chartData: ChartData }) {
-//     return (
-//         <ChartComponent
-//             type="line"
-//             data={chartData}
-//             options={{
-//                 plugins: { legend: { display: chartOptions.showLegend } },
-//                 scales: { x: { display: chartOptions.showXAxis }, y: { display: chartOptions.showYAxis } },
-//                 maintainAspectRatio: chartOptions.maintainAspectRatio,
-//                 responsive: chartOptions.responsive
-//             }}
-//         />
-//     );
-// }
+import { ChartDisplay } from '@/app/components/cards/components/chartDisplay';
+import { debounce } from 'lodash';
 
 export default function ChartCard(props: ExtendedCard) {
     const [cardInfo, setCardInfo] = useState<ExtendedCard>(props);
     const [chartData, setChartData] = useState<ChartData | null>(null);
     const [months, setMonths] = useState<number>(1);
     const isMobile = useMobileChecker();
+
+    const updateCardData = useCallback(
+        debounce(async (newPeriod: Date) => {
+            try {
+                const url = `/api/card?id=${cardInfo.id}`;
+                console.log('Sending PUT request to:', url);
+                const newCardInfo: ExtendedCard = { ...cardInfo, period: newPeriod };
+                console.log('Request body:', JSON.stringify(newCardInfo));
+
+                const putResponse = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(newCardInfo),
+                });
+
+                console.log('PUT response status:', putResponse.status);
+                const responseText = await putResponse.text();
+                console.log('PUT response text:', responseText);
+
+                if (!putResponse.ok) {
+                    throw new Error(
+                        `Failed to update card period: ${putResponse.status} ${responseText}`
+                    );
+                }
+
+                // ... (rest of your function)
+            } catch (error) {
+                console.error('Error updating card data:', error);
+                setCardInfo((prevCardInfo) => ({ ...prevCardInfo, period: prevCardInfo.period }));
+            }
+        }, 300),
+        [cardInfo.id]
+    );
 
     useEffect(() => {
         if (cardInfo.period) {
@@ -64,6 +84,15 @@ export default function ChartCard(props: ExtendedCard) {
         }
     }, [cardInfo.chartData]);
 
+    const handlePeriodChange = (date: Date | null) => {
+        if (date) {
+            // Optimistically update the UI
+            setCardInfo((prevCardInfo) => ({ ...prevCardInfo, period: date }));
+            // Trigger the actual update
+            updateCardData(date);
+        }
+    };
+
     if (!chartData) {
         return <CardSkeleton />;
     }
@@ -90,7 +119,7 @@ export default function ChartCard(props: ExtendedCard) {
                     <PeriodSelector
                         months={months}
                         period={cardInfo.period}
-                        onChange={(date) => setCardInfo({ ...cardInfo, period: date })}
+                        onChange={handlePeriodChange}
                         isMobile={isMobile}
                     />
                 </div>
