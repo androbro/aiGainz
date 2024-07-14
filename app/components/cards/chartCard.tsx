@@ -20,9 +20,7 @@ export default function ChartCard(props: ExtendedCard) {
         debounce(async (newPeriod: Date) => {
             try {
                 const url = `/api/card?id=${cardInfo.id}`;
-                console.log('Sending PUT request to:', url);
                 const newCardInfo: ExtendedCard = { ...cardInfo, period: newPeriod };
-                console.log('Request body:', JSON.stringify(newCardInfo));
 
                 const putResponse = await fetch(url, {
                     method: 'PUT',
@@ -31,20 +29,14 @@ export default function ChartCard(props: ExtendedCard) {
                     },
                     body: JSON.stringify(newCardInfo),
                 });
-
-                console.log('PUT response status:', putResponse.status);
                 const responseText = await putResponse.text();
-                console.log('PUT response text:', responseText);
 
                 if (!putResponse.ok) {
                     throw new Error(
                         `Failed to update card period: ${putResponse.status} ${responseText}`
                     );
                 }
-
-                // ... (rest of your function)
             } catch (error) {
-                console.error('Error updating card data:', error);
                 setCardInfo((prevCardInfo) => ({ ...prevCardInfo, period: prevCardInfo.period }));
             }
         }, 300),
