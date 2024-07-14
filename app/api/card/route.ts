@@ -10,14 +10,14 @@ export async function GET(request: Request) {
     if (id) {
         const card = await prisma.card.findUnique({
             where: { id: parseInt(id) },
-            include: { dataPoints: true, CardChartData: true },
+            include: { chartData: { include: { dataPoints: true } } },
         });
         return card
             ? NextResponse.json(card)
             : NextResponse.json({ error: 'Card not found' }, { status: 404 });
     } else {
         const cards = await prisma.card.findMany({
-            include: { dataPoints: true, CardChartData: true },
+            include: { chartData: { include: { dataPoints: true } } },
         });
         return NextResponse.json(cards);
     }
@@ -27,15 +27,18 @@ export async function POST(request: Request) {
     const body = await request.json();
     const card = await prisma.card.create({
         data: {
-            ...body,
-            dataPoints: {
-                create: body.dataPoints,
-            },
+            title: body.title,
+            period: body.period,
             chartData: {
-                create: body.chartData,
+                create: {
+                    ...body.chartData,
+                    dataPoints: {
+                        create: body.chartData.dataPoints,
+                    },
+                },
             },
         },
-        include: { dataPoints: true, CardChartData: true },
+        include: { chartData: { include: { dataPoints: true } } },
     });
     return NextResponse.json(card, { status: 201 });
 }
@@ -53,16 +56,19 @@ export async function PUT(request: Request) {
         const updatedCard = await prisma.card.update({
             where: { id: parseInt(id) },
             data: {
-                ...body,
-                dataPoints: {
-                    deleteMany: {},
-                    create: body.dataPoints,
-                },
+                title: body.title,
+                period: body.period,
                 chartData: {
-                    update: body.chartData,
+                    update: {
+                        ...body.chartData,
+                        dataPoints: {
+                            deleteMany: {},
+                            create: body.chartData.dataPoints,
+                        },
+                    },
                 },
             },
-            include: { dataPoints: true, CardChartData: true },
+            include: { chartData: { include: { dataPoints: true } } },
         });
         return NextResponse.json(updatedCard);
     } catch (error) {

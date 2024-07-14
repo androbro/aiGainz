@@ -3,6 +3,7 @@ import { PrismaClient, EquipmentType, EquipmentCategory, EquipmentLocation } fro
 
 const prisma = new PrismaClient();
 
+//workoutEquipment route
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
@@ -10,14 +11,14 @@ export async function GET(request: Request) {
     if (id) {
         const workoutEquipment = await prisma.workoutEquipment.findUnique({
             where: { id: parseInt(id) },
-            include: { exercises: true }
+            include: { exercises: true },
         });
         return workoutEquipment
             ? NextResponse.json(workoutEquipment)
             : NextResponse.json({ error: 'WorkoutEquipment not found' }, { status: 404 });
     } else {
         const workoutEquipments = await prisma.workoutEquipment.findMany({
-            include: { exercises: true }
+            include: { exercises: true },
         });
         return NextResponse.json(workoutEquipments);
     }
@@ -32,7 +33,7 @@ export async function POST(request: Request) {
             category: body.category as EquipmentCategory,
             location: body.location as EquipmentLocation,
         },
-        include: { exercises: true }
+        include: { exercises: true },
     });
     return NextResponse.json(workoutEquipment, { status: 201 });
 }
@@ -55,7 +56,7 @@ export async function PUT(request: Request) {
                 category: body.category as EquipmentCategory,
                 location: body.location as EquipmentLocation,
             },
-            include: { exercises: true }
+            include: { exercises: true },
         });
         return NextResponse.json(updatedWorkoutEquipment);
     } catch (error) {
@@ -73,7 +74,7 @@ export async function DELETE(request: Request) {
 
     try {
         await prisma.workoutEquipment.delete({
-            where: { id: parseInt(id) }
+            where: { id: parseInt(id) },
         });
         return NextResponse.json({ message: 'WorkoutEquipment deleted successfully' });
     } catch (error) {

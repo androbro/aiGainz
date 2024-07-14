@@ -121,37 +121,40 @@ async function seedCards() {
         'Conversion Rate',
         'Churn Rate',
     ];
+
     for (let i = 0; i < 6; i++) {
-        const card = await prisma.card.create({
+        const chart = await prisma.chart.create({
             data: {
-                title: cardTitles[i],
-                totalScore: faker.number.float({ min: 0, max: 1000, precision: 0.01 }),
-                percentageChange: faker.number.float({ min: -100, max: 100, precision: 0.01 }),
-                period: faker.date.recent(180),
-                dataPoints: {},
-                chart: {
-                    create: {
-                        label: cardTitles[i],
-                        data: Array.from({ length: 30 }, () =>
-                            faker.number.float({ min: 0, max: 100, precision: 0.01 })
-                        ),
-                        fill: faker.datatype.boolean(),
-                        borderColor: faker.color.rgb(),
-                        tension: faker.number.float({ min: 0, max: 1, precision: 0.1 }),
-                        pointRadius: faker.number.float({ min: 0, max: 5, precision: 0.1 }),
-                        showLegend: faker.datatype.boolean(),
-                        showXAxis: faker.datatype.boolean(),
-                        showYAxis: faker.datatype.boolean(),
-                        maintainAspectRatio: faker.datatype.boolean(),
-                        responsive: faker.datatype.boolean(),
-                        width: faker.helpers.maybe(() => faker.number.int({ min: 200, max: 800 })),
-                        height: faker.helpers.maybe(() => faker.number.int({ min: 200, max: 600 })),
-                    },
+                label: cardTitles[i],
+                fill: faker.datatype.boolean(),
+                borderColor: faker.color.rgb(),
+                tension: faker.number.float({ min: 0, max: 1, precision: 0.1 }),
+                pointRadius: faker.number.float({ min: 0, max: 5, precision: 0.1 }),
+                showLegend: faker.datatype.boolean(),
+                showXAxis: faker.datatype.boolean(),
+                showYAxis: faker.datatype.boolean(),
+                maintainAspectRatio: faker.datatype.boolean(),
+                responsive: faker.datatype.boolean(),
+                width: faker.helpers.maybe(() => faker.number.int({ min: 200, max: 800 })),
+                height: faker.helpers.maybe(() => faker.number.int({ min: 200, max: 600 })),
+                dataPoints: {
+                    create: Array.from({ length: 30 }, () => ({
+                        date: faker.date.recent(30),
+                        score: faker.number.float({ min: 0, max: 100, precision: 0.01 }),
+                    })),
                 },
             },
         });
 
-        console.log(`Created card: ${card.title}`);
+        const card = await prisma.card.create({
+            data: {
+                title: cardTitles[i],
+                period: faker.date.recent(180),
+                chartDataId: chart.id,
+            },
+        });
+
+        console.log(`Created card: ${card.title} with chart: ${chart.label}`);
     }
 }
 

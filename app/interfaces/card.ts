@@ -4,17 +4,13 @@ import { Chart } from '@/app/interfaces/chart';
 export interface CardInformation {
     id: number;
     title: string;
-    data: CardPropData;
-    chart: Chart;
     period: Nullable<Date>;
+    chartData: Chart;
 }
 
 export interface CardPropData {
     totalScore: number;
-    dataPoints: { date: Date; score: number }[];
     percentageChange: number;
-    width?: number;
-    height?: number;
 }
 
 export interface CalculationFunction {
@@ -25,5 +21,5 @@ export interface CardType {
     id: string;
     title: string;
     calculationFunction: CalculationFunction;
-    chartSettings: Omit<Chart, 'data' | 'label'>;
+    chartSettings: Omit<Chart, 'dataPoints' | 'label'>;
 }
