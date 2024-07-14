@@ -4,7 +4,6 @@ import { Workout } from '@/app/interfaces/calculation';
 export async function calculateStrengthScore(period: Date): Promise<CardPropData> {
     let returnValue: CardPropData = {
         totalScore: 0,
-        dataPoints: [],
         percentageChange: 0,
     };
     const fetchWorkouts = async (startDate: Date): Promise<Workout[]> => {
@@ -50,16 +49,16 @@ export async function calculateStrengthScore(period: Date): Promise<CardPropData
             dataPoints.push({ date: new Date(workout.createdAt), score: workoutScore });
         }
 
+        const firstDataPoint = dataPoints.at(0);
+        const lastDataPoint = dataPoints.at(-1);
+
         const percentageChange =
-            dataPoints.length > 1
-                ? ((dataPoints[dataPoints.length - 1].score - dataPoints[0].score) /
-                      dataPoints[0].score) *
-                  100
+            firstDataPoint && lastDataPoint
+                ? ((lastDataPoint.score - firstDataPoint.score) / firstDataPoint.score) * 100
                 : 0;
 
         return {
             totalScore,
-            dataPoints,
             percentageChange,
         };
     };

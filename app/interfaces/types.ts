@@ -1,20 +1,11 @@
-// types.ts
-import { Card as PrismaCard, Chart as PrismaChart } from '@prisma/client';
+import { Card, Chart, ChartDataPoint } from '@prisma/client';
 
-export interface FlexibleChartDataPoint {
-    id: number;
-    date: string | Date;
-    score: number;
-    chartId: number;
-}
-
-export interface ExtendedChart extends Omit<PrismaChart, 'dataPoints'> {
-    dataPoints: FlexibleChartDataPoint[];
-}
-
-export interface ExtendedCard extends Omit<PrismaCard, 'chartData'> {
-    chartData: ExtendedChart;
-}
+// Only extend types if absolutely necessary
+export type ExtendedCard = Card & {
+    chartData: Chart & {
+        dataPoints: ChartDataPoint[];
+    };
+};
 
 export interface ChartData {
     labels: string[];
@@ -22,7 +13,7 @@ export interface ChartData {
         label: string;
         data: number[];
         fill: boolean;
-        borderColor: string | undefined; // Keep this as string | undefined
+        borderColor: string | undefined;
         tension: number;
         pointRadius: number;
     }[];

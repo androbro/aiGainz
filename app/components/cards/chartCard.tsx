@@ -2,14 +2,29 @@
 import { Card } from 'primereact/card';
 import CardSkeleton from '@/app/components/cardSkeleton';
 import { useMobileChecker } from '@/hooks/useMobileChecker';
-import { ChartData, ExtendedCard, ExtendedChart } from '@/app/interfaces/types';
+import { ChartData, ExtendedCard } from '@/app/interfaces/types';
 import { parseDate } from '@/app/utils/utils';
 import { CardHeader } from '@/app/components/cards/components/cardHeader';
 import { StatisticsDisplay } from '@/app/components/cards/components/statisticsDisplay';
 import { PeriodSelector } from '@/app/components/cards/components/periodSelector';
-import { ChartDisplay } from '@/app/components/cards/components/chartDisplay';
+import { Chart as ChartComponent } from 'primereact/chart'; // Import the actual Chart component
 
-export default function SmallStatsCard(props: ExtendedCard) {
+function ChartDisplay({ chartOptions, chartData }: { chartOptions: ExtendedCard['chartData']; chartData: ChartData }) {
+    return (
+        <ChartComponent
+            type="line"
+            data={chartData}
+            options={{
+                plugins: { legend: { display: chartOptions.showLegend } },
+                scales: { x: { display: chartOptions.showXAxis }, y: { display: chartOptions.showYAxis } },
+                maintainAspectRatio: chartOptions.maintainAspectRatio,
+                responsive: chartOptions.responsive
+            }}
+        />
+    );
+}
+
+export default function ChartCard(props: ExtendedCard) {
     const [cardInfo, setCardInfo] = useState<ExtendedCard>(props);
     const [chartData, setChartData] = useState<ChartData | null>(null);
     const [months, setMonths] = useState<number>(1);
@@ -38,7 +53,7 @@ export default function SmallStatsCard(props: ExtendedCard) {
                         label: cardInfo.chartData.label,
                         data: cardInfo.chartData.dataPoints.map((dp) => dp.score),
                         fill: cardInfo.chartData.fill,
-                        borderColor: cardInfo.chartData.borderColor || undefined, // Handle null case
+                        borderColor: cardInfo.chartData.borderColor || undefined,
                         tension: cardInfo.chartData.tension,
                         pointRadius: cardInfo.chartData.pointRadius,
                     },
@@ -52,8 +67,13 @@ export default function SmallStatsCard(props: ExtendedCard) {
         return <CardSkeleton />;
     }
 
-    const lastDataPoint = cardInfo.chartData.dataPoints[cardInfo.chartData.dataPoints.length - 1];
-    const firstDataPoint = cardInfo.chartData.dataPoints[0];
+    const lastDataPoint = cardInfo.chartData.dataPoints.at(-1);
+    const firstDataPoint = cardInfo.chartData.dataPoints.at(0);
+
+    if (!lastDataPoint || !firstDataPoint) {
+        return <CardSkeleton />;
+    }
+
     const percentageChange =
         ((lastDataPoint.score - firstDataPoint.score) / firstDataPoint.score) * 100;
 
@@ -68,7 +88,7 @@ export default function SmallStatsCard(props: ExtendedCard) {
                     />
                     <PeriodSelector
                         months={months}
-                        period={cardInfo.period ? parseDate(cardInfo.period) : null}
+                        period={cardInfo.period}
                         onChange={(date) => setCardInfo({ ...cardInfo, period: date })}
                         isMobile={isMobile}
                     />

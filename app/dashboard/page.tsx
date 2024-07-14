@@ -4,14 +4,14 @@ import { useLoading } from '@/hooks/useLoading';
 import React, { useEffect, useState } from 'react';
 import { Carousel } from 'primereact/carousel';
 import { useMobileChecker } from '@/hooks/useMobileChecker';
-import { CardInformation } from '@/app/interfaces/card';
-import SmallStatsCard from '@/app/components/cards/chartCard';
+import ChartCard from '@/app/components/cards/chartCard';
+import { ExtendedCard } from '@/app/interfaces/types';
 
 export default function Dashboard() {
     const { setIsLoading } = useLoaderStore();
     const isMobile = useMobileChecker();
     useLoading(false, setIsLoading);
-    const [cardData, setCardData] = useState<CardInformation[]>([]);
+    const [cardData, setCardData] = useState<ExtendedCard[]>([]);
 
     useEffect(() => {
         async function fetchCardData() {
@@ -53,15 +53,10 @@ export default function Dashboard() {
         },
     ];
 
-    const productTemplate = (card: CardInformation) => {
+    const productTemplate = (card: ExtendedCard) => {
         return (
             <div>
-                <SmallStatsCard
-                    id={card.id}
-                    title={card.title}
-                    chartData={card.chartData}
-                    period={card.period}
-                />
+                <ChartCard {...card} />
             </div>
         );
     };
@@ -83,12 +78,7 @@ export default function Dashboard() {
                             <div className="flex flex-wrap justify-content-center">
                                 {cardData.map((card, index) => (
                                     <div key={index} className="sm:col-6 md:col-6 lg:col-3">
-                                        <SmallStatsCard
-                                            id={card.id}
-                                            title={card.title}
-                                            chartData={card.chartData}
-                                            period={card.period}
-                                        />
+                                        <ChartCard {...card} />
                                     </div>
                                 ))}
                             </div>
