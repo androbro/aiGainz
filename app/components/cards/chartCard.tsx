@@ -7,10 +7,7 @@ import { parseDate } from '@/app/utils/utils';
 import { CardHeader } from '@/app/components/cards/components/cardHeader';
 import { StatisticsDisplay } from '@/app/components/cards/components/statisticsDisplay';
 import { PeriodSelector } from '@/app/components/cards/components/periodSelector';
-
-function ChartDisplay(props: { chartOptions: ExtendedChart; chartData: ChartData }) {
-    return null;
-}
+import { ChartDisplay } from '@/app/components/cards/components/chartDisplay';
 
 export default function SmallStatsCard(props: ExtendedCard) {
     const [cardInfo, setCardInfo] = useState<ExtendedCard>(props);

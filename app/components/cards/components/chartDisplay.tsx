@@ -7,7 +7,7 @@ export type ChartDisplayProps = {
     chartOptions: ExtendedChart;
 };
 
-const ChartDisplay: React.FC<ChartDisplayProps> = ({ chartData, chartOptions }) => (
+export const ChartDisplay: React.FC<ChartDisplayProps> = ({ chartData, chartOptions }) => (
     <div style={{ height: `${chartOptions.height || 200}px` }}>
         <ChartComponent
             type="line"
