@@ -1,22 +1,29 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Button } from 'primereact/button';
 
 interface CustomInplaceProps {
     display: React.ReactNode;
     content: React.ReactNode;
+    isEditing: boolean;
+    onEdit: (editing: boolean) => void;
     escapeUsingEscKey?: boolean;
 }
 
-const CustomInplace: React.FC<CustomInplaceProps> = ({ display, content }) => {
-    const [isEditing, setIsEditing] = useState(false);
+const CustomInplace: React.FC<CustomInplaceProps> = ({
+    display,
+    content,
+    isEditing,
+    onEdit,
+    escapeUsingEscKey = true,
+}) => {
     const inplaceRef = useRef<HTMLDivElement>(null);
 
-    const toggleEdit = () => setIsEditing(!isEditing);
+    const toggleEdit = () => onEdit(!isEditing);
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') {
-                setIsEditing(false);
+            if (escapeUsingEscKey && event.key === 'Escape') {
+                onEdit(false);
             }
         };
 
@@ -25,7 +32,7 @@ const CustomInplace: React.FC<CustomInplaceProps> = ({ display, content }) => {
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
         };
-    }, []);
+    }, [escapeUsingEscKey, onEdit]);
 
     return (
         <div ref={inplaceRef}>
@@ -43,7 +50,7 @@ const CustomInplace: React.FC<CustomInplaceProps> = ({ display, content }) => {
                         text
                         severity="danger"
                         aria-label="Cancel"
-                        onClick={toggleEdit}
+                        onClick={() => onEdit(false)}
                     />
                 </div>
             )}
