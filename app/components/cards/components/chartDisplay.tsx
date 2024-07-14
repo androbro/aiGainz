@@ -9,29 +9,36 @@ export type ChartDisplayProps = {
 };
 
 export const ChartDisplay: React.FC<ChartDisplayProps> = ({ chartData, chartOptions }) => (
-    <div style={{ height: `${chartOptions.height || 200}px` }}>
+    <div>
         <ChartComponent
             type="line"
             data={chartData}
             options={{
                 plugins: {
                     legend: {
-                        display: chartOptions.showLegend,
+                        // display: chartOptions.showLegend,
+                        display: false,
                     },
                 },
                 scales: {
                     x: {
-                        display: chartOptions.showXAxis,
+                        // display: chartOptions.showXAxis,
+                        display: false,
                     },
                     y: {
-                        display: chartOptions.showYAxis,
+                        // display: chartOptions.showYAxis,
+                        display: false,
                     },
                 },
-                maintainAspectRatio: chartOptions.maintainAspectRatio,
-                responsive: chartOptions.responsive,
+                // maintainAspectRatio: chartOptions.maintainAspectRatio,
+                // responsive: chartOptions.responsive,
+                maintainAspectRatio: false,
+                responsive: true,
             }}
-            // width="75px"
-            // height="100%"
+            // width={`${chartOptions.width}px`}
+            // height={`${chartOptions.height}px`}
+            width="100%"
+            height="100%"
         />
     </div>
 );

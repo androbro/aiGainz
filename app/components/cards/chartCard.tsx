@@ -7,22 +7,23 @@ import { parseDate } from '@/app/utils/utils';
 import { CardHeader } from '@/app/components/cards/components/cardHeader';
 import { StatisticsDisplay } from '@/app/components/cards/components/statisticsDisplay';
 import { PeriodSelector } from '@/app/components/cards/components/periodSelector';
-import { Chart as ChartComponent } from 'primereact/chart'; // Import the actual Chart component
+import { Chart as ChartComponent } from 'primereact/chart';
+import { ChartDisplay } from '@/app/components/cards/components/chartDisplay'; // Import the actual Chart component
 
-function ChartDisplay({ chartOptions, chartData }: { chartOptions: ExtendedCard['chartData']; chartData: ChartData }) {
-    return (
-        <ChartComponent
-            type="line"
-            data={chartData}
-            options={{
-                plugins: { legend: { display: chartOptions.showLegend } },
-                scales: { x: { display: chartOptions.showXAxis }, y: { display: chartOptions.showYAxis } },
-                maintainAspectRatio: chartOptions.maintainAspectRatio,
-                responsive: chartOptions.responsive
-            }}
-        />
-    );
-}
+// function ChartDisplay({ chartOptions, chartData }: { chartOptions: ExtendedCard['chartData']; chartData: ChartData }) {
+//     return (
+//         <ChartComponent
+//             type="line"
+//             data={chartData}
+//             options={{
+//                 plugins: { legend: { display: chartOptions.showLegend } },
+//                 scales: { x: { display: chartOptions.showXAxis }, y: { display: chartOptions.showYAxis } },
+//                 maintainAspectRatio: chartOptions.maintainAspectRatio,
+//                 responsive: chartOptions.responsive
+//             }}
+//         />
+//     );
+// }
 
 export default function ChartCard(props: ExtendedCard) {
     const [cardInfo, setCardInfo] = useState<ExtendedCard>(props);
