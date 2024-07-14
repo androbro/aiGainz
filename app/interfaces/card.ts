@@ -2,6 +2,7 @@ import { Nullable } from 'primereact/ts-helpers';
 import { Chart } from '@/app/interfaces/chart';
 
 export interface CardInformation {
+    id: number;
     title: string;
     data: CardPropData;
     chart: Chart;
@@ -12,6 +13,8 @@ export interface CardPropData {
     totalScore: number;
     dataPoints: { date: Date; score: number }[];
     percentageChange: number;
+    width?: number;
+    height?: number;
 }
 
 export interface CalculationFunction {

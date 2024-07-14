@@ -121,7 +121,6 @@ async function seedCards() {
         'Conversion Rate',
         'Churn Rate',
     ];
-
     for (let i = 0; i < 6; i++) {
         const card = await prisma.card.create({
             data: {

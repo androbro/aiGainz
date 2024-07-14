@@ -24,10 +24,8 @@ export default function Dashboard() {
                     console.error(`Unknown card type: ${config.title}`);
                     return null;
                 }
-
                 try {
                     const data = await cardType.calculationFunction(config.period);
-
                     return {
                         title: config.title || cardType.title,
                         data,
@@ -97,6 +95,7 @@ export default function Dashboard() {
         return (
             <div>
                 <SmallStatsCard
+                    id={card.id}
                     title={card.title}
                     data={card.data}
                     chart={card.chart}
@@ -124,6 +123,7 @@ export default function Dashboard() {
                                 {cardData.map((card, index) => (
                                     <div key={index} className="sm:col-6 md:col-6 lg:col-3">
                                         <SmallStatsCard
+                                            id={card.id}
                                             title={card.title}
                                             data={card.data}
                                             chart={card.chart}

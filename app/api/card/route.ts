@@ -10,14 +10,14 @@ export async function GET(request: Request) {
     if (id) {
         const card = await prisma.card.findUnique({
             where: { id: parseInt(id) },
-            include: { dataPoints: true, chartData: true },
+            include: { dataPoints: true, CardChartData: true },
         });
         return card
             ? NextResponse.json(card)
             : NextResponse.json({ error: 'Card not found' }, { status: 404 });
     } else {
         const cards = await prisma.card.findMany({
-            include: { dataPoints: true, chartData: true },
+            include: { dataPoints: true, CardChartData: true },
         });
         return NextResponse.json(cards);
     }
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
                 create: body.chartData,
             },
         },
-        include: { dataPoints: true, chartData: true },
+        include: { dataPoints: true, CardChartData: true },
     });
     return NextResponse.json(card, { status: 201 });
 }
@@ -62,7 +62,7 @@ export async function PUT(request: Request) {
                     update: body.chartData,
                 },
             },
-            include: { dataPoints: true, chartData: true },
+            include: { dataPoints: true, CardChartData: true },
         });
         return NextResponse.json(updatedCard);
     } catch (error) {

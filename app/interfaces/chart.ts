@@ -1,6 +1,6 @@
 export interface Chart {
     label: string;
-    data: number[];
+    data: { date: Date; score: number }[];
     fill: boolean;
     borderColor: string | undefined;
     tension: number;
