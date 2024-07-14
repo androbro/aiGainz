@@ -1,10 +1,11 @@
 import React from 'react';
 import { Chart as ChartComponent } from 'primereact/chart';
-import { ChartData, ExtendedChart } from '@/app/interfaces/types';
+import { ChartData, ExtendedCard } from '@/app/interfaces/types';
+import { Chart } from '@prisma/client';
 
 export type ChartDisplayProps = {
     chartData: ChartData;
-    chartOptions: ExtendedChart;
+    chartOptions: Chart;
 };
 
 export const ChartDisplay: React.FC<ChartDisplayProps> = ({ chartData, chartOptions }) => (
@@ -29,8 +30,8 @@ export const ChartDisplay: React.FC<ChartDisplayProps> = ({ chartData, chartOpti
                 maintainAspectRatio: chartOptions.maintainAspectRatio,
                 responsive: chartOptions.responsive,
             }}
-            width="100%"
-            height="100%"
+            // width="75px"
+            // height="100%"
         />
     </div>
 );
