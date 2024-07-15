@@ -1,5 +1,6 @@
 import { Nullable } from 'primereact/ts-helpers';
 import { Chart } from '@/app/interfaces/chart';
+import { ExtendedCard } from '@/app/interfaces/types';
 
 export interface CardInformation {
     id: number;
@@ -13,13 +14,9 @@ export interface CardPropData {
     percentageChange: number;
 }
 
-export interface CalculationFunction {
-    (params: any): Promise<CardPropData>;
-}
+export type CardAdjustmentFunction = (card: ExtendedCard) => Promise<ExtendedCard>;
 
-export interface CardType {
-    id: string;
+export interface CardAdjustment {
     title: string;
-    calculationFunction: CalculationFunction;
-    chartSettings: Omit<Chart, 'dataPoints' | 'label'>;
+    adjustmentFunction: CardAdjustmentFunction;
 }

@@ -1,3 +1,5 @@
+import {ExtendedCard} from "@/app/interfaces/types";
+
 export interface Workout {
     id: number;
     createdAt: string;
@@ -9,4 +11,8 @@ export interface Workout {
             difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
         };
     }>;
+}
+
+export interface AdjustmentFunction {
+    (card: ExtendedCard): ExtendedCard;
 }

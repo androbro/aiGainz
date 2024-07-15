@@ -9,6 +9,8 @@ import { StatisticsDisplay } from '@/app/components/cards/components/statisticsD
 import { PeriodSelector } from '@/app/components/cards/components/periodSelector';
 import { ChartDisplay } from '@/app/components/cards/components/chartDisplay';
 import { debounce } from 'lodash';
+import { CardAdjustment } from '@/app/interfaces/card';
+import { cardAdjustments } from '@/app/mappers/mapperFunction';
 
 export default function ChartCard(props: ExtendedCard) {
     const [cardInfo, setCardInfo] = useState<ExtendedCard>(props);
@@ -35,6 +37,17 @@ export default function ChartCard(props: ExtendedCard) {
                     throw new Error(
                         `Failed to update card period: ${putResponse.status} ${responseText}`
                     );
+                }
+
+                // Apply the adjustment function if it exists
+                const adjustment = cardAdjustments.find(
+                    (adj: CardAdjustment) => adj.title === newCardInfo.title
+                );
+                if (adjustment) {
+                    const adjustedCard = await adjustment.adjustmentFunction(newCardInfo);
+                    setCardInfo(adjustedCard);
+                } else {
+                    setCardInfo(newCardInfo);
                 }
             } catch (error) {
                 setCardInfo((prevCardInfo) => ({ ...prevCardInfo, period: prevCardInfo.period }));
@@ -78,9 +91,6 @@ export default function ChartCard(props: ExtendedCard) {
 
     const handlePeriodChange = (date: Date | null) => {
         if (date) {
-            // Optimistically update the UI
-            setCardInfo((prevCardInfo) => ({ ...prevCardInfo, period: date }));
-            // Trigger the actual update
             updateCardData(date);
         }
     };
