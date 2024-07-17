@@ -3,26 +3,58 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
+    const currentDate = new Date();
 
     if (id) {
         const card = await prisma.card.findUnique({
             where: { id: parseInt(id) },
-            include: { chartData: { include: { dataPoints: true } } },
+            include: {
+                chartData: {
+                    include: {
+                        dataPoints: true,
+                    },
+                },
+            },
         });
-        return card
-            ? NextResponse.json(card)
-            : NextResponse.json({ error: 'Card not found' }, { status: 404 });
+
+        if (!card) {
+            return NextResponse.json({ error: 'Card not found' }, { status: 404 });
+        }
+
+        // Filter dataPoints based on the card's period
+        if (card.period) {
+            card.chartData.dataPoints = card.chartData.dataPoints.filter(
+                (dp) => dp.date >= card.period! && dp.date <= currentDate
+            );
+        }
+
+        return NextResponse.json(card);
     } else {
         const cards = await prisma.card.findMany({
-            include: { chartData: { include: { dataPoints: true } } },
+            include: {
+                chartData: {
+                    include: {
+                        dataPoints: true,
+                    },
+                },
+            },
         });
+
+        // Filter dataPoints for each card based on its period
+        cards.forEach((card) => {
+            if (card.period) {
+                card.chartData.dataPoints = card.chartData.dataPoints.filter(
+                    (dp) => dp.date >= card.period! && dp.date <= currentDate
+                );
+            }
+        });
+
         return NextResponse.json(cards);
     }
 }
-
 export async function POST(request: Request) {
     const body = await request.json();
     const card = await prisma.card.create({

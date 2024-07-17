@@ -9,8 +9,6 @@ import { StatisticsDisplay } from '@/app/components/cards/components/statisticsD
 import { PeriodSelector } from '@/app/components/cards/components/periodSelector';
 import { ChartDisplay } from '@/app/components/cards/components/chartDisplay';
 import { debounce } from 'lodash';
-import { CardAdjustment } from '@/app/interfaces/card';
-import { cardAdjustments } from '@/app/mappers/mapperFunction';
 
 export default function ChartCard(props: ExtendedCard) {
     const [cardInfo, setCardInfo] = useState<ExtendedCard>(props);
@@ -38,17 +36,10 @@ export default function ChartCard(props: ExtendedCard) {
                         `Failed to update card period: ${putResponse.status} ${responseText}`
                     );
                 }
-
-                // Apply the adjustment function if it exists
-                const adjustment = cardAdjustments.find(
-                    (adj: CardAdjustment) => adj.title === newCardInfo.title
-                );
-                if (adjustment) {
-                    const adjustedCard = await adjustment.adjustmentFunction(newCardInfo);
-                    setCardInfo(adjustedCard);
-                } else {
-                    setCardInfo(newCardInfo);
-                }
+                //update the card with the new period and recalculated data based on the new period and the current date
+                fetchCardData(cardInfo.id).then((data) => {
+                    setCardInfo((prevCardInfo) => ({ ...prevCardInfo, chartData: data.chartData }));
+                });
             } catch (error) {
                 setCardInfo((prevCardInfo) => ({ ...prevCardInfo, period: prevCardInfo.period }));
             }
@@ -132,3 +123,11 @@ export default function ChartCard(props: ExtendedCard) {
         </Card>
     );
 }
+
+export const fetchCardData = async (id: number) => {
+    const response = await fetch(`/api/card?id=${id}`);
+    if (!response.ok) {
+        throw new Error('Failed to fetch card data');
+    }
+    return await response.json();
+};
