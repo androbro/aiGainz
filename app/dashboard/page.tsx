@@ -59,14 +59,40 @@ export default function Dashboard() {
         fetchCardData();
     }, [fetchCardData]);
 
-    const handleAddCard = () => {
-        // Implement the logic to add a new card here
-        console.log('Add new card');
+    const handleAddCard = async (newCardData: any) => {
+        setIsLoading(true);
+        try {
+            const response = await fetch('/api/card', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newCardData),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to add new card');
+            }
+
+            const addedCard = await response.json();
+            setCardData((prevCards) => [...prevCards, addedCard]);
+        } catch (error) {
+            console.error('Error adding new card:', error);
+            setError('Failed to add new card. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const renderCard = (card: ExtendedCard) => (
-        <div key={card.id} className="sm:col-6 md:col-6 lg:col-3 p-2" style={{ height: '300px' }}>
+        <div key={card.id} className="sm:col-6 md:col-6 lg:col-3 p-2">
             <ChartCard {...card} />
+        </div>
+    );
+    
+    const renderAddButton = () => (
+        <div className="sm:col-6 md:col-6 lg:col-3 p-2">
+            <AddCardButton onCardAdd={handleAddCard} />
         </div>
     );
 
@@ -78,10 +104,7 @@ export default function Dashboard() {
         <div className="layout-container layout-light layout-colorscheme-menu layout-static layout-static-inactive p-ripple-disabled">
             {isMobile ? (
                 <Carousel
-                    value={[
-                        ...cardData.map(renderCard),
-                        <AddCardButton key="add-button" onClick={handleAddCard} />,
-                    ]}
+                    value={[...cardData.map(renderCard), renderAddButton()]}
                     numVisible={1}
                     numScroll={1}
                     responsiveOptions={responsiveOptions}
@@ -92,16 +115,11 @@ export default function Dashboard() {
                     <div className="w-full xl:max-w-110rem px-4">
                         <div className="flex flex-wrap justify-content-start">
                             {cardData.map(renderCard)}
-                            <div
-                                className="sm:col-6 md:col-6 lg:col-3 p-2"
-                                style={{ height: '200px' }}
-                            >
-                                <AddCardButton onClick={handleAddCard} />
-                            </div>
+                            {renderAddButton()}
                         </div>
                     </div>
                 </div>
             )}
         </div>
-    );
+    )
 }
