@@ -65,22 +65,14 @@ export default function Dashboard() {
     };
 
     const renderCard = (card: ExtendedCard) => (
-        <div key={card.id} className="sm:col-6 md:col-6 lg:col-3 p-2">
+        <div key={card.id} className="sm:col-6 md:col-6 lg:col-3 p-2" style={{ height: '300px' }}>
             <ChartCard {...card} />
-        </div>
-    );
-
-    const renderAddButton = () => (
-        <div key="add-button" className="sm:col-6 md:col-6 lg:col-3 p-2">
-            <AddCardButton onClick={handleAddCard} />
         </div>
     );
 
     if (error) {
         return <div className="text-center text-red-500">{error}</div>;
     }
-
-    const allCards = [...cardData.map(renderCard), renderAddButton()];
 
     return (
         <div className="layout-container layout-light layout-colorscheme-menu layout-static layout-static-inactive p-ripple-disabled">
@@ -100,7 +92,10 @@ export default function Dashboard() {
                     <div className="w-full xl:max-w-110rem px-4">
                         <div className="flex flex-wrap justify-content-start">
                             {cardData.map(renderCard)}
-                            <div className="sm:col-6 md:col-6 lg:col-3 p-2 flex align-items-stretch">
+                            <div
+                                className="sm:col-6 md:col-6 lg:col-3 p-2"
+                                style={{ height: '200px' }}
+                            >
                                 <AddCardButton onClick={handleAddCard} />
                             </div>
                         </div>

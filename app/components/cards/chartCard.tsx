@@ -86,14 +86,10 @@ export default function ChartCard(props: ExtendedCard) {
         }
     };
 
-    if (!chartData) {
-        return <CardSkeleton />;
-    }
-
     const lastDataPoint = cardInfo.chartData.dataPoints.at(-1);
     const firstDataPoint = cardInfo.chartData.dataPoints.at(0);
 
-    if (!lastDataPoint || !firstDataPoint) {
+    if (!lastDataPoint || !firstDataPoint || !chartData) {
         return <CardSkeleton />;
     }
 
