@@ -120,6 +120,7 @@ export async function POST(request: NextRequest) {
                         dataPoints: {
                             create: dataPoints,
                         },
+                        dataType: dataSourceType,
                     },
                 },
             },
