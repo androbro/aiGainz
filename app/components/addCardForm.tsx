@@ -36,7 +36,7 @@ export const AddCardForm: React.FC<AddCardFormProps> = ({ onSubmit }) => {
         if (name && period && selectedDataSource) {
             onSubmit({
                 name,
-                period,
+                period: period.toISOString(),
                 dataSource: selectedDataSource,
             });
         } else {

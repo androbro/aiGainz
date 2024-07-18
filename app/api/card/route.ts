@@ -55,24 +55,86 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(cards);
     }
 }
-export async function POST(request: Request) {
-    const body = await request.json();
-    const card = await prisma.card.create({
-        data: {
-            title: body.title,
-            period: body.period,
-            chartData: {
-                create: {
-                    ...body.chartData,
-                    dataPoints: {
-                        create: body.chartData.dataPoints,
+export async function POST(request: NextRequest) {
+    try {
+        const body = await request.json();
+        console.log('Received POST request with body:', body);
+
+        // Extract the data source type and ID
+        const [dataSourceType, dataSourceId] = body.dataSource.split('_');
+
+        // Prepare the chart data
+        const chartData = {
+            label: body.name,
+            fill: false,
+            borderColor: '#4B91F1',
+            tension: 0.4,
+            pointRadius: 2,
+            showLegend: true,
+            showXAxis: true,
+            showYAxis: true,
+            maintainAspectRatio: false,
+            responsive: true,
+            width: null,
+            height: 200,
+            dataPoints: [], // We'll populate this based on the data source
+        };
+
+        // Fetch data points based on the data source
+        let dataPoints: { date: Date; score: number }[] = [];
+        if (dataSourceType === 'exercise') {
+            const workouts = await prisma.workoutExercise.findMany({
+                where: {
+                    exerciseId: parseInt(dataSourceId),
+                    workout: {
+                        createdAt: {
+                            gte: new Date(body.period),
+                        },
+                    },
+                },
+                orderBy: {
+                    workout: {
+                        createdAt: 'asc',
+                    },
+                },
+                include: {
+                    workout: true,
+                },
+            });
+
+            dataPoints = workouts.map((we) => ({
+                date: we.workout.createdAt,
+                score: we.weight * we.reps * we.sets,
+            }));
+        }
+        // Add similar logic for muscleTypes and workoutEquipments if needed
+
+        // Create the card with chart data
+        const card = await prisma.card.create({
+            data: {
+                title: body.name,
+                period: new Date(body.period),
+                chartData: {
+                    create: {
+                        ...chartData,
+                        dataPoints: {
+                            create: dataPoints,
+                        },
                     },
                 },
             },
-        },
-        include: { chartData: { include: { dataPoints: true } } },
-    });
-    return NextResponse.json(card, { status: 201 });
+            include: { chartData: { include: { dataPoints: true } } },
+        });
+
+        console.log('Card created successfully:', card);
+        return NextResponse.json(card, { status: 201 });
+    } catch (error) {
+        console.error('Error creating card:', error);
+        return NextResponse.json(
+            { error: 'Failed to create card', details: error },
+            { status: 500 }
+        );
+    }
 }
 
 export async function PUT(req: NextRequest) {

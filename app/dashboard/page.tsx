@@ -71,7 +71,8 @@ export default function Dashboard() {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to add new card');
+                const errorData = await response.json();
+                throw new Error(`Failed to add new card: ${errorData.error}`);
             }
 
             const addedCard = await response.json();
@@ -89,7 +90,7 @@ export default function Dashboard() {
             <ChartCard {...card} />
         </div>
     );
-    
+
     const renderAddButton = () => (
         <div className="sm:col-6 md:col-6 lg:col-3 p-2">
             <AddCardButton onCardAdd={handleAddCard} />
@@ -121,5 +122,5 @@ export default function Dashboard() {
                 </div>
             )}
         </div>
-    )
+    );
 }
