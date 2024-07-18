@@ -13,7 +13,8 @@
     "migrate": "prisma migrate dev --preview-feature",
     "format:prisma": "prisma format",
     "seed": "prisma db seed",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "reset": "prisma migrate reset"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^3.5.0",

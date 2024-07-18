@@ -4,15 +4,18 @@ import {
     EquipmentCategory,
     EquipmentLocation,
     Exercise,
+    $Enums,
+    ChartDataPoint,
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { workoutEquipment } from '../testData/workoutEquipment';
 import { muscleGroups } from '../testData/muscleGroup';
+import ChartDataType = $Enums.ChartDataType;
 
 const prisma = new PrismaClient();
 
 async function main() {
-    // Seed MuscleTypes and WorkoutEquipment (your existing code)
+    // Seed MuscleTypes and WorkoutEquipment
     for (const groupName of muscleGroups) {
         await prisma.muscleType.create({
             data: { name: groupName },
@@ -37,6 +40,10 @@ async function main() {
 
     // Seed Workouts and WorkoutExercises
     await seedWorkoutsAndExercises(exercises);
+
+    // Seed ChartDataPoints (and Charts) for MuscleTypes and Exercises
+    await seedMuscleTypeChartDataPoints();
+    await seedExerciseChartDataPoints();
 
     // Seed Cards
     await seedCards();
@@ -69,9 +76,8 @@ async function seedExercises(): Promise<Exercise[]> {
 }
 
 async function seedWorkoutsAndExercises(exercises: Exercise[]) {
-    // Generate dates for the last 6 months
     const endDate = new Date();
-    const startDate = new Date(endDate.getTime() - 6 * 30 * 24 * 60 * 60 * 1000); // Approximately 6 months ago
+    const startDate = new Date(endDate.getTime() - 6 * 30 * 24 * 60 * 60 * 1000); // 6 months ago
 
     for (let i = 0; i < 10; i++) {
         const workoutDate = faker.date.between({ from: startDate, to: endDate });
@@ -112,49 +118,120 @@ async function seedWorkoutsAndExercises(exercises: Exercise[]) {
     }
 }
 
+async function seedMuscleTypeChartDataPoints() {
+    const muscleTypes = await prisma.muscleType.findMany();
+    const startDate = new Date('2024-01-01');
+    const endDate = new Date('2024-06-30');
+
+    for (const muscleType of muscleTypes) {
+        const dataPoints = generateDateSpreadDataPoints(startDate, endDate);
+        const chart = await prisma.chart.create({
+            data: {
+                label: `${muscleType.name} Progress`,
+                fill: false,
+                borderColor: faker.color.rgb(),
+                tension: 0.4,
+                pointRadius: 2,
+                showLegend: true,
+                showXAxis: true,
+                showYAxis: true,
+                maintainAspectRatio: false,
+                responsive: true,
+                dataType: ChartDataType.MUSCLE_TYPE,
+            },
+        });
+        await prisma.chartDataPoint.createMany({
+            data: dataPoints.map((dp) => ({
+                date: dp.date,
+                score: dp.score,
+                muscleTypeId: muscleType.id,
+                chartId: chart.id,
+            })),
+        });
+    }
+    console.log('Seeded ChartDataPoints for MuscleTypes');
+}
+
+async function seedExerciseChartDataPoints() {
+    const exercises = await prisma.exercise.findMany();
+    const startDate = new Date('2024-01-01');
+    const endDate = new Date('2024-06-30');
+
+    for (const exercise of exercises) {
+        const dataPoints = generateDateSpreadDataPoints(startDate, endDate);
+        const chart = await prisma.chart.create({
+            data: {
+                label: `${exercise.name} Progress`,
+                fill: false,
+                borderColor: faker.color.rgb(),
+                tension: 0.4,
+                pointRadius: 2,
+                showLegend: true,
+                showXAxis: true,
+                showYAxis: true,
+                maintainAspectRatio: false,
+                responsive: true,
+                dataType: ChartDataType.EXERCISE,
+            },
+        });
+        await prisma.chartDataPoint.createMany({
+            data: dataPoints.map((dp) => ({
+                date: dp.date,
+                score: dp.score,
+                exerciseId: exercise.id,
+                chartId: chart.id,
+            })),
+        });
+    }
+    console.log('Seeded ChartDataPoints for Exercises');
+}
+
+function generateDateSpreadDataPoints(
+    startDate: Date,
+    endDate: Date,
+    count: number = 10
+): { date: Date; score: number }[] {
+    const dataPoints: { date: Date; score: number }[] = [];
+    const dateRange = endDate.getTime() - startDate.getTime();
+
+    for (let i = 0; i < count; i++) {
+        const randomDate = new Date(startDate.getTime() + Math.random() * dateRange);
+        dataPoints.push({
+            date: randomDate,
+            score: faker.number.float({ min: 0, max: 100, precision: 0.01 }),
+        });
+    }
+
+    return dataPoints.sort((a, b) => a.date.getTime() - b.date.getTime());
+}
+
 async function seedCards() {
     const cardTitles = [
         'Overall Strength',
-        'Bench Press',
-        'Customer Satisfaction',
-        'Product Usage',
-        'Conversion Rate',
-        'Churn Rate',
+        'Bench Press Progress',
+        'Leg Day Intensity',
+        'Cardio Performance',
+        'Weight Training Volume',
+        'Recovery Time Trend',
     ];
 
-    for (let i = 0; i < 6; i++) {
-        const chart = await prisma.chart.create({
-            data: {
-                label: cardTitles[i],
-                fill: faker.datatype.boolean(),
-                borderColor: faker.color.rgb(),
-                tension: faker.number.float({ min: 0, max: 1, precision: 0.1 }),
-                pointRadius: faker.number.float({ min: 0, max: 5, precision: 0.1 }),
-                showLegend: faker.datatype.boolean(),
-                showXAxis: faker.datatype.boolean(),
-                showYAxis: faker.datatype.boolean(),
-                maintainAspectRatio: faker.datatype.boolean(),
-                responsive: faker.datatype.boolean(),
-                width: faker.helpers.maybe(() => faker.number.int({ min: 200, max: 800 })),
-                height: faker.helpers.maybe(() => faker.number.int({ min: 200, max: 600 })),
-                dataPoints: {
-                    create: Array.from({ length: 30 }, () => ({
-                        date: faker.date.recent(30),
-                        score: faker.number.float({ min: 0, max: 100, precision: 0.01 }),
-                    })),
-                },
-            },
-        });
+    const startDate = new Date('2024-01-01');
 
+    const charts = await prisma.chart.findMany({
+        include: { dataPoints: true },
+        take: cardTitles.length,
+    });
+
+    for (let i = 0; i < charts.length; i++) {
         const card = await prisma.card.create({
             data: {
                 title: cardTitles[i],
-                period: faker.date.recent(180),
-                chartDataId: chart.id,
+                period: startDate,
+                chartDataId: charts[i].id,
             },
         });
 
-        console.log(`Created card: ${card.title} with chart: ${chart.label}`);
+        console.log(`Created card: ${card.title} with chart: ${charts[i].label}`);
     }
 }
 
