@@ -14,8 +14,15 @@ import ChartDataType = $Enums.ChartDataType;
 
 const prisma = new PrismaClient();
 
+// Helper function to generate random float with specified precision
+function generateRandomFloat(min: number, max: number): number {
+    return faker.number.float({ min, max, multipleOf: 0.01 });
+}
+
 async function main() {
-    // Seed MuscleTypes and WorkoutEquipment
+    console.log('Starting database seeding...');
+
+    // Seed MuscleTypes
     for (const groupName of muscleGroups) {
         await prisma.muscleType.create({
             data: { name: groupName },
@@ -23,6 +30,7 @@ async function main() {
         console.log(`Created muscle group: ${groupName}`);
     }
 
+    // Seed WorkoutEquipment
     for (const equipment of workoutEquipment) {
         await prisma.workoutEquipment.create({
             data: {
@@ -41,15 +49,18 @@ async function main() {
     // Seed Workouts and WorkoutExercises
     await seedWorkoutsAndExercises(exercises);
 
-    // Seed ChartDataPoints (and Charts) for MuscleTypes and Exercises
+    // Seed ChartDataPoints for MuscleTypes and Exercises
     await seedMuscleTypeChartDataPoints();
     await seedExerciseChartDataPoints();
 
-    // Seed Cards
-    await seedCards();
+    // Seed Charts and Cards
+    await seedChartsAndCards();
+
+    console.log('Database seeding completed successfully.');
 }
 
 async function seedExercises(): Promise<Exercise[]> {
+    console.log('Seeding exercises...');
     const exercises: Exercise[] = [];
     const muscleTypes = await prisma.muscleType.findMany();
     const equipments = await prisma.workoutEquipment.findMany();
@@ -76,6 +87,7 @@ async function seedExercises(): Promise<Exercise[]> {
 }
 
 async function seedWorkoutsAndExercises(exercises: Exercise[]) {
+    console.log('Seeding workouts and workout exercises...');
     const endDate = new Date();
     const startDate = new Date(endDate.getTime() - 6 * 30 * 24 * 60 * 60 * 1000); // 6 months ago
 
@@ -94,23 +106,21 @@ async function seedWorkoutsAndExercises(exercises: Exercise[]) {
         const numberOfExercises = faker.number.int({ min: 3, max: 10 });
         const shuffledExercises = faker.helpers.shuffle(exercises).slice(0, numberOfExercises);
 
-        for (let j = 0; j < shuffledExercises.length; j++) {
-            await prisma.workoutExercise.create({
-                data: {
-                    workoutId: workout.id,
-                    exerciseId: shuffledExercises[j].id,
-                    order: j + 1,
-                    sets: faker.number.int({ min: 1, max: 5 }),
-                    reps: faker.number.int({ min: 5, max: 20 }),
-                    weight: parseFloat(
-                        faker.number.float({ min: 0, max: 100, precision: 0.1 }).toFixed(1)
-                    ),
-                    minutesToComplete: faker.number.int({ min: 1, max: 10 }),
-                    restBetweenSets: faker.number.int({ min: 30, max: 120 }),
-                    notes: faker.helpers.maybe(() => faker.lorem.sentence(), { probability: 0.3 }),
-                },
-            });
-        }
+        const workoutExercises = shuffledExercises.map((exercise, index) => ({
+            workoutId: workout.id,
+            exerciseId: exercise.id,
+            order: index + 1,
+            sets: faker.number.int({ min: 1, max: 5 }),
+            reps: faker.number.int({ min: 5, max: 20 }),
+            weight: generateRandomFloat(0, 100),
+            minutesToComplete: faker.number.int({ min: 1, max: 10 }),
+            restBetweenSets: faker.number.int({ min: 30, max: 120 }),
+            notes: faker.helpers.maybe(() => faker.lorem.sentence(), { probability: 0.3 }),
+        }));
+
+        await prisma.workoutExercise.createMany({
+            data: workoutExercises,
+        });
 
         console.log(
             `Created workout: ${workout.name} with ${shuffledExercises.length} exercises on ${workoutDate.toISOString()}`
@@ -119,33 +129,18 @@ async function seedWorkoutsAndExercises(exercises: Exercise[]) {
 }
 
 async function seedMuscleTypeChartDataPoints() {
+    console.log('Seeding chart data points for muscle types...');
     const muscleTypes = await prisma.muscleType.findMany();
     const startDate = new Date('2024-01-01');
-    const endDate = new Date('2024-06-30');
+    const endDate = new Date('2024-07-31');
 
     for (const muscleType of muscleTypes) {
         const dataPoints = generateDateSpreadDataPoints(startDate, endDate);
-        const chart = await prisma.chart.create({
-            data: {
-                label: `${muscleType.name} Progress`,
-                fill: false,
-                borderColor: faker.color.rgb(),
-                tension: 0.4,
-                pointRadius: 2,
-                showLegend: true,
-                showXAxis: true,
-                showYAxis: true,
-                maintainAspectRatio: false,
-                responsive: true,
-                dataType: ChartDataType.MUSCLE_TYPE,
-            },
-        });
         await prisma.chartDataPoint.createMany({
             data: dataPoints.map((dp) => ({
                 date: dp.date,
                 score: dp.score,
                 muscleTypeId: muscleType.id,
-                chartId: chart.id,
             })),
         });
     }
@@ -153,33 +148,18 @@ async function seedMuscleTypeChartDataPoints() {
 }
 
 async function seedExerciseChartDataPoints() {
+    console.log('Seeding chart data points for exercises...');
     const exercises = await prisma.exercise.findMany();
     const startDate = new Date('2024-01-01');
-    const endDate = new Date('2024-06-30');
+    const endDate = new Date('2024-07-31');
 
     for (const exercise of exercises) {
         const dataPoints = generateDateSpreadDataPoints(startDate, endDate);
-        const chart = await prisma.chart.create({
-            data: {
-                label: `${exercise.name} Progress`,
-                fill: false,
-                borderColor: faker.color.rgb(),
-                tension: 0.4,
-                pointRadius: 2,
-                showLegend: true,
-                showXAxis: true,
-                showYAxis: true,
-                maintainAspectRatio: false,
-                responsive: true,
-                dataType: ChartDataType.EXERCISE,
-            },
-        });
         await prisma.chartDataPoint.createMany({
             data: dataPoints.map((dp) => ({
                 date: dp.date,
                 score: dp.score,
                 exerciseId: exercise.id,
-                chartId: chart.id,
             })),
         });
     }
@@ -198,49 +178,92 @@ function generateDateSpreadDataPoints(
         const randomDate = new Date(startDate.getTime() + Math.random() * dateRange);
         dataPoints.push({
             date: randomDate,
-            score: faker.number.float({ min: 0, max: 100, precision: 0.01 }),
+            score: generateRandomFloat(0, 100),
         });
     }
 
     return dataPoints.sort((a, b) => a.date.getTime() - b.date.getTime());
 }
 
-async function seedCards() {
-    const cardTitles = [
-        'Overall Strength',
-        'Bench Press Progress',
-        'Leg Day Intensity',
-        'Cardio Performance',
-        'Weight Training Volume',
-        'Recovery Time Trend',
+async function seedChartsAndCards() {
+    console.log('Seeding charts and cards...');
+    const chartTypes = [
+        { title: 'Overall Strength', dataType: ChartDataType.MUSCLE_TYPE },
+        { title: 'Bench Press Progress', dataType: ChartDataType.EXERCISE },
+        { title: 'Leg Day Intensity', dataType: ChartDataType.MUSCLE_TYPE },
+        { title: 'Cardio Performance', dataType: ChartDataType.WORKOUT_EQUIPMENT },
+        { title: 'Weight Training Volume', dataType: ChartDataType.EQUIPMENT_TYPE },
+        { title: 'Recovery Time Trend', dataType: ChartDataType.WORKOUT_EXERCISE },
     ];
 
     const startDate = new Date('2024-01-01');
 
-    const charts = await prisma.chart.findMany({
-        include: { dataPoints: true },
-        take: cardTitles.length,
-    });
+    for (const chartType of chartTypes) {
+        let dataSourceId: number;
 
-    for (let i = 0; i < charts.length; i++) {
-        const card = await prisma.card.create({
-            data: {
-                title: cardTitles[i],
-                period: startDate,
-                chartDataId: charts[i].id,
-            },
-        });
+        try {
+            switch (chartType.dataType) {
+                case ChartDataType.MUSCLE_TYPE:
+                    dataSourceId = (await prisma.muscleType.findFirst())?.id ?? 1;
+                    break;
+                case ChartDataType.EXERCISE:
+                    dataSourceId = (await prisma.exercise.findFirst())?.id ?? 1;
+                    break;
+                case ChartDataType.WORKOUT_EQUIPMENT:
+                    dataSourceId = (await prisma.workoutEquipment.findFirst())?.id ?? 1;
+                    break;
+                case ChartDataType.EQUIPMENT_TYPE:
+                    dataSourceId = (await prisma.workoutEquipment.findFirst())?.id ?? 1;
+                    break;
+                case ChartDataType.WORKOUT_EXERCISE:
+                    dataSourceId = (await prisma.workoutExercise.findFirst())?.id ?? 1;
+                    break;
+                default:
+                    dataSourceId = 1;
+            }
 
-        console.log(`Created card: ${card.title} with chart: ${charts[i].label}`);
+            if (dataSourceId === 1) {
+                console.warn(`No item found for ${chartType.dataType}. Using default ID 1.`);
+            }
+
+            const chart = await prisma.chart.create({
+                data: {
+                    label: chartType.title,
+                    fill: false,
+                    borderColor: faker.color.rgb(),
+                    tension: generateRandomFloat(0, 1),
+                    pointRadius: generateRandomFloat(0, 5),
+                    showLegend: true,
+                    showXAxis: true,
+                    showYAxis: true,
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    dataType: chartType.dataType,
+                    dataSourceId: dataSourceId,
+                },
+            });
+
+            const card = await prisma.card.create({
+                data: {
+                    title: chartType.title,
+                    period: startDate,
+                    chartDataId: chart.id,
+                },
+            });
+
+            console.log(`Created card: ${card.title} with chart type: ${chartType.dataType}`);
+        } catch (error) {
+            console.error(`Error creating chart/card for ${chartType.title}:`, error);
+        }
     }
 }
 
 main()
-    .then(async () => {
-        await prisma.$disconnect();
-    })
-    .catch(async (e) => {
-        console.error(e);
-        await prisma.$disconnect();
+    .catch((e) => {
+        console.error('An error occurred during seeding:', e);
         process.exit(1);
+    })
+    .finally(async () => {
+        await prisma.$disconnect();
+        console.log('Prisma client disconnected.');
     });

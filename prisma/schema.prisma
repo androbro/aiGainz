@@ -21,22 +21,25 @@ model Exercise {
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
   WorkoutExercise   WorkoutExercise[]
+  chartDataPoints   ChartDataPoint[]
 }
 
 model MuscleType {
-  id                 Int        @id @default(autoincrement())
-  name               String     @unique
-  primaryExercises   Exercise[] @relation("PrimaryMuscle")
-  secondaryExercises Exercise[] @relation("SecondaryMuscle")
+  id                 Int              @id @default(autoincrement())
+  name               String           @unique
+  primaryExercises   Exercise[]       @relation("PrimaryMuscle")
+  secondaryExercises Exercise[]       @relation("SecondaryMuscle")
+  ChartDataPoint     ChartDataPoint[]
 }
 
 model WorkoutEquipment {
-  id        Int               @id @default(autoincrement())
-  name      String            @unique
-  type      EquipmentType
-  category  EquipmentCategory
-  location  EquipmentLocation
-  exercises Exercise[]
+  id             Int               @id @default(autoincrement())
+  name           String            @unique
+  type           EquipmentType
+  category       EquipmentCategory
+  location       EquipmentLocation
+  exercises      Exercise[]
+  ChartDataPoint ChartDataPoint[]
 }
 
 model Workout {
@@ -49,18 +52,19 @@ model Workout {
 }
 
 model WorkoutExercise {
-  id                Int      @id @default(autoincrement())
-  workout           Workout  @relation(fields: [workoutId], references: [id])
+  id                Int              @id @default(autoincrement())
+  workout           Workout          @relation(fields: [workoutId], references: [id])
   workoutId         Int
-  exercise          Exercise @relation(fields: [exerciseId], references: [id])
+  exercise          Exercise         @relation(fields: [exerciseId], references: [id])
   exerciseId        Int
   order             Int
   sets              Int
   reps              Int
-  weight            Float    @default(0)
+  weight            Float            @default(0)
   minutesToComplete Int
   restBetweenSets   Int
   notes             String?
+  ChartDataPoint    ChartDataPoint[]
 }
 
 model Card {
@@ -89,6 +93,21 @@ model Chart {
   height              Int?
   card                Card?
   dataType            ChartDataType
+  dataSourceId        Int
+}
+
+model ChartDataPoint {
+  id                 Int               @id @default(autoincrement())
+  date               DateTime
+  score              Float
+  exerciseId         Int?
+  exercise           Exercise?         @relation(fields: [exerciseId], references: [id])
+  muscleTypeId       Int?
+  muscleType         MuscleType?       @relation(fields: [muscleTypeId], references: [id])
+  workoutEquipmentId Int?
+  workoutEquipment   WorkoutEquipment? @relation(fields: [workoutEquipmentId], references: [id])
+  workoutExerciseId  Int?
+  workoutExercise    WorkoutExercise?  @relation(fields: [workoutExerciseId], references: [id])
 }
 
 enum EquipmentType {

@@ -9,14 +9,16 @@ import { PeriodSelector } from '@/app/components/cards/components/periodSelector
 import { ChartDisplay } from '@/app/components/cards/components/chartDisplay';
 import { debounce } from 'lodash';
 import { Card } from 'primereact/card';
-import { Card as CardModel } from '@prisma/client';
+import { ExtendedCard } from '@/app/api/card/interfaces';
 
-export function ChartCard(props: CardModel) {
-    const [cardInfo, setCardInfo] = useState<CardModel>(props);
+export function ChartCard(props: ExtendedCard) {
+    const [cardInfo, setCardInfo] = useState<ExtendedCard>(props);
     const [chartData, setChartData] = useState<ChartDataPoint[] | null>(null);
     const [months, setMonths] = useState<number>(1);
-    const lastDataPoint = chartData?.at(-1);
-    const firstDataPoint = chartData?.at(0);
+    const lastDataPoint =
+        Array.isArray(chartData) && chartData.length > 0 ? chartData.at(-1) : null;
+    const firstDataPoint =
+        Array.isArray(chartData) && chartData.length > 0 ? chartData.at(0) : null;
     const isMobile = useMobileChecker();
 
     useEffect(() => {
@@ -30,6 +32,12 @@ export function ChartCard(props: CardModel) {
             setMonths(Math.abs(monthsDiff));
         }
     }, [cardInfo.period]);
+
+    useEffect(() => {
+        if (cardInfo.chartData) {
+            setChartData(cardInfo.chartData);
+        }
+    }, [cardInfo.chartData]);
 
     const handlePeriodChange = (date: Date | null) => {
         console.log('handle change here');

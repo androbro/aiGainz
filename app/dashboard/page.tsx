@@ -1,5 +1,5 @@
 ﻿'use client';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Carousel } from 'primereact/carousel';
 import { useMobileChecker } from '@/hooks/useMobileChecker';
 import { ChartCard } from '@/app/components/cards/chartCard';

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, ChartDataType } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -12,11 +12,7 @@ export async function GET(request: NextRequest) {
         const card = await prisma.card.findUnique({
             where: { id: parseInt(id) },
             include: {
-                chartData: {
-                    include: {
-                        dataPoints: true,
-                    },
-                },
+                chartData: true,
             },
         });
 
@@ -24,46 +20,112 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Card not found' }, { status: 404 });
         }
 
-        // Filter dataPoints based on the card's period
-        if (card.period) {
-            card.chartData.dataPoints = card.chartData.dataPoints.filter(
-                (dp) => dp.date >= card.period! && dp.date <= currentDate
-            );
-        }
+        // Fetch data points based on dataType and dataSourceId
+        const dataPoints = await fetchDataPoints(
+            card.chartData.dataType,
+            card.chartData.dataSourceId,
+            card.period
+        );
 
-        return NextResponse.json(card);
+        // Add dataPoints to the card object
+        const cardWithDataPoints = {
+            ...card,
+            chartData: {
+                ...card.chartData,
+                dataPoints: dataPoints,
+            },
+        };
+
+        return NextResponse.json(cardWithDataPoints);
     } else {
         const cards = await prisma.card.findMany({
             include: {
-                chartData: {
-                    include: {
-                        dataPoints: true,
-                    },
-                },
+                chartData: true,
             },
         });
 
-        // Filter dataPoints for each card based on its period
-        cards.forEach((card) => {
-            if (card.period) {
-                card.chartData.dataPoints = card.chartData.dataPoints.filter(
-                    (dp) => dp.date >= card.period! && dp.date <= currentDate
+        // Fetch data points for each card
+        const cardsWithDataPoints = await Promise.all(
+            cards.map(async (card) => {
+                const dataPoints = await fetchDataPoints(
+                    card.chartData.dataType,
+                    card.chartData.dataSourceId,
+                    card.period
                 );
-            }
-        });
+                return {
+                    ...card,
+                    chartData: {
+                        ...card.chartData,
+                        dataPoints: dataPoints,
+                    },
+                };
+            })
+        );
 
-        return NextResponse.json(cards);
+        return NextResponse.json(cardsWithDataPoints);
     }
 }
+
+async function fetchDataPoints(dataType: ChartDataType, dataSourceId: number, period: Date | null) {
+    const whereClause: any = {
+        date: { gte: period || new Date(0) },
+    };
+
+    switch (dataType) {
+        case ChartDataType.EXERCISE:
+            whereClause.exerciseId = dataSourceId;
+            break;
+        case ChartDataType.MUSCLE_TYPE:
+            whereClause.muscleTypeId = dataSourceId;
+            break;
+        case ChartDataType.WORKOUT_EQUIPMENT:
+            whereClause.workoutEquipmentId = dataSourceId;
+            break;
+        case ChartDataType.WORKOUT_EXERCISE:
+            whereClause.workoutExerciseId = dataSourceId;
+            break;
+        case ChartDataType.EQUIPMENT_TYPE:
+            // For EQUIPMENT_TYPE, we need to fetch the equipment and then use its type
+            const equipment = await prisma.workoutEquipment.findUnique({
+                where: { id: dataSourceId },
+            });
+            if (equipment) {
+                whereClause.workoutEquipmentId = {
+                    in: await prisma.workoutEquipment
+                        .findMany({ where: { type: equipment.type }, select: { id: true } })
+                        .then((ids) => ids.map((e) => e.id)),
+                };
+            }
+            break;
+        case ChartDataType.EQUIPMENT_CATEGORY:
+            // Similar to EQUIPMENT_TYPE, but using category instead
+            const categoryEquipment = await prisma.workoutEquipment.findUnique({
+                where: { id: dataSourceId },
+            });
+            if (categoryEquipment) {
+                whereClause.workoutEquipmentId = {
+                    in: await prisma.workoutEquipment
+                        .findMany({
+                            where: { category: categoryEquipment.category },
+                            select: { id: true },
+                        })
+                        .then((ids) => ids.map((e) => e.id)),
+                };
+            }
+            break;
+    }
+
+    return prisma.chartDataPoint.findMany({
+        where: whereClause,
+        orderBy: { date: 'asc' },
+    });
+}
+
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         console.log('Received POST request with body:', body);
 
-        // Extract the data source type and ID
-        const [dataSourceType, dataSourceId] = body.dataSource.split('_');
-
-        // Prepare the chart data
         const chartData = {
             label: body.name,
             fill: false,
@@ -77,58 +139,38 @@ export async function POST(request: NextRequest) {
             responsive: true,
             width: null,
             height: 200,
-            dataPoints: [], // We'll populate this based on the data source
+            dataType: body.dataType as ChartDataType,
+            dataSourceId: parseInt(body.dataSourceId),
         };
 
-        // Fetch data points based on the data source
-        let dataPoints: { date: Date; score: number }[] = [];
-        if (dataSourceType === 'exercise') {
-            const workouts = await prisma.workoutExercise.findMany({
-                where: {
-                    exerciseId: parseInt(dataSourceId),
-                    workout: {
-                        createdAt: {
-                            gte: new Date(body.period),
-                        },
-                    },
-                },
-                orderBy: {
-                    workout: {
-                        createdAt: 'asc',
-                    },
-                },
-                include: {
-                    workout: true,
-                },
-            });
-
-            dataPoints = workouts.map((we) => ({
-                date: we.workout.createdAt,
-                score: we.weight * we.reps * we.sets,
-            }));
-        }
-        // Add similar logic for muscleTypes and workoutEquipments if needed
-
-        // Create the card with chart data
         const card = await prisma.card.create({
             data: {
                 title: body.name,
                 period: new Date(body.period),
                 chartData: {
-                    create: {
-                        ...chartData,
-                        dataPoints: {
-                            create: dataPoints,
-                        },
-                        dataType: dataSourceType,
-                    },
+                    create: chartData,
                 },
             },
-            include: { chartData: { include: { dataPoints: true } } },
+            include: { chartData: true },
         });
 
-        console.log('Card created successfully:', card);
-        return NextResponse.json(card, { status: 201 });
+        // Fetch data points for the newly created card
+        const dataPoints = await fetchDataPoints(
+            card.chartData.dataType,
+            card.chartData.dataSourceId,
+            card.period
+        );
+
+        const cardWithDataPoints = {
+            ...card,
+            chartData: {
+                ...card.chartData,
+                dataPoints: dataPoints,
+            },
+        };
+
+        console.log('Card created successfully:', cardWithDataPoints);
+        return NextResponse.json(cardWithDataPoints, { status: 201 });
     } catch (error) {
         console.error('Error creating card:', error);
         return NextResponse.json(
@@ -157,7 +199,7 @@ export async function PUT(req: NextRequest) {
             where: { id: parseInt(id) },
             data: {
                 title: body.title,
-                period: body.period,
+                period: new Date(body.period),
                 chartData: {
                     update: {
                         label: body.chartData.label,
@@ -172,20 +214,31 @@ export async function PUT(req: NextRequest) {
                         responsive: body.chartData.responsive,
                         width: body.chartData.width,
                         height: body.chartData.height,
-                        dataPoints: {
-                            deleteMany: {},
-                            create: body.chartData.dataPoints.map((dp: any) => ({
-                                date: dp.date,
-                                score: dp.score,
-                            })),
-                        },
+                        dataType: body.chartData.dataType,
+                        dataSourceId: body.chartData.dataSourceId,
                     },
                 },
             },
-            include: { chartData: { include: { dataPoints: true } } },
+            include: { chartData: true },
         });
+
+        // Fetch updated data points
+        const dataPoints = await fetchDataPoints(
+            updatedCard.chartData.dataType,
+            updatedCard.chartData.dataSourceId,
+            updatedCard.period
+        );
+
+        const updatedCardWithDataPoints = {
+            ...updatedCard,
+            chartData: {
+                ...updatedCard.chartData,
+                dataPoints: dataPoints,
+            },
+        };
+
         console.log('Card updated successfully');
-        return NextResponse.json(updatedCard);
+        return NextResponse.json(updatedCardWithDataPoints);
     } catch (error) {
         console.error('Error updating card:', error);
         return NextResponse.json(
@@ -209,6 +262,6 @@ export async function DELETE(request: Request) {
         });
         return NextResponse.json({ message: 'Card deleted successfully' });
     } catch (error) {
-        return NextResponse.json({ error: 'Card not found' }, { status: 404 });
+        return NextResponse.json({ error: 'Card not found or delete failed' }, { status: 404 });
     }
 }
