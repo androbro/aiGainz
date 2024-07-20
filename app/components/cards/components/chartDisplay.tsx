@@ -1,44 +1,51 @@
 import React from 'react';
-import { Chart as ChartComponent } from 'primereact/chart';
-import { ChartDataPoint } from '@/app/interfaces/types';
-import { Chart } from '@prisma/client';
+import { Chart } from 'primereact/chart';
+import { ExtendedChart } from '@/app/api/card/interfaces';
 
-export type ChartDisplayProps = {
-    chartData: ChartDataPoint[];
-    // chartOptions: Chart;
-};
+interface ChartDisplayProps {
+    chartData: ExtendedChart;
+}
 
-export const ChartDisplay: React.FC<ChartDisplayProps> = ({ chartData }) => (
-    <div>
-        <ChartComponent
+export const ChartDisplay: React.FC<ChartDisplayProps> = ({ chartData }) => {
+    const data = {
+        labels: chartData.chartDataPoint?.map((dp) => new Date(dp.date).toLocaleDateString()) || [],
+        datasets: [
+            {
+                label: chartData.label,
+                data: chartData.chartDataPoint?.map((dp) => dp.score) || [],
+                fill: chartData.fill,
+                borderColor: chartData.borderColor || undefined,
+                tension: chartData.tension,
+                pointRadius: chartData.pointRadius,
+            },
+        ],
+    };
+
+    const options = {
+        plugins: {
+            legend: {
+                display: chartData.showLegend,
+            },
+        },
+        scales: {
+            x: {
+                display: chartData.showXAxis,
+            },
+            y: {
+                display: chartData.showYAxis,
+            },
+        },
+        maintainAspectRatio: chartData.maintainAspectRatio,
+        responsive: chartData.responsive,
+    };
+
+    return (
+        <Chart
             type="line"
-            data={chartData}
-            options={{
-                plugins: {
-                    legend: {
-                        // display: chartOptions.showLegend,
-                        display: false,
-                    },
-                },
-                scales: {
-                    x: {
-                        // display: chartOptions.showXAxis,
-                        display: false,
-                    },
-                    y: {
-                        // display: chartOptions.showYAxis,
-                        display: false,
-                    },
-                },
-                // maintainAspectRatio: chartOptions.maintainAspectRatio,
-                // responsive: chartOptions.responsive,
-                maintainAspectRatio: false,
-                responsive: true,
-            }}
-            // width={`${chartOptions.width}px`}
-            // height={`${chartOptions.height}px`}
-            width="100%"
-            height="100%"
+            data={data}
+            options={options}
+            width={chartData.width?.toString()}
+            height={chartData.height?.toString()}
         />
-    </div>
-);
+    );
+};

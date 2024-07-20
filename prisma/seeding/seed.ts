@@ -247,7 +247,7 @@ async function seedChartsAndCards() {
                 data: {
                     title: chartType.title,
                     period: startDate,
-                    chartDataId: chart.id,
+                    chartId: chart.id,
                 },
             });
 

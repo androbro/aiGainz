@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient, ChartDataType } from '@prisma/client';
+import { DataPointsApi } from '@/app/api/dataPoints/api';
 
 const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
-    const currentDate = new Date();
 
     if (id) {
         const card = await prisma.card.findUnique({
             where: { id: parseInt(id) },
             include: {
-                chartData: true,
+                chart: true,
             },
         });
 
@@ -20,42 +20,38 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Card not found' }, { status: 404 });
         }
 
-        // Fetch data points based on dataType and dataSourceId
-        const dataPoints = await fetchDataPoints(
-            card.chartData.dataType,
-            card.chartData.dataSourceId,
-            card.period
+        // Fetch data points using the new dataPoints API
+        const dataPointsResponse = await fetch(
+            `${request.nextUrl.origin}/api/dataPoints?dataType=${card.chart.dataType}&dataSourceId=${card.chart.dataSourceId}&period=${card.period?.toISOString()}`
         );
+        const dataPoints = await dataPointsResponse.json();
 
         // Add dataPoints to the card object
         const cardWithDataPoints = {
             ...card,
-            chartData: {
-                ...card.chartData,
+            chart: {
+                ...card.chart,
                 dataPoints: dataPoints,
             },
         };
-
         return NextResponse.json(cardWithDataPoints);
     } else {
         const cards = await prisma.card.findMany({
             include: {
-                chartData: true,
+                chart: true,
             },
         });
-
         // Fetch data points for each card
         const cardsWithDataPoints = await Promise.all(
             cards.map(async (card) => {
-                const dataPoints = await fetchDataPoints(
-                    card.chartData.dataType,
-                    card.chartData.dataSourceId,
-                    card.period
+                const dataPointsResponse = await fetch(
+                    `${request.nextUrl.origin}/api/dataPoints?dataType=${card.chart.dataType}&dataSourceId=${card.chart.dataSourceId}&period=${card.period?.toISOString()}`
                 );
+                const dataPoints = await dataPointsResponse.json();
                 return {
                     ...card,
-                    chartData: {
-                        ...card.chartData,
+                    chart: {
+                        ...card.chart,
                         dataPoints: dataPoints,
                     },
                 };
@@ -64,61 +60,6 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json(cardsWithDataPoints);
     }
-}
-
-async function fetchDataPoints(dataType: ChartDataType, dataSourceId: number, period: Date | null) {
-    const whereClause: any = {
-        date: { gte: period || new Date(0) },
-    };
-
-    switch (dataType) {
-        case ChartDataType.EXERCISE:
-            whereClause.exerciseId = dataSourceId;
-            break;
-        case ChartDataType.MUSCLE_TYPE:
-            whereClause.muscleTypeId = dataSourceId;
-            break;
-        case ChartDataType.WORKOUT_EQUIPMENT:
-            whereClause.workoutEquipmentId = dataSourceId;
-            break;
-        case ChartDataType.WORKOUT_EXERCISE:
-            whereClause.workoutExerciseId = dataSourceId;
-            break;
-        case ChartDataType.EQUIPMENT_TYPE:
-            // For EQUIPMENT_TYPE, we need to fetch the equipment and then use its type
-            const equipment = await prisma.workoutEquipment.findUnique({
-                where: { id: dataSourceId },
-            });
-            if (equipment) {
-                whereClause.workoutEquipmentId = {
-                    in: await prisma.workoutEquipment
-                        .findMany({ where: { type: equipment.type }, select: { id: true } })
-                        .then((ids) => ids.map((e) => e.id)),
-                };
-            }
-            break;
-        case ChartDataType.EQUIPMENT_CATEGORY:
-            // Similar to EQUIPMENT_TYPE, but using category instead
-            const categoryEquipment = await prisma.workoutEquipment.findUnique({
-                where: { id: dataSourceId },
-            });
-            if (categoryEquipment) {
-                whereClause.workoutEquipmentId = {
-                    in: await prisma.workoutEquipment
-                        .findMany({
-                            where: { category: categoryEquipment.category },
-                            select: { id: true },
-                        })
-                        .then((ids) => ids.map((e) => e.id)),
-                };
-            }
-            break;
-    }
-
-    return prisma.chartDataPoint.findMany({
-        where: whereClause,
-        orderBy: { date: 'asc' },
-    });
 }
 
 export async function POST(request: NextRequest) {
@@ -147,24 +88,24 @@ export async function POST(request: NextRequest) {
             data: {
                 title: body.name,
                 period: new Date(body.period),
-                chartData: {
+                chart: {
                     create: chartData,
                 },
             },
-            include: { chartData: true },
+            include: { chart: true },
         });
 
         // Fetch data points for the newly created card
-        const dataPoints = await fetchDataPoints(
-            card.chartData.dataType,
-            card.chartData.dataSourceId,
-            card.period
+        const dataPoints = await DataPointsApi.getDataPoints(
+            card.chart.dataType,
+            card.chart.dataSourceId,
+            card.period!
         );
 
         const cardWithDataPoints = {
             ...card,
-            chartData: {
-                ...card.chartData,
+            chart: {
+                ...card.chart,
                 dataPoints: dataPoints,
             },
         };
@@ -200,39 +141,39 @@ export async function PUT(req: NextRequest) {
             data: {
                 title: body.title,
                 period: new Date(body.period),
-                chartData: {
+                chart: {
                     update: {
-                        label: body.chartData.label,
-                        fill: body.chartData.fill,
-                        borderColor: body.chartData.borderColor,
-                        tension: body.chartData.tension,
-                        pointRadius: body.chartData.pointRadius,
-                        showLegend: body.chartData.showLegend,
-                        showXAxis: body.chartData.showXAxis,
-                        showYAxis: body.chartData.showYAxis,
-                        maintainAspectRatio: body.chartData.maintainAspectRatio,
-                        responsive: body.chartData.responsive,
-                        width: body.chartData.width,
-                        height: body.chartData.height,
-                        dataType: body.chartData.dataType,
-                        dataSourceId: body.chartData.dataSourceId,
+                        label: body.chart.label,
+                        fill: body.chart.fill,
+                        borderColor: body.chart.borderColor,
+                        tension: body.chart.tension,
+                        pointRadius: body.chart.pointRadius,
+                        showLegend: body.chart.showLegend,
+                        showXAxis: body.chart.showXAxis,
+                        showYAxis: body.chart.showYAxis,
+                        maintainAspectRatio: body.chart.maintainAspectRatio,
+                        responsive: body.chart.responsive,
+                        width: body.chart.width,
+                        height: body.chart.height,
+                        dataType: body.chart.dataType,
+                        dataSourceId: body.chart.dataSourceId,
                     },
                 },
             },
-            include: { chartData: true },
+            include: { chart: true },
         });
 
         // Fetch updated data points
-        const dataPoints = await fetchDataPoints(
-            updatedCard.chartData.dataType,
-            updatedCard.chartData.dataSourceId,
-            updatedCard.period
+        const dataPoints = DataPointsApi.getDataPoints(
+            updatedCard.chart.dataType,
+            updatedCard.chart.dataSourceId,
+            updatedCard.period!
         );
 
         const updatedCardWithDataPoints = {
             ...updatedCard,
-            chartData: {
-                ...updatedCard.chartData,
+            chart: {
+                ...updatedCard.chart,
                 dataPoints: dataPoints,
             },
         };

@@ -1,24 +1,22 @@
 ﻿import React, { useEffect, useState, useCallback } from 'react';
 import CardSkeleton from '@/app/components/cardSkeleton';
 import { useMobileChecker } from '@/hooks/useMobileChecker';
-import { ChartDataPoint } from '@/app/interfaces/types';
 import { parseDate } from '@/app/utils/utils';
 import { CardHeader } from '@/app/components/cards/components/cardHeader';
 import { StatisticsDisplay } from '@/app/components/cards/components/statisticsDisplay';
 import { PeriodSelector } from '@/app/components/cards/components/periodSelector';
 import { ChartDisplay } from '@/app/components/cards/components/chartDisplay';
-import { debounce } from 'lodash';
 import { Card } from 'primereact/card';
-import { ExtendedCard } from '@/app/api/card/interfaces';
+import { ExtendedCard, ExtendedChart } from '@/app/api/card/interfaces';
 
 export function ChartCard(props: ExtendedCard) {
     const [cardInfo, setCardInfo] = useState<ExtendedCard>(props);
-    const [chartData, setChartData] = useState<ChartDataPoint[] | null>(null);
+    const [chartData, setChartData] = useState<ExtendedChart | null>(null);
     const [months, setMonths] = useState<number>(1);
-    const lastDataPoint =
-        Array.isArray(chartData) && chartData.length > 0 ? chartData.at(-1) : null;
-    const firstDataPoint =
-        Array.isArray(chartData) && chartData.length > 0 ? chartData.at(0) : null;
+    const [firstDataPoint, setFirstDataPoint] = useState<{ date: Date; score: number } | null>(
+        null
+    );
+    const [lastDataPoint, setLastDataPoint] = useState<{ date: Date; score: number } | null>(null);
     const isMobile = useMobileChecker();
 
     useEffect(() => {
@@ -34,10 +32,16 @@ export function ChartCard(props: ExtendedCard) {
     }, [cardInfo.period]);
 
     useEffect(() => {
-        if (cardInfo.chartData) {
-            setChartData(cardInfo.chartData);
+        if (cardInfo.chart) {
+            setChartData(cardInfo.chart);
+            console.log('chart data', cardInfo.chart);
+
+            if (cardInfo.chart.dataPoints && cardInfo.chart.dataPoints.length > 0) {
+                setFirstDataPoint(cardInfo.chart.dataPoints[0]);
+                setLastDataPoint(cardInfo.chart.dataPoints[cardInfo.chart.dataPoints.length - 1]);
+            }
         }
-    }, [cardInfo.chartData]);
+    }, [cardInfo.chart]);
 
     const handlePeriodChange = (date: Date | null) => {
         console.log('handle change here');

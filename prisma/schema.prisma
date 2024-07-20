@@ -68,13 +68,13 @@ model WorkoutExercise {
 }
 
 model Card {
-  id          Int       @id @default(autoincrement())
-  title       String
-  period      DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  chartData   Chart     @relation(fields: [chartDataId], references: [id])
-  chartDataId Int       @unique
+  id        Int       @id @default(autoincrement())
+  title     String
+  period    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  chart     Chart     @relation(fields: [chartId], references: [id])
+  chartId   Int       @unique
 }
 
 model Chart {
