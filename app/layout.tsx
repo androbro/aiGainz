@@ -11,6 +11,7 @@ import { Button } from 'primereact/button';
 import TopBar from '@/app/components/topBar';
 import { UserProvider, useUser } from '@auth0/nextjs-auth0/client';
 import { AuthenticatedQueryProvider } from '@/app/providers/authenticatedQueryProvider';
+import { ReactQueryProvider } from '@/app/providers/reactQueryProvider';
 // import 'primereact/resources/themes/lara-dark-purple/theme.css';
 
 const inter = Inter({ subsets: ['latin'] });

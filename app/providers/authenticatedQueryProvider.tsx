@@ -1,11 +1,8 @@
 import React, { useEffect } from 'react';
 import { useUser } from '@auth0/nextjs-auth0/client';
-import { ReactQueryProvider } from '@/app/reactQueryProvider';
-import { InputText } from 'primereact/inputtext';
-import { Checkbox } from 'primereact/checkbox';
 import { Button } from 'primereact/button';
-import Link from 'next/link';
 import { useLoaderStore } from '@/app/store/loaderStore';
+import { ReactQueryProvider } from './reactQueryProvider';
 
 interface AuthenticatedQueryProviderProps {
     children: React.ReactNode;

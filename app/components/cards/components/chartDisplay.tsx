@@ -1,14 +1,14 @@
 import React from 'react';
 import { Chart as ChartComponent } from 'primereact/chart';
-import { ChartData, ExtendedCard } from '@/app/interfaces/types';
+import { ChartDataPoint } from '@/app/interfaces/types';
 import { Chart } from '@prisma/client';
 
 export type ChartDisplayProps = {
-    chartData: ChartData;
-    chartOptions: Chart;
+    chartData: ChartDataPoint[];
+    // chartOptions: Chart;
 };
 
-export const ChartDisplay: React.FC<ChartDisplayProps> = ({ chartData, chartOptions }) => (
+export const ChartDisplay: React.FC<ChartDisplayProps> = ({ chartData }) => (
     <div>
         <ChartComponent
             type="line"

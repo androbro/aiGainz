@@ -20,6 +20,7 @@ export const AddCardForm: React.FC<AddCardFormProps> = ({ onSubmit }) => {
                 const response = await fetch('/api/groupedData');
                 if (response.ok) {
                     const data = await response.json();
+                    console.log('Grouped data:', data);
                     setGroupedData(data);
                 } else {
                     console.error('Failed to fetch grouped data');
@@ -45,10 +46,6 @@ export const AddCardForm: React.FC<AddCardFormProps> = ({ onSubmit }) => {
         }
     };
 
-    const handleDataSourceChange = (e: TreeSelectChangeEvent) => {
-        setSelectedDataSource(e.value as string | undefined);
-    };
-
     return (
         <div className="flex flex-column gap-2">
             <InputText
@@ -65,7 +62,10 @@ export const AddCardForm: React.FC<AddCardFormProps> = ({ onSubmit }) => {
             <TreeSelect
                 value={selectedDataSource}
                 options={groupedData}
-                onChange={handleDataSourceChange}
+                onChange={(e) => {
+                    console.log(e);
+                    setSelectedDataSource(e.value as string | undefined);
+                }}
                 filter
                 placeholder="Select Data Source"
                 className="w-full"
