@@ -8,11 +8,11 @@ interface ChartDisplayProps {
 
 export const ChartDisplay: React.FC<ChartDisplayProps> = ({ chartData }) => {
     const data = {
-        labels: chartData.chartDataPoint?.map((dp) => new Date(dp.date).toLocaleDateString()) || [],
+        labels: chartData.dataPoints?.map((dp) => new Date(dp.date).toLocaleDateString()) || [],
         datasets: [
             {
                 label: chartData.label,
-                data: chartData.chartDataPoint?.map((dp) => dp.score) || [],
+                data: chartData.dataPoints?.map((dp) => dp.score) || [],
                 fill: chartData.fill,
                 borderColor: chartData.borderColor || undefined,
                 tension: chartData.tension,

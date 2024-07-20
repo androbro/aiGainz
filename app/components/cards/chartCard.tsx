@@ -34,7 +34,6 @@ export function ChartCard(props: ExtendedCard) {
     useEffect(() => {
         if (cardInfo.chart) {
             setChartData(cardInfo.chart);
-            console.log('chart data', cardInfo.chart);
 
             if (cardInfo.chart.dataPoints && cardInfo.chart.dataPoints.length > 0) {
                 setFirstDataPoint(cardInfo.chart.dataPoints[0]);
