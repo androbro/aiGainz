@@ -3,19 +3,19 @@ import { useLoading } from '@/hooks/useLoading';
 import { CustomError } from '@/app/functions/errorNotification';
 import { useLoaderStore } from '@/app/store/loaderStore';
 
-interface UseDataFetchingParams {
+interface UseDataStateHandlerParams {
     isLoading: boolean;
     isError: boolean;
     error: CustomError | null;
     errorMessage: string;
 }
 
-export const useDataFetching = ({
+export const useDataStateHandler = ({
     isLoading,
     isError,
     error,
     errorMessage,
-}: UseDataFetchingParams) => {
+}: UseDataStateHandlerParams) => {
     const { setIsLoading } = useLoaderStore();
     useErrorNotification(isError, errorMessage, error);
     useLoading(isLoading, setIsLoading);

@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState, useCallback } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import CardSkeleton from '@/app/components/cardSkeleton';
 import { useMobileChecker } from '@/hooks/useMobileChecker';
 import { parseDate } from '@/app/utils/utils';
@@ -8,17 +8,17 @@ import { PeriodSelector } from '@/app/components/cards/components/periodSelector
 import { ChartDisplay } from '@/app/components/cards/components/chartDisplay';
 import { Card } from 'primereact/card';
 import { ExtendedCard, ExtendedChart } from '@/app/api/card/interfaces';
+import { useCards } from '@/hooks/useCards';
 
 export function ChartCard(props: ExtendedCard) {
     const [cardInfo, setCardInfo] = useState<ExtendedCard>(props);
     const [chartData, setChartData] = useState<ExtendedChart | null>(null);
     const [months, setMonths] = useState<number>(1);
-    const [firstDataPoint, setFirstDataPoint] = useState<{ date: Date; score: number } | null>(
-        null
-    );
     const [lastDataPoint, setLastDataPoint] = useState<{ date: Date; score: number } | null>(null);
     const [percentageChange, setPercentageChange] = useState<number>(0);
     const isMobile = useMobileChecker();
+
+    const { updateCard } = useCards({});
 
     useEffect(() => {
         if (cardInfo.period) {
@@ -44,7 +44,6 @@ export function ChartCard(props: ExtendedCard) {
             if (!firstDataPoint || !lastDataPoint) {
                 return;
             }
-            setFirstDataPoint(firstDataPoint);
             setLastDataPoint(lastDataPoint);
             setPercentageChange(
                 ((lastDataPoint.score - firstDataPoint.score) / firstDataPoint.score) * 100 || 0
@@ -53,7 +52,12 @@ export function ChartCard(props: ExtendedCard) {
     }, [cardInfo.chart]);
 
     const handlePeriodChange = (date: Date | null) => {
-        console.log('handle change here');
+        if (date) {
+            setCardInfo((prevCardInfo) => ({ ...prevCardInfo, period: date }));
+
+            // Update the card with the new period
+            updateCard({ id: cardInfo.id.toString(), data: { ...cardInfo, period: date } });
+        }
     };
 
     if (!chartData) {
