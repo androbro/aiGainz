@@ -1,51 +1,70 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Chart } from 'primereact/chart';
 import { ExtendedChart } from '@/app/api/card/interfaces';
+import { chartTypeConfigs } from '@/app/config/chartTypeConfigs';
 
 interface ChartDisplayProps {
     chartData: ExtendedChart;
 }
 
 export const ChartDisplay: React.FC<ChartDisplayProps> = ({ chartData }) => {
-    const data = {
-        labels: chartData.dataPoints?.map((dp) => new Date(dp.date).toLocaleDateString()) || [],
-        datasets: [
-            {
-                label: chartData.label,
-                data: chartData.dataPoints?.map((dp) => dp.score) || [],
-                fill: chartData.fill,
-                borderColor: chartData.borderColor || undefined,
-                tension: chartData.tension,
-                pointRadius: chartData.pointRadius,
-            },
-        ],
-    };
+    const [data, setData] = React.useState<any>(null);
+    const [options, setOptions] = React.useState<any>(null);
 
-    const options = {
-        plugins: {
-            legend: {
-                display: chartData.showLegend,
-            },
-        },
-        scales: {
-            x: {
-                display: chartData.showXAxis,
-            },
-            y: {
-                display: chartData.showYAxis,
-            },
-        },
-        maintainAspectRatio: chartData.maintainAspectRatio,
-        responsive: chartData.responsive,
-    };
+    useEffect(() => {
+        if (chartData && chartData.dataPoints && chartData.dataPoints.length > 0) {
+            setData({
+                labels:
+                    chartData.dataPoints?.map((dp) => new Date(dp.date).toLocaleDateString()) || [],
+                datasets: [
+                    {
+                        label: chartData.label,
+                        data: chartData.dataPoints?.map((dp) => dp.score) || [],
+                        fill: chartData.fill,
+                        borderColor: chartData.borderColor || undefined,
+                        tension: chartData.tension,
+                        pointRadius: chartData.pointRadius,
+                    },
+                ],
+            });
+
+            // Use this line to switch between database options and preset configurations
+            const usePresetConfigs = true; // Set to false to use database options
+
+            setOptions(
+                usePresetConfigs
+                    ? chartTypeConfigs[chartData.dataType]
+                    : {
+                          plugins: {
+                              legend: {
+                                  display: chartData.showLegend,
+                              },
+                          },
+                          scales: {
+                              x: {
+                                  display: chartData.showXAxis,
+                              },
+                              y: {
+                                  display: chartData.showYAxis,
+                              },
+                          },
+                          maintainAspectRatio: chartData.maintainAspectRatio,
+                          responsive: chartData.responsive,
+                      }
+            );
+        }
+    }, [chartData]);
 
     return (
-        <Chart
-            type="line"
-            data={data}
-            options={options}
-            width={chartData.width?.toString()}
-            height={chartData.height?.toString()}
-        />
+        <div>
+            {chartData.dataPoints?.length === 0 && <div>No data available</div>}
+            <Chart
+                type="line"
+                data={data}
+                options={options}
+                width={chartData.width?.toString() || '100%'}
+                height={chartData.height?.toString() || '75px'}
+            />
+        </div>
     );
 };

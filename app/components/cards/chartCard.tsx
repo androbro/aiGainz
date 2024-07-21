@@ -17,6 +17,7 @@ export function ChartCard(props: ExtendedCard) {
         null
     );
     const [lastDataPoint, setLastDataPoint] = useState<{ date: Date; score: number } | null>(null);
+    const [percentageChange, setPercentageChange] = useState<number>(0);
     const isMobile = useMobileChecker();
 
     useEffect(() => {
@@ -35,10 +36,19 @@ export function ChartCard(props: ExtendedCard) {
         if (cardInfo.chart) {
             setChartData(cardInfo.chart);
 
-            if (cardInfo.chart.dataPoints && cardInfo.chart.dataPoints.length > 0) {
-                setFirstDataPoint(cardInfo.chart.dataPoints[0]);
-                setLastDataPoint(cardInfo.chart.dataPoints[cardInfo.chart.dataPoints.length - 1]);
+            if (!(cardInfo.chart.dataPoints && cardInfo.chart.dataPoints.length > 0)) {
+                return;
             }
+            const firstDataPoint = cardInfo.chart.dataPoints.at(0);
+            const lastDataPoint = cardInfo.chart.dataPoints.at(-1);
+            if (!firstDataPoint || !lastDataPoint) {
+                return;
+            }
+            setFirstDataPoint(firstDataPoint);
+            setLastDataPoint(lastDataPoint);
+            setPercentageChange(
+                ((lastDataPoint.score - firstDataPoint.score) / firstDataPoint.score) * 100 || 0
+            );
         }
     }, [cardInfo.chart]);
 
@@ -46,12 +56,9 @@ export function ChartCard(props: ExtendedCard) {
         console.log('handle change here');
     };
 
-    if (!lastDataPoint || !firstDataPoint || !chartData) {
+    if (!chartData) {
         return <CardSkeleton />;
     }
-
-    const percentageChange =
-        ((lastDataPoint.score - firstDataPoint.score) / firstDataPoint.score) * 100;
 
     return (
         <Card>
@@ -59,7 +66,7 @@ export function ChartCard(props: ExtendedCard) {
                 <CardHeader title={cardInfo.title} />
                 <div className="col-6 flex flex-column justify-content-center">
                     <StatisticsDisplay
-                        score={lastDataPoint.score}
+                        score={lastDataPoint ? lastDataPoint.score : 0}
                         percentageChange={percentageChange}
                     />
                     <PeriodSelector
