@@ -6,6 +6,7 @@ import { ChartCard } from '@/app/components/cards/chartCard';
 import AddCardButton from '@/app/components/addCardButton';
 import { Card as CardModel } from '@prisma/client';
 import { useCards } from '@/hooks/useCards';
+import { CreateCard } from '@/app/api/card/interfaces';
 
 type ResponsiveOption = {
     breakpoint: string;
@@ -22,11 +23,10 @@ const responsiveOptions: ResponsiveOption[] = [
 
 export default function Dashboard() {
     const isMobile = useMobileChecker();
+    const { createCard, cards } = useCards({});
 
-    const { cards } = useCards({});
-
-    const handleAddCard = useCallback(() => {
-        console.log('Add card');
+    const handleAddCard = useCallback((newCard: CreateCard) => {
+        createCard(newCard);
     }, []);
 
     const renderCard = (card: CardModel) => (
@@ -37,7 +37,7 @@ export default function Dashboard() {
 
     const renderAddButton = () => (
         <div className="sm:col-6 md:col-6 lg:col-3 p-2">
-            <AddCardButton onCardAdd={handleAddCard} />
+            <AddCardButton onCardAdd={(card) => handleAddCard(card)} />
         </div>
     );
 

@@ -1,5 +1,5 @@
 import { Card as CardModel } from '@prisma/client';
-import { ExtendedCard } from '@/app/api/card/interfaces';
+import { CreateCard, ExtendedCard } from '@/app/api/card/interfaces';
 export const CardApi = {
     getCards: async (): Promise<ExtendedCard[]> => {
         const response = await fetch('/api/card');
@@ -9,7 +9,7 @@ export const CardApi = {
         const response = await fetch(`/api/card?id=${id}`);
         return response.json();
     },
-    createCard: async (data: any): Promise<ExtendedCard> => {
+    createCard: async (data: CreateCard): Promise<ExtendedCard> => {
         const response = await fetch('/api/card', {
             method: 'POST',
             headers: {
@@ -19,7 +19,7 @@ export const CardApi = {
         });
         return response.json();
     },
-    updateCard: async (id: string, data: any): Promise<ExtendedCard> => {
+    updateCard: async (id: string, data: ExtendedCard): Promise<ExtendedCard> => {
         const response = await fetch(`/api/card?id=${id}`, {
             method: 'PUT',
             headers: {

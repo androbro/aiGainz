@@ -1,18 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Calendar } from 'primereact/calendar';
-import { TreeSelect, TreeSelectChangeEvent } from 'primereact/treeselect';
+import { TreeSelect, TreeSelectSelectionKeysType } from 'primereact/treeselect';
 import { Button } from 'primereact/button';
+import { ChartDataType } from '@prisma/client';
+import { CreateCard } from '@/app/api/card/interfaces';
+import { ExtendedChart } from '@/app/api/chart/interfaces';
+import { string } from 'prop-types';
 
 interface AddCardFormProps {
-    onSubmit: (cardData: any) => void;
+    onSubmit: (cardData: CreateCard) => void;
 }
 
 export const AddCardForm: React.FC<AddCardFormProps> = ({ onSubmit }) => {
     const [name, setName] = useState('');
     const [period, setPeriod] = useState<Date | null>(null);
     const [selectedDataSource, setSelectedDataSource] = useState<string | undefined>(undefined);
+    const [selectedGroup, setSelectedGroup] = useState<ChartDataType | undefined>(undefined);
     const [groupedData, setGroupedData] = useState([]);
+    const [selectedValue, setSelectedValue] = useState<
+        string | TreeSelectSelectionKeysType | TreeSelectSelectionKeysType[] | undefined
+    >(undefined);
 
     useEffect(() => {
         const fetchGroupedData = async () => {
@@ -34,16 +42,33 @@ export const AddCardForm: React.FC<AddCardFormProps> = ({ onSubmit }) => {
     }, []);
 
     const handleSubmit = () => {
-        if (name && period && selectedDataSource) {
-            onSubmit({
-                name,
-                period: period.toISOString(),
-                dataSource: selectedDataSource,
-            });
-        } else {
-            // Handle validation error
-            console.error('Please fill all fields');
+        if (!name || !period || !selectedDataSource || !selectedGroup) {
+            console.error('Missing required fields');
+            return;
         }
+        const newChart: ExtendedChart = {
+            id: 0, // This will be set by the backend
+            label: name,
+            fill: false,
+            borderColor: '#4B91F1',
+            tension: 0.4,
+            pointRadius: 2,
+            showLegend: true,
+            showXAxis: true,
+            showYAxis: true,
+            maintainAspectRatio: false,
+            responsive: true,
+            width: null,
+            height: 200,
+            dataType: selectedGroup,
+            dataSourceId: parseInt(selectedDataSource),
+        };
+        const newCard: CreateCard = {
+            title: name,
+            period: period,
+            chart: newChart,
+        };
+        onSubmit(newCard);
     };
 
     return (
@@ -60,11 +85,17 @@ export const AddCardForm: React.FC<AddCardFormProps> = ({ onSubmit }) => {
                 placeholder="Select Period"
             />
             <TreeSelect
-                value={selectedDataSource}
+                value={selectedValue}
                 options={groupedData}
                 onChange={(e) => {
-                    console.log(e);
-                    setSelectedDataSource(e.value as string | undefined);
+                    // e.value is ChartDataType_DataSourceId (e.g. "exercise_2") so we need to split it
+                    if (!e.value) return;
+                    const [group, dataSource] = e.value.toString().split('_');
+                    console.log('Selected group:', group);
+                    console.log('Selected data source:', dataSource);
+                    setSelectedGroup(group as ChartDataType);
+                    setSelectedDataSource(dataSource);
+                    setSelectedValue(e.value);
                 }}
                 filter
                 placeholder="Select Data Source"

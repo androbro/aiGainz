@@ -7,8 +7,9 @@ import { StatisticsDisplay } from '@/app/components/cards/components/statisticsD
 import { PeriodSelector } from '@/app/components/cards/components/periodSelector';
 import { ChartDisplay } from '@/app/components/cards/components/chartDisplay';
 import { Card } from 'primereact/card';
-import { ExtendedCard, ExtendedChart } from '@/app/api/card/interfaces';
+import { ExtendedCard } from '@/app/api/card/interfaces';
 import { useCards } from '@/hooks/useCards';
+import { ExtendedChart } from '@/app/api/chart/interfaces';
 
 export function ChartCard(props: ExtendedCard) {
     const [cardInfo, setCardInfo] = useState<ExtendedCard>(props);

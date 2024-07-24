@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient, ChartDataType } from '@prisma/client';
+import { ChartDataType, PrismaClient } from '@prisma/client';
 import { DataPointsApi } from '@/app/api/dataPoints/api';
+import { CreateCard } from '@/app/api/card/interfaces';
 
 const prisma = new PrismaClient();
 
@@ -64,48 +65,33 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
     try {
-        const body = await request.json();
+        const body: CreateCard = await request.json();
         console.log('Received POST request with body:', body);
 
-        const chartData = {
-            label: body.name,
-            fill: false,
-            borderColor: '#4B91F1',
-            tension: 0.4,
-            pointRadius: 2,
-            showLegend: true,
-            showXAxis: true,
-            showYAxis: true,
-            maintainAspectRatio: false,
-            responsive: true,
-            width: null,
-            height: 200,
-            dataType: body.dataType as ChartDataType,
-            dataSourceId: parseInt(body.dataSourceId),
-        };
-
-        const card = await prisma.card.create({
-            data: {
-                title: body.name,
-                period: new Date(body.period),
-                chart: {
-                    create: chartData,
+        const cardWithChart = await prisma.$transaction(async (prisma) => {
+            return prisma.card.create({
+                data: {
+                    title: body.title,
+                    period: body.period,
+                    chart: {
+                        create: body.chart,
+                    },
                 },
-            },
-            include: { chart: true },
+                include: { chart: true },
+            });
         });
 
         // Fetch data points for the newly created card
         const dataPoints = await DataPointsApi.getDataPoints(
-            card.chart.dataType,
-            card.chart.dataSourceId,
-            card.period!
+            cardWithChart.chart.dataType,
+            cardWithChart.chart.dataSourceId,
+            cardWithChart.period!
         );
 
         const cardWithDataPoints = {
-            ...card,
+            ...cardWithChart,
             chart: {
-                ...card.chart,
+                ...cardWithChart.chart,
                 dataPoints: dataPoints,
             },
         };

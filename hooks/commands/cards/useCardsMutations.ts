@@ -4,15 +4,20 @@ import { Card } from '@prisma/client';
 import { useDataStateHandler } from '@/hooks/useDataStateHandler';
 import debounce from 'lodash/debounce';
 import { useCallback } from 'react';
+import { CreateCard, ExtendedCard } from '@/app/api/card/interfaces';
 
 export const useCardsMutations = () => {
     const queryClient = useQueryClient();
 
-    const updateCardMutation = useMutation<Card, Error, { id: string; data: Partial<Card> }>({
+    const updateCardMutation = useMutation<
+        ExtendedCard,
+        Error,
+        { id: string; data: Partial<ExtendedCard> }
+    >({
         mutationFn: ({ id, data }) => CardApi.updateCard(id, data),
         onSuccess: (updatedCard) => {
             queryClient.invalidateQueries({ queryKey: ['cards'] });
-            queryClient.setQueryData<Card[]>(
+            queryClient.setQueryData<ExtendedCard[]>(
                 ['cards'],
                 (oldCards) =>
                     oldCards?.map((card) => (card.id === updatedCard.id ? updatedCard : card)) ?? []
@@ -20,7 +25,7 @@ export const useCardsMutations = () => {
         },
     });
 
-    const createCardMutation = useMutation<Card, Error, Partial<Card>>({
+    const createCardMutation = useMutation<ExtendedCard, Error, CreateCard>({
         mutationFn: (data) => CardApi.createCard(data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['cards'] });

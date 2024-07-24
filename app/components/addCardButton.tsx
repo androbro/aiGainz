@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
-import { Card } from 'primereact/card';
+import { Card as CardModel } from '@prisma/client';
 import { AddCardForm } from './addCardForm';
+import { Card } from 'primereact/card';
 
 interface AddCardButtonProps {
-    onCardAdd: (cardData: any) => void;
+    onCardAdd: (cardData: CardModel) => void;
 }
 
 const AddCardButton: React.FC<AddCardButtonProps> = ({ onCardAdd }) => {
