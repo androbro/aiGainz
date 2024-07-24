@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ChartDataType, PrismaClient } from '@prisma/client';
-import { DataPointsApi } from '@/app/api/dataPoints/api';
 import { CreateCard } from '@/app/api/card/interfaces';
+import { DataPointsApi } from '@/app/api/dataPoints/api';
 
 const prisma = new PrismaClient();
 
@@ -21,13 +21,19 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Card not found' }, { status: 404 });
         }
 
-        // Fetch data points using the new dataPoints API
-        const dataPointsResponse = await fetch(
-            `${request.nextUrl.origin}/api/dataPoints?dataType=${card.chart.dataType}&dataSourceId=${card.chart.dataSourceId}&period=${card.period?.toISOString()}`
+        // Fetch data points using the dataPoints API
+        const dataPointsUrl = new URL('/api/dataPoints', request.url);
+        dataPointsUrl.searchParams.set('dataType', card.chart.dataType);
+        dataPointsUrl.searchParams.set('dataSourceId', card.chart.dataSourceId.toString());
+        dataPointsUrl.searchParams.set(
+            'period',
+            card.period?.toISOString() || new Date().toISOString()
         );
+
+        console.log('Fetching data points with URL in card.route:', dataPointsUrl);
+        const dataPointsResponse = await fetch(dataPointsUrl);
         const dataPoints = await dataPointsResponse.json();
 
-        // Add dataPoints to the card object
         const cardWithDataPoints = {
             ...card,
             chart: {
@@ -42,13 +48,20 @@ export async function GET(request: NextRequest) {
                 chart: true,
             },
         });
-        // Fetch data points for each card
+
         const cardsWithDataPoints = await Promise.all(
             cards.map(async (card) => {
-                const dataPointsResponse = await fetch(
-                    `${request.nextUrl.origin}/api/dataPoints?dataType=${card.chart.dataType}&dataSourceId=${card.chart.dataSourceId}&period=${card.period?.toISOString()}`
+                const dataPointsUrl = new URL('/api/dataPoints', request.url);
+                dataPointsUrl.searchParams.set('dataType', card.chart.dataType);
+                dataPointsUrl.searchParams.set('dataSourceId', card.chart.dataSourceId.toString());
+                dataPointsUrl.searchParams.set(
+                    'period',
+                    card.period?.toISOString() || new Date().toISOString()
                 );
+
+                const dataPointsResponse = await fetch(dataPointsUrl);
                 const dataPoints = await dataPointsResponse.json();
+
                 return {
                     ...card,
                     chart: {
@@ -119,7 +132,7 @@ export async function PUT(req: NextRequest) {
 
     try {
         const body = await req.json();
-        console.log('Received body:', JSON.stringify(body, null, 2));
+        // console.log('Received body:', JSON.stringify(body, null, 2));
 
         console.log('Attempting to update card with ID:', id);
         const updatedCard = await prisma.card.update({

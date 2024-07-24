@@ -5,6 +5,7 @@ const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
+    console.log('GET request to /api/dataPoints', searchParams);
     const dataType = searchParams.get('dataType') as ChartDataType;
     const dataSourceId = searchParams.get('dataSourceId');
     const periodStart = searchParams.get('period');
@@ -20,9 +21,9 @@ export async function GET(request: NextRequest) {
         const startDate = new Date(periodStart);
         const endDate = new Date(); // Current date
 
-        console.log(
-            `Fetching data points for ${dataType} with ID ${dataSourceId} from ${startDate.toISOString()} to ${endDate.toISOString()}`
-        );
+        // console.log(
+        //     `Fetching data points for ${dataType} with ID ${dataSourceId} from ${startDate.toISOString()} to ${endDate.toISOString()}`
+        // );
 
         const dataPoints = await fetchDataPoints(
             dataType,

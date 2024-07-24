@@ -55,7 +55,6 @@ export function ChartCard(props: ExtendedCard) {
     const handlePeriodChange = (date: Date | null) => {
         if (date) {
             setCardInfo((prevCardInfo) => ({ ...prevCardInfo, period: date }));
-
             // Update the card with the new period
             updateCard({ id: cardInfo.id.toString(), data: { ...cardInfo, period: date } });
         }

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient, ChartDataType } from '@prisma/client';
-import { DataPointsApi } from '@/app/api/dataPoints/api';
 
 const prisma = new PrismaClient();
 
@@ -70,7 +69,7 @@ export async function PUT(req: NextRequest) {
 
     try {
         const body = await req.json();
-        console.log('Received body:', JSON.stringify(body, null, 2));
+        // console.log('Received body:', JSON.stringify(body, null, 2));
 
         console.log('Attempting to update chart with ID:', id);
         const updatedChart = await prisma.chart.update({

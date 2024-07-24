@@ -14,7 +14,17 @@ export const useCardsMutations = () => {
         Error,
         { id: string; data: Partial<ExtendedCard> }
     >({
-        mutationFn: ({ id, data }) => CardApi.updateCard(id, data),
+        mutationFn: ({ id, data }) => {
+            const cardData: Partial<ExtendedCard> & { id?: number } = {
+                ...data,
+                id: parseInt(id),
+            };
+            if (isExtendedCard(cardData)) {
+                return CardApi.updateCard(id, cardData);
+            } else {
+                return Promise.reject(new Error('Invalid data'));
+            }
+        },
         onSuccess: (updatedCard) => {
             queryClient.invalidateQueries({ queryKey: ['cards'] });
             queryClient.setQueryData<ExtendedCard[]>(
@@ -24,6 +34,10 @@ export const useCardsMutations = () => {
             );
         },
     });
+
+    function isExtendedCard(card: Partial<ExtendedCard> & { id?: number }): card is ExtendedCard {
+        return card.id !== undefined;
+    }
 
     const createCardMutation = useMutation<ExtendedCard, Error, CreateCard>({
         mutationFn: (data) => CardApi.createCard(data),
