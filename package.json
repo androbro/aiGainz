@@ -14,7 +14,8 @@
     "format:prisma": "prisma format",
     "seed": "prisma db seed",
     "postinstall": "prisma generate",
-    "reset": "prisma migrate reset"
+    "reset": "prisma migrate reset",
+    "studio": "prisma studio"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^3.5.0",
@@ -39,6 +40,7 @@
     "zustand": "^4.5.4"
   },
   "devDependencies": {
+    "@prisma/extension-optimize": "^0.10.0",
     "@types/node": "^20.14.10",
     "@types/react": "^18",
     "@types/react-dom": "^18",

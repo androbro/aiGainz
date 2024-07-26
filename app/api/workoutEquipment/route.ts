@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient, EquipmentType, EquipmentCategory, EquipmentLocation } from '@prisma/client';
+import { withOptimize } from '@prisma/extension-optimize';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient().$extends(withOptimize());
 
 //workoutEquipment route
 export async function GET(request: Request) {
