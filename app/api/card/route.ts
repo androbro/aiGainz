@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ChartDataType, PrismaClient } from '@prisma/client';
 import { CreateCard } from '@/app/api/card/interfaces';
 import { DataPointsApi } from '@/app/api/dataPoints/api';
-import { withOptimize } from '@prisma/extension-optimize';
 
-const prisma = new PrismaClient().$extends(withOptimize());
+const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);

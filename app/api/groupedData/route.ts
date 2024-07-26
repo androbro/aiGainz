@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { withOptimize } from '@prisma/extension-optimize';
 
-const prisma = new PrismaClient().$extends(withOptimize());
+const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
     try {
