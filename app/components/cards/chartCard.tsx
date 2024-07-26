@@ -10,6 +10,7 @@ import { Card } from 'primereact/card';
 import { ExtendedCard } from '@/app/api/card/interfaces';
 import { useCards } from '@/hooks/useCards';
 import { ExtendedChart } from '@/app/api/chart/interfaces';
+import { CustomContextMenu } from '@/app/components/customContextMenu';
 
 export function ChartCard(props: ExtendedCard) {
     const [cardInfo, setCardInfo] = useState<ExtendedCard>(props);
@@ -19,7 +20,7 @@ export function ChartCard(props: ExtendedCard) {
     const [percentageChange, setPercentageChange] = useState<number>(0);
     const isMobile = useMobileChecker();
 
-    const { updateCard, updatedCard } = useCards({});
+    const { updateCard, updatedCard, deleteCard } = useCards({});
 
     useEffect(() => {
         if (updatedCard && updatedCard.id === cardInfo.id) {
@@ -61,9 +62,17 @@ export function ChartCard(props: ExtendedCard) {
     const handlePeriodChange = (date: Date | null) => {
         if (date) {
             setCardInfo((prevCardInfo) => ({ ...prevCardInfo, period: date }));
-            // Update the card with the new period
             updateCard({ id: cardInfo.id.toString(), data: { ...cardInfo, period: date } });
         }
+    };
+
+    const handleRename = (newName: string) => {
+        setCardInfo((prevCardInfo) => ({ ...prevCardInfo, title: newName }));
+        updateCard({ id: cardInfo.id.toString(), data: { ...cardInfo, title: newName } });
+    };
+
+    const handleDelete = () => {
+        deleteCard(cardInfo.id.toString());
     };
 
     if (!chartData) {
@@ -71,25 +80,27 @@ export function ChartCard(props: ExtendedCard) {
     }
 
     return (
-        <Card>
-            <div className="grid">
-                <CardHeader title={cardInfo.title} />
-                <div className="col-6 flex flex-column justify-content-center">
-                    <StatisticsDisplay
-                        score={lastDataPoint ? lastDataPoint.score : 0}
-                        percentageChange={percentageChange}
-                    />
-                    <PeriodSelector
-                        months={months}
-                        period={cardInfo.period}
-                        onChange={handlePeriodChange}
-                        isMobile={isMobile}
-                    />
+        <CustomContextMenu onRename={handleRename} onDelete={handleDelete}>
+            <Card>
+                <div className="grid">
+                    <CardHeader title={cardInfo.title} />
+                    <div className="col-6 flex flex-column justify-content-center">
+                        <StatisticsDisplay
+                            score={lastDataPoint ? lastDataPoint.score : 0}
+                            percentageChange={percentageChange}
+                        />
+                        <PeriodSelector
+                            months={months}
+                            period={cardInfo.period}
+                            onChange={handlePeriodChange}
+                            isMobile={isMobile}
+                        />
+                    </div>
+                    <div className="col-6">
+                        <ChartDisplay chartData={chartData} />
+                    </div>
                 </div>
-                <div className="col-6">
-                    <ChartDisplay chartData={chartData} />
-                </div>
-            </div>
-        </Card>
+            </Card>
+        </CustomContextMenu>
     );
 }
