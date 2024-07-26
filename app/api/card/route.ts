@@ -104,6 +104,8 @@ export async function POST(request: NextRequest) {
             cardWithChart.period!
         );
 
+        console.log('Data points:', dataPoints);
+
         const cardWithDataPoints = {
             ...cardWithChart,
             chart: {

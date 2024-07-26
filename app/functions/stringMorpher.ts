@@ -13,6 +13,17 @@ export const createTitleFromName = (name: string): string => {
     return listOfWords.join(' ');
 };
 
+export const createSnakeFromName = (name: string): string => {
+    // add a space before all caps
+    let listOfWords: string[] = name.split(/(?=[A-Z])/);
+    //uppercase all letters
+    listOfWords = listOfWords.map((word) => {
+        return word.toUpperCase();
+    });
+    //add underscore between words
+    return listOfWords.join('_');
+};
+
 export const shortenStringAndAddEllipsis = (length: number, str: string): string => {
     if (str && str.length > length) {
         return str.substring(0, length) + '...';
@@ -37,7 +48,11 @@ export const areEqual = (lhs: string, rhs: string, caseInsensitive: boolean = tr
 
 export const getFormattedDate = (date: Date): string => {
     if (date !== undefined) {
-        const dateOptions: Intl.DateTimeFormatOptions = { year: '2-digit', month: '2-digit', day: '2-digit' };
+        const dateOptions: Intl.DateTimeFormatOptions = {
+            year: '2-digit',
+            month: '2-digit',
+            day: '2-digit',
+        };
         return new Date(date).toLocaleDateString('en-GB', dateOptions);
     } else {
         return 'No Date';

@@ -1,18 +1,22 @@
 import React, { useState } from 'react';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
-import { Card as CardModel } from '@prisma/client';
 import { AddCardForm } from './addCardForm';
 import { Card } from 'primereact/card';
+import { CreateCard } from '@/app/api/card/interfaces';
+import { ChartDataType } from '@prisma/client';
+import { createSnakeFromName } from '@/app/functions/stringMorpher';
 
 interface AddCardButtonProps {
-    onCardAdd: (cardData: CardModel) => void;
+    onCardAdd: (cardData: CreateCard) => void;
 }
 
 const AddCardButton: React.FC<AddCardButtonProps> = ({ onCardAdd }) => {
     const [dialogVisible, setDialogVisible] = useState(false);
 
-    const handleAddCard = (cardData: any) => {
+    const handleAddCard = (cardData: CreateCard) => {
+        //make dataType camelCase SNAKE_CASE
+        cardData.chart!.dataType = createSnakeFromName(cardData.chart!.dataType) as ChartDataType;
         onCardAdd(cardData);
         setDialogVisible(false);
     };
