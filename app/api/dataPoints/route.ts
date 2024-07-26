@@ -5,8 +5,24 @@ import { withOptimize } from '@prisma/extension-optimize';
 const prisma = new PrismaClient().$extends(withOptimize());
 
 export async function GET(request: NextRequest) {
-    const { searchParams } = new URL(request.url);
-    console.log('GET request to /api/dataPoints', searchParams);
+    let searchParams: URLSearchParams;
+    try {
+        // Decode the URL before parsing
+        const decodedUrl = decodeURIComponent(request.url);
+        // Try to parse the full decoded URL
+        const fullUrl = new URL(decodedUrl);
+        searchParams = fullUrl.searchParams;
+    } catch (error) {
+        console.error('Failed to parse full URL, attempting to parse path and query:', error);
+        // If full URL parsing fails, try to parse just the path and query
+        const urlParts = request.url.split('?');
+        if (urlParts.length > 1) {
+            const decodedQuery = decodeURIComponent(urlParts[1]);
+            searchParams = new URLSearchParams(decodedQuery);
+        } else {
+            searchParams = new URLSearchParams();
+        }
+    }
     const dataType = searchParams.get('dataType') as ChartDataType;
     const dataSourceId = searchParams.get('dataSourceId');
     const periodStart = searchParams.get('period');
@@ -21,10 +37,6 @@ export async function GET(request: NextRequest) {
     try {
         const startDate = new Date(periodStart);
         const endDate = new Date(); // Current date
-
-        // console.log(
-        //     `Fetching data points for ${dataType} with ID ${dataSourceId} from ${startDate.toISOString()} to ${endDate.toISOString()}`
-        // );
 
         const dataPoints = await fetchDataPoints(
             dataType,

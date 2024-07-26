@@ -1,4 +1,5 @@
 import { ChartDataType } from '@prisma/client';
+import axios from 'axios';
 
 export interface DataPoint {
     id: number;
@@ -13,20 +14,33 @@ export const DataPointsApi = {
         dataSourceId: number,
         period?: Date
     ): Promise<DataPoint[]> => {
-        const queryParams = new URLSearchParams({
-            dataType: dataType.toString(),
-            dataSourceId: dataSourceId.toString(),
-        });
+        try {
+            const params = {
+                dataType: dataType.toString(),
+                dataSourceId: dataSourceId.toString(),
+                period: period ? period.toISOString() : undefined,
+            };
 
-        if (period) {
-            queryParams.append('period', period.toISOString());
-        }
+            const baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
+            const response = await axios.get(`${baseUrl}/api/dataPoints`, { params });
 
-        const response = await fetch(`/api/dataPoints?${queryParams}`);
-        if (!response.ok) {
+            console.log('Response received:', response.status, response.statusText);
+
+            if (response.status !== 200) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                console.error('Axios error:', error.message);
+                console.error('Response data:', error.response?.data);
+                console.error('Response status:', error.response?.status);
+            } else {
+                console.error('Unexpected error:', error);
+            }
             throw new Error('Failed to fetch data points');
         }
-        return response.json();
     },
 
     // If you need to add, update, or delete data points in the future,

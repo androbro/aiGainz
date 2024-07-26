@@ -10,6 +10,9 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
+    // Get the base URL from the request
+    const baseUrl = `${request.nextUrl.protocol}//${request.nextUrl.host}`;
+
     if (id) {
         const card = await prisma.card.findUnique({
             where: { id: parseInt(id) },
@@ -23,7 +26,7 @@ export async function GET(request: NextRequest) {
         }
 
         // Fetch data points using the dataPoints API
-        const dataPointsUrl = new URL('/api/dataPoints', request.url);
+        const dataPointsUrl = new URL('/api/dataPoints', baseUrl);
         dataPointsUrl.searchParams.set('dataType', card.chart.dataType);
         dataPointsUrl.searchParams.set('dataSourceId', card.chart.dataSourceId.toString());
         dataPointsUrl.searchParams.set(
@@ -31,7 +34,7 @@ export async function GET(request: NextRequest) {
             card.period?.toISOString() || new Date().toISOString()
         );
 
-        console.log('Fetching data points with URL in card.route:', dataPointsUrl);
+        console.log('Fetching data points with URL in card.route:', dataPointsUrl.toString());
         const dataPointsResponse = await fetch(dataPointsUrl);
         const dataPoints = await dataPointsResponse.json();
 
@@ -52,7 +55,7 @@ export async function GET(request: NextRequest) {
 
         const cardsWithDataPoints = await Promise.all(
             cards.map(async (card) => {
-                const dataPointsUrl = new URL('/api/dataPoints', request.url);
+                const dataPointsUrl = new URL('/api/dataPoints', baseUrl);
                 dataPointsUrl.searchParams.set('dataType', card.chart.dataType);
                 dataPointsUrl.searchParams.set('dataSourceId', card.chart.dataSourceId.toString());
                 dataPointsUrl.searchParams.set(
@@ -121,11 +124,10 @@ export async function POST(request: NextRequest) {
     }
 }
 
+//url = /api/card?id=1
 export async function PUT(req: NextRequest) {
-    console.log('PUT request received');
     const url = new URL(req.url);
     const id = url.searchParams.get('id');
-    console.log('Received ID:', id);
 
     if (!id) {
         return NextResponse.json({ error: 'ID is required' }, { status: 400 });
@@ -164,7 +166,7 @@ export async function PUT(req: NextRequest) {
         });
 
         // Fetch updated data points
-        const dataPoints = DataPointsApi.getDataPoints(
+        const dataPoints = await DataPointsApi.getDataPoints(
             updatedCard.chart.dataType,
             updatedCard.chart.dataSourceId,
             updatedCard.period!
@@ -178,7 +180,7 @@ export async function PUT(req: NextRequest) {
             },
         };
 
-        console.log('Card updated successfully');
+        console.log('Card updated successfully:', updatedCardWithDataPoints);
         return NextResponse.json(updatedCardWithDataPoints);
     } catch (error) {
         console.error('Error updating card:', error);
