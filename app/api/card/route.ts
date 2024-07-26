@@ -202,15 +202,32 @@ export async function DELETE(request: NextRequest) {
 
     try {
         await prisma.$transaction(async (tx) => {
-            // Delete the card and its associated data
+            // First, find the card to get its chartId
+            const card = await tx.card.findUnique({
+                where: { id: parseInt(id) },
+                select: { chartId: true },
+            });
+
+            if (!card) {
+                throw new Error('Card not found');
+            }
+
+            // Delete the card
             await tx.card.delete({
                 where: { id: parseInt(id) },
             });
+
+            // Delete the associated chart
+            await tx.chart.delete({
+                where: { id: card.chartId },
+            });
         });
 
-        return NextResponse.json({ message: 'Card and associated data deleted successfully' });
+        return NextResponse.json({
+            message: 'Card, chart, and associated data deleted successfully',
+        });
     } catch (error) {
-        console.error('Error deleting card:', error);
+        console.error('Error deleting card and associated data:', error);
         return NextResponse.json(
             { error: 'Failed to delete card and associated data' },
             { status: 500 }

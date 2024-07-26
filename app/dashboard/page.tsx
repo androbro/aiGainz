@@ -23,11 +23,18 @@ const responsiveOptions: ResponsiveOption[] = [
 
 export default function Dashboard() {
     const isMobile = useMobileChecker();
-    const { createCard, cards } = useCards({});
+    const { createCard, cards, createdCard } = useCards({});
 
     const handleAddCard = useCallback((newCard: CreateCard) => {
         createCard(newCard);
     }, []);
+
+    useEffect(() => {
+        if (createdCard) {
+            //add card to the list
+            cards.push(createdCard);
+        }
+    }, [createdCard]);
 
     const renderCard = (card: CardModel) => (
         <div key={card.id} className="sm:col-6 md:col-6 lg:col-3 p-2">

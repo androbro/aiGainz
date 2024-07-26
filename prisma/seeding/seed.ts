@@ -5,7 +5,6 @@ import {
     EquipmentLocation,
     Exercise,
     $Enums,
-    ChartDataPoint,
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { workoutEquipment } from '../testData/workoutEquipment';

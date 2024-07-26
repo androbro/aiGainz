@@ -99,6 +99,7 @@ export const useCardsMutations = () => {
         updatedCard: updateCardMutation.data,
         createCard: debouncedCreateCard,
         isCreatingCard: createCardMutation.isPending,
+        createdCard: createCardMutation.data,
         deleteCard: debouncedDeleteCard,
         isDeletingCard: deleteCardMutation.isPending,
     };
