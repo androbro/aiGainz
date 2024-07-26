@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Chart } from 'primereact/chart';
-import { ExtendedChart } from '@/app/api/card/interfaces';
 import { chartTypeConfigs } from '@/app/config/chartTypeConfigs';
+import { ExtendedChart } from '@/app/api/chart/interfaces';
 
 interface ChartDisplayProps {
     chartData: ExtendedChart;

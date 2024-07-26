@@ -19,7 +19,13 @@ export function ChartCard(props: ExtendedCard) {
     const [percentageChange, setPercentageChange] = useState<number>(0);
     const isMobile = useMobileChecker();
 
-    const { updateCard } = useCards({});
+    const { updateCard, updatedCard } = useCards({});
+
+    useEffect(() => {
+        if (updatedCard && updatedCard.id === cardInfo.id) {
+            setCardInfo(updatedCard);
+        }
+    }, [updatedCard]);
 
     useEffect(() => {
         if (cardInfo.period) {

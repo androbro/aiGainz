@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { QueryCache, useMutation, useQueryClient } from '@tanstack/react-query';
 import { CardApi } from '@/app/api/card/api';
 import { Card } from '@prisma/client';
 import { useDataStateHandler } from '@/hooks/useDataStateHandler';
@@ -8,6 +8,17 @@ import { CreateCard, ExtendedCard } from '@/app/api/card/interfaces';
 
 export const useCardsMutations = () => {
     const queryClient = useQueryClient();
+    const queryCache = new QueryCache({
+        onError: (error) => {
+            console.log(error);
+        },
+        onSuccess: (data) => {
+            console.log(data);
+        },
+        onSettled: (data, error) => {
+            console.log(data, error);
+        },
+    });
 
     const updateCardMutation = useMutation<
         ExtendedCard,
@@ -26,12 +37,8 @@ export const useCardsMutations = () => {
             }
         },
         onSuccess: (updatedCard) => {
-            queryClient.invalidateQueries({ queryKey: ['cards'] });
-            queryClient.setQueryData<ExtendedCard[]>(
-                ['cards'],
-                (oldCards) =>
-                    oldCards?.map((card) => (card.id === updatedCard.id ? updatedCard : card)) ?? []
-            );
+            //fetch all cached data
+            console.log('updatedCard', updatedCard);
         },
     });
 
@@ -89,6 +96,7 @@ export const useCardsMutations = () => {
     return {
         updateCard: debouncedUpdateCard,
         isUpdatingCard: updateCardMutation.isPending,
+        updatedCard: updateCardMutation.data,
         createCard: debouncedCreateCard,
         isCreatingCard: createCardMutation.isPending,
         deleteCard: debouncedDeleteCard,

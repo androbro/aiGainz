@@ -26,7 +26,7 @@ export const useCardsQuery = ({ filterObject = undefined, enabled = true }: UseC
         error: errorCards,
         isError: isErrorCards,
     } = useQuery<Card[], Error>({
-        queryKey: ['cards', filterObject],
+        queryKey: ['cards'],
         queryFn: getFilteredCards,
         retry: 0,
         enabled,
