@@ -74,27 +74,28 @@ model Card {
   period    DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  chart     Chart     @relation(fields: [chartId], references: [id])
+  chart     Chart     @relation(fields: [chartId], references: [id], onDelete: Cascade)
   chartId   Int       @unique
 }
 
 model Chart {
-  id                  Int           @id @default(autoincrement())
+  id                  Int              @id @default(autoincrement())
   label               String
   fill                Boolean
   borderColor         String?
   tension             Float
   pointRadius         Float
-  showLegend          Boolean       @default(true)
-  showXAxis           Boolean       @default(true)
-  showYAxis           Boolean       @default(true)
-  maintainAspectRatio Boolean       @default(true)
-  responsive          Boolean       @default(true)
+  showLegend          Boolean          @default(true)
+  showXAxis           Boolean          @default(true)
+  showYAxis           Boolean          @default(true)
+  maintainAspectRatio Boolean          @default(true)
+  responsive          Boolean          @default(true)
   width               Int?
   height              Int?
   card                Card?
   dataType            ChartDataType
   dataSourceId        Int
+  dataPoints          ChartDataPoint[] @relation("ChartToDataPoint")
 }
 
 model ChartDataPoint {
@@ -109,6 +110,8 @@ model ChartDataPoint {
   workoutEquipment   WorkoutEquipment? @relation(fields: [workoutEquipmentId], references: [id])
   workoutExerciseId  Int?
   workoutExercise    WorkoutExercise?  @relation(fields: [workoutExerciseId], references: [id])
+  chart              Chart             @relation("ChartToDataPoint", fields: [chartId], references: [id], onDelete: Cascade)
+  chartId            Int
 }
 
 enum EquipmentType {

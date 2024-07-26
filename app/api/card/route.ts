@@ -192,7 +192,7 @@ export async function PUT(req: NextRequest) {
     }
 }
 
-export async function DELETE(request: Request) {
+export async function DELETE(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
@@ -201,11 +201,19 @@ export async function DELETE(request: Request) {
     }
 
     try {
-        await prisma.card.delete({
-            where: { id: parseInt(id) },
+        await prisma.$transaction(async (tx) => {
+            // Delete the card and its associated data
+            await tx.card.delete({
+                where: { id: parseInt(id) },
+            });
         });
-        return NextResponse.json({ message: 'Card deleted successfully' });
+
+        return NextResponse.json({ message: 'Card and associated data deleted successfully' });
     } catch (error) {
-        return NextResponse.json({ error: 'Card not found or delete failed' }, { status: 404 });
+        console.error('Error deleting card:', error);
+        return NextResponse.json(
+            { error: 'Failed to delete card and associated data' },
+            { status: 500 }
+        );
     }
 }
