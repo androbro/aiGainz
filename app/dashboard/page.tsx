@@ -4,9 +4,8 @@ import { Carousel } from 'primereact/carousel';
 import { useMobileChecker } from '@/hooks/useMobileChecker';
 import { ChartCard } from '@/app/components/cards/chartCard';
 import AddCardButton from '@/app/components/addCardButton';
-import { Card as CardModel } from '@prisma/client';
 import { useCards } from '@/hooks/useCards';
-import { CreateCard } from '@/app/api/card/interfaces';
+import { CreateCard, ExtendedCard } from '@/app/api/card/interfaces';
 
 type ResponsiveOption = {
     breakpoint: string;
@@ -23,28 +22,41 @@ const responsiveOptions: ResponsiveOption[] = [
 
 export default function Dashboard() {
     const isMobile = useMobileChecker();
-    const { createCard, cards, createdCard } = useCards({});
+    const { createCard, cards: initialCards, createdCard } = useCards({});
+    const [cards, setCards] = useState<ExtendedCard[]>([]);
 
-    const handleAddCard = useCallback((newCard: CreateCard) => {
-        createCard(newCard);
-    }, []);
+    useEffect(() => {
+        if (initialCards) {
+            setCards(initialCards);
+        }
+    }, [initialCards]);
+
+    const handleAddCard = useCallback(
+        (newCard: CreateCard) => {
+            createCard(newCard);
+        },
+        [createCard]
+    );
 
     useEffect(() => {
         if (createdCard) {
-            //add card to the list
-            cards.push(createdCard);
+            setCards((prevCards) => [...prevCards, createdCard]);
         }
     }, [createdCard]);
 
-    const renderCard = (card: CardModel) => (
+    const handleDeleteCard = useCallback((id: number) => {
+        setCards((prevCards) => prevCards.filter((card) => card.id !== id));
+    }, []);
+
+    const renderCard = (card: ExtendedCard) => (
         <div key={card.id} className="sm:col-6 md:col-6 lg:col-3 p-2">
-            <ChartCard {...card} />
+            <ChartCard card={card} onDelete={handleDeleteCard} />
         </div>
     );
 
     const renderAddButton = () => (
         <div className="sm:col-6 md:col-6 lg:col-3 p-2">
-            <AddCardButton onCardAdd={(card) => handleAddCard(card)} />
+            <AddCardButton onCardAdd={handleAddCard} />
         </div>
     );
 
@@ -52,7 +64,7 @@ export default function Dashboard() {
         <div className="layout-container layout-light layout-colorscheme-menu layout-static layout-static-inactive p-ripple-disabled">
             {isMobile ? (
                 <Carousel
-                    value={[...cards!.map(renderCard), renderAddButton()]}
+                    value={[...cards.map(renderCard), renderAddButton()]}
                     numVisible={1}
                     numScroll={1}
                     responsiveOptions={responsiveOptions}
@@ -62,7 +74,7 @@ export default function Dashboard() {
                 <div className="xl:center-horizontally flex">
                     <div className="w-full xl:max-w-110rem px-4">
                         <div className="flex flex-wrap justify-content-start">
-                            {cards!.map(renderCard)}
+                            {cards.map(renderCard)}
                             {renderAddButton()}
                         </div>
                     </div>
