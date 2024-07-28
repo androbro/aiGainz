@@ -10,6 +10,7 @@ import { faker } from '@faker-js/faker';
 import { workoutEquipment } from '../testData/workoutEquipment';
 import { muscleGroups } from '../testData/muscleGroup';
 import ChartDataType = $Enums.ChartDataType;
+import { detailedExercises } from '../testData/exercise';
 
 const prisma = new PrismaClient();
 
@@ -26,7 +27,6 @@ async function main() {
         await prisma.muscleType.create({
             data: { name: groupName },
         });
-        console.log(`Created muscle group: ${groupName}`);
     }
 
     // Seed WorkoutEquipment
@@ -39,7 +39,6 @@ async function main() {
                 type: equipment.type as EquipmentType,
             },
         });
-        console.log(`Created workout equipment: ${equipment.name}`);
     }
 
     // Seed Exercises
@@ -60,29 +59,27 @@ async function main() {
 
 async function seedExercises(): Promise<Exercise[]> {
     console.log('Seeding exercises...');
-    const exercises: Exercise[] = [];
-    const muscleTypes = await prisma.muscleType.findMany();
-    const equipments = await prisma.workoutEquipment.findMany();
+    const seededExercises: Exercise[] = [];
 
-    for (let i = 0; i < 50; i++) {
-        const exercise = await prisma.exercise.create({
-            data: {
-                name: faker.lorem.words(3),
-                description: faker.lorem.sentence(),
-                primaryMuscleId: faker.helpers.arrayElement(muscleTypes).id,
-                secondaryMuscleId: faker.helpers.arrayElement([
-                    null,
-                    ...muscleTypes.map((m) => m.id),
-                ]),
-                equipmentId: faker.helpers.arrayElement(equipments).id,
-                difficulty: faker.helpers.arrayElement(['Beginner', 'Intermediate', 'Advanced']),
-            },
-        });
-        exercises.push(exercise);
-        console.log(`Created exercise: ${exercise.name}`);
+    for (const exercise of detailedExercises) {
+        try {
+            const newExercise = await prisma.exercise.create({
+                data: {
+                    name: exercise.name,
+                    description: exercise.description,
+                    primaryMuscleId: exercise.primaryMuscleId,
+                    secondaryMuscleId: exercise.secondaryMuscleId,
+                    equipmentId: exercise.equipmentId,
+                    difficulty: exercise.difficulty,
+                },
+            });
+            seededExercises.push(newExercise);
+        } catch (error) {
+            console.error(`Error creating exercise ${exercise.name}:`, error);
+        }
     }
 
-    return exercises;
+    return seededExercises;
 }
 
 async function seedWorkoutsAndExercises(exercises: Exercise[]) {
@@ -120,10 +117,6 @@ async function seedWorkoutsAndExercises(exercises: Exercise[]) {
         await prisma.workoutExercise.createMany({
             data: workoutExercises,
         });
-
-        console.log(
-            `Created workout: ${workout.name} with ${shuffledExercises.length} exercises on ${workoutDate.toISOString()}`
-        );
     }
 }
 
