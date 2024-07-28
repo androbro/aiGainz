@@ -5,7 +5,7 @@ import { TreeSelect, TreeSelectSelectionKeysType } from 'primereact/treeselect';
 import { Button } from 'primereact/button';
 import { ChartDataType } from '@prisma/client';
 import { CreateCard } from '@/app/api/card/interfaces';
-import { ExtendedChart } from '@/app/api/chart/interfaces';
+import { CreateChart, ExtendedChart } from '@/app/api/chart/interfaces';
 import { string } from 'prop-types';
 
 interface AddCardFormProps {
@@ -46,8 +46,7 @@ export const AddCardForm: React.FC<AddCardFormProps> = ({ onSubmit }) => {
             console.error('Missing required fields');
             return;
         }
-        const newChart: ExtendedChart = {
-            id: 0, // This will be set by the backend
+        const newChart: CreateChart = {
             label: name,
             fill: false,
             borderColor: '#4B91F1',

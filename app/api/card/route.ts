@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
                     title: body.title,
                     period: body.period,
                     chart: {
-                        create: body.chart,
+                        create: body.chart, // The 'id' is already omitted in the CreateCard interface
                     },
                 },
                 include: { chart: true },
