@@ -13,3 +13,15 @@ export const errorNotification = (
         showToast(TOAST_SEVERITY.ERROR, `${error.status}: ${title}`, error.message, 5000);
     }
 };
+
+export const successNotification = (title: string, message: string) => {
+    showToast(TOAST_SEVERITY.SUCCESS, title, message, 5000);
+};
+
+export const infoNotification = (title: string, message: string) => {
+    showToast(TOAST_SEVERITY.INFO, title, message, 5000);
+};
+
+export const warningNotification = (title: string, message: string) => {
+    showToast(TOAST_SEVERITY.WARN, title, message, 5000);
+};

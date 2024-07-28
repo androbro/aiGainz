@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { CustomError, errorNotification } from '@/app/functions/errorNotification';
+import { CustomError, errorNotification } from '@/app/functions/notifications';
 
 export const useErrorNotification = (
     isError: boolean,

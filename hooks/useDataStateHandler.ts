@@ -1,6 +1,6 @@
-import { useErrorNotification } from '@/hooks/useErrorNotification';
+import { useErrorNotification } from '@/hooks/notifications/useErrorNotification';
 import { useLoading } from '@/hooks/useLoading';
-import { CustomError } from '@/app/functions/errorNotification';
+import { CustomError } from '@/app/functions/notifications';
 import { useLoaderStore } from '@/app/store/loaderStore';
 
 interface UseDataStateHandlerParams {

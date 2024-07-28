@@ -5,20 +5,10 @@ import { useDataStateHandler } from '@/hooks/useDataStateHandler';
 import debounce from 'lodash/debounce';
 import { useCallback } from 'react';
 import { CreateCard, ExtendedCard } from '@/app/api/card/interfaces';
+import { infoNotification, successNotification } from '@/app/functions/notifications';
 
 export const useCardsMutations = () => {
     const queryClient = useQueryClient();
-    const queryCache = new QueryCache({
-        onError: (error) => {
-            console.log(error);
-        },
-        onSuccess: (data) => {
-            console.log(data);
-        },
-        onSettled: (data, error) => {
-            console.log(data, error);
-        },
-    });
 
     const updateCardMutation = useMutation<
         ExtendedCard,
@@ -39,6 +29,7 @@ export const useCardsMutations = () => {
         onSuccess: (updatedCard) => {
             //fetch all cached data
             console.log('updatedCard', updatedCard);
+            infoNotification('Card has been updated', 'success');
         },
     });
 
@@ -50,6 +41,7 @@ export const useCardsMutations = () => {
         mutationFn: (data) => CardApi.createCard(data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['cards'] });
+            successNotification('Card has been created', 'success');
         },
     });
 
@@ -57,6 +49,7 @@ export const useCardsMutations = () => {
         mutationFn: (id) => CardApi.deleteCard(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['cards'] });
+            infoNotification('Card has been deleted', 'success');
         },
     });
 
