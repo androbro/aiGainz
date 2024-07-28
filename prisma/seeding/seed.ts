@@ -180,42 +180,50 @@ function generateDateSpreadDataPoints(
 async function seedChartsAndCards() {
     console.log('Seeding charts and cards...');
     const chartTypes = [
-        { title: 'Overall Strength', dataType: ChartDataType.MUSCLE_TYPE },
         { title: 'Bench Press Progress', dataType: ChartDataType.EXERCISE },
-        { title: 'Leg Day Intensity', dataType: ChartDataType.MUSCLE_TYPE },
-        { title: 'Cardio Performance', dataType: ChartDataType.WORKOUT_EQUIPMENT },
-        { title: 'Weight Training Volume', dataType: ChartDataType.EQUIPMENT_TYPE },
-        { title: 'Recovery Time Trend', dataType: ChartDataType.WORKOUT_EXERCISE },
+        { title: 'Chest Strength', dataType: ChartDataType.MUSCLE_TYPE },
+        { title: 'Leg Development', dataType: ChartDataType.MUSCLE_TYPE },
+        { title: 'Leg Press Machine Usage', dataType: ChartDataType.WORKOUT_EQUIPMENT },
     ];
 
     const startDate = new Date('2024-01-01');
 
     for (const chartType of chartTypes) {
-        let dataSourceId: number;
-
         try {
+            let dataSourceId = 1; // Default to 1 if no specific item is found
+
             switch (chartType.dataType) {
-                case ChartDataType.MUSCLE_TYPE:
-                    dataSourceId = (await prisma.muscleType.findFirst())?.id ?? 1;
-                    break;
                 case ChartDataType.EXERCISE:
-                    dataSourceId = (await prisma.exercise.findFirst())?.id ?? 1;
+                    if (chartType.title === 'Bench Press Progress') {
+                        const benchPress = await prisma.exercise.findFirst({
+                            where: { name: 'Bench Press' },
+                        });
+                        if (benchPress) dataSourceId = benchPress.id;
+                    }
+                    break;
+                case ChartDataType.MUSCLE_TYPE:
+                    if (chartType.title === 'Chest Strength') {
+                        const chest = await prisma.muscleType.findFirst({
+                            where: { name: 'Chest' },
+                        });
+                        if (chest) dataSourceId = chest.id;
+                    } else if (chartType.title === 'Leg Development') {
+                        const legs = await prisma.muscleType.findFirst({ where: { name: 'Legs' } });
+                        if (legs) dataSourceId = legs.id;
+                    }
                     break;
                 case ChartDataType.WORKOUT_EQUIPMENT:
-                    dataSourceId = (await prisma.workoutEquipment.findFirst())?.id ?? 1;
+                    if (chartType.title === 'Leg Press Machine Usage') {
+                        const legPressMachine = await prisma.workoutEquipment.findFirst({
+                            where: { name: 'Leg Press Machine' },
+                        });
+                        if (legPressMachine) dataSourceId = legPressMachine.id;
+                    }
                     break;
-                case ChartDataType.EQUIPMENT_TYPE:
-                    dataSourceId = (await prisma.workoutEquipment.findFirst())?.id ?? 1;
-                    break;
-                case ChartDataType.WORKOUT_EXERCISE:
-                    dataSourceId = (await prisma.workoutExercise.findFirst())?.id ?? 1;
-                    break;
-                default:
-                    dataSourceId = 1;
             }
 
             if (dataSourceId === 1) {
-                console.warn(`No item found for ${chartType.dataType}. Using default ID 1.`);
+                console.warn(`No specific item found for ${chartType.title}. Using default ID 1.`);
             }
 
             const chart = await prisma.chart.create({
