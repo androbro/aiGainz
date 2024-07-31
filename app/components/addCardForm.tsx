@@ -7,6 +7,7 @@ import { ChartDataType } from '@prisma/client';
 import { CreateCard } from '@/app/api/card/interfaces';
 import { CreateChart, ExtendedChart } from '@/app/api/chart/interfaces';
 import { string } from 'prop-types';
+import { useGroupedData } from '@/hooks/useGroupedData';
 
 interface AddCardFormProps {
     onSubmit: (cardData: CreateCard) => void;
@@ -17,10 +18,14 @@ export const AddCardForm: React.FC<AddCardFormProps> = ({ onSubmit }) => {
     const [period, setPeriod] = useState<Date | null>(null);
     const [selectedDataSource, setSelectedDataSource] = useState<string | undefined>(undefined);
     const [selectedGroup, setSelectedGroup] = useState<ChartDataType | undefined>(undefined);
-    const [groupedData, setGroupedData] = useState([]);
     const [selectedValue, setSelectedValue] = useState<
         string | TreeSelectSelectionKeysType | TreeSelectSelectionKeysType[] | undefined
     >(undefined);
+
+    const { groupedData } = useGroupedData({
+        enabled: true,
+        filterObject: { id: 'availableData' },
+    });
 
     useEffect(() => {
         const fetchGroupedData = async () => {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { withOptimize } from '@prisma/extension-optimize';
+import { GroupedData } from '@/app/api/groupedData/interfaces';
 
 const prisma = new PrismaClient();
 
@@ -10,7 +11,7 @@ export async function GET(request: NextRequest) {
         const muscleTypes = await prisma.muscleType.findMany();
         const workoutEquipments = await prisma.workoutEquipment.findMany();
 
-        const groupedData = [
+        const groupedData: GroupedData[] = [
             {
                 key: 'exercises',
                 label: 'Exercises',
