@@ -1,15 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { ChartDataType, PrismaClient } from '@prisma/client';
 import { GroupedData } from '@/app/api/groupedData/interfaces';
+import { DataPointsApi } from '@/app/api/dataPoints/api';
 
 const prisma = new PrismaClient();
 
 //this is not filtering yet. you need to filter using the data from the datapoints table
 export async function GET(request: NextRequest) {
     try {
+        const { searchParams } = new URL(request.url);
+        const period = new Date(searchParams.get('period') as string);
+
         const exercises = await prisma.exercise.findMany();
         const muscleTypes = await prisma.muscleType.findMany();
         const workoutEquipments = await prisma.workoutEquipment.findMany();
+
+        //fetch data from the dataPoints table
+        const dataPoints = await DataPointsApi.getAllDataPoints(period);
+
+        console.log('Data points:', dataPoints);
 
         const groupedData: GroupedData[] = [
             {

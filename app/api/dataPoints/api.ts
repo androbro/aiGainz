@@ -9,6 +9,33 @@ export interface DataPoint {
 }
 
 export const DataPointsApi = {
+    getAllDataPoints: async (period?: Date): Promise<DataPoint[]> => {
+        try {
+            const params = {
+                period: period ? period.toISOString() : undefined,
+            };
+
+            const baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
+            const response = await axios.get(`${baseUrl}/api/dataPoints/allDataPoints`, { params });
+
+            console.log('Response received:', response.status, response.statusText);
+
+            if (response.status !== 200) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                console.error('Axios error:', error.message);
+                console.error('Response data:', error.response?.data);
+                console.error('Response status:', error.response?.status);
+            } else {
+                console.error('Unexpected error:', error);
+            }
+            throw new Error('Failed to fetch data points');
+        }
+    },
     getDataPoints: async (
         dataType: ChartDataType,
         dataSourceId: number,
