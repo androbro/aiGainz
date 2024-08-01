@@ -23,28 +23,28 @@ export const AddCardForm: React.FC<AddCardFormProps> = ({ onSubmit }) => {
     >(undefined);
 
     const { groupedData } = useGroupedData({
-        enabled: true,
-        filterObject: { id: 'availableData' },
+        enabled: !!period,
+        period: period || new Date(),
     });
 
-    useEffect(() => {
-        const fetchGroupedData = async () => {
-            try {
-                const response = await fetch('/api/groupedData');
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('Grouped data:', data);
-                    setGroupedData(data);
-                } else {
-                    console.error('Failed to fetch grouped data');
-                }
-            } catch (error) {
-                console.error('Error fetching grouped data:', error);
-            }
-        };
-
-        fetchGroupedData();
-    }, []);
+    // useEffect(() => {
+    //     const fetchGroupedData = async () => {
+    //         try {
+    //             const response = await fetch('/api/groupedData');
+    //             if (response.ok) {
+    //                 const data = await response.json();
+    //                 console.log('Grouped data:', data);
+    //                 setGroupedData(data);
+    //             } else {
+    //                 console.error('Failed to fetch grouped data');
+    //             }
+    //         } catch (error) {
+    //             console.error('Error fetching grouped data:', error);
+    //         }
+    //     };
+    //
+    //     fetchGroupedData();
+    // }, []);
 
     const handleSubmit = () => {
         if (!name || !period || !selectedDataSource || !selectedGroup) {

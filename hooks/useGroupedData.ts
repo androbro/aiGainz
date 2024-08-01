@@ -4,9 +4,14 @@ import {
     UseGroupedDataQueryProps,
 } from '@/hooks/queries/groupedData/useCardsQuery';
 
-export const useGroupedData = (props: UseGroupedDataQueryProps) => {
+interface UseGroupedDataProps {
+    period: Date;
+    enabled?: boolean;
+}
+
+export const useGroupedData = ({ period, enabled = true }: UseGroupedDataProps) => {
     const { groupedData, isLoadingGroupedData, refetchGroupedData, errorGroupedData } =
-        useGroupedDataQuery(props);
+        useGroupedDataQuery({ period, enabled });
     const {
         updateGroupedData,
         isUpdatingGroupedData,

@@ -4,21 +4,18 @@ import { useDataStateHandler } from '@/hooks/useDataStateHandler';
 import { GroupedData } from '@/app/api/groupedData/interfaces';
 
 export interface UseGroupedDataQueryProps {
-    filterObject?: { id: string; [key: string]: any } | undefined;
+    period: Date;
     enabled?: boolean;
 }
 
-export const useGroupedDataQuery = ({
-    filterObject = undefined,
-    enabled = true,
-}: UseGroupedDataQueryProps) => {
+export const useGroupedDataQuery = ({ period, enabled = true }: UseGroupedDataQueryProps) => {
     const errorMessage = 'Error Fetching GroupedData';
 
     const getFilteredGroupedData = async (): Promise<GroupedData[]> => {
-        if (Object.keys(filterObject || {}).length === 0 || filterObject === undefined) {
+        if (!period) {
             return await GroupedDataApi.getGroupedData();
         }
-        const groupedData = await GroupedDataApi.getGroupedDataWhereRecordsAreFound();
+        const groupedData = await GroupedDataApi.getGroupedDataWhereRecordsAreFound(period);
         return groupedData ? groupedData : [];
     };
 

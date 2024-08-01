@@ -9,7 +9,9 @@ const prisma = new PrismaClient();
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        const period = new Date(searchParams.get('period') as string);
+        console.log('searchParams on group:', searchParams);
+        const periodString = searchParams.get('period') as string;
+        const period = new Date(periodString);
 
         const exercises = await prisma.exercise.findMany();
         const muscleTypes = await prisma.muscleType.findMany();

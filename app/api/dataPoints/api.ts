@@ -8,12 +8,14 @@ export interface DataPoint {
     // Add other fields as necessary
 }
 
+//use http://localhost:3000/api/dataPoints/allDataPoints?period=2024-07-31T22:00:00.000Z to test
 export const DataPointsApi = {
-    getAllDataPoints: async (period?: Date): Promise<DataPoint[]> => {
+    getAllDataPoints: async (period: Date): Promise<DataPoint[]> => {
         try {
             const params = {
-                period: period ? period.toISOString() : undefined,
+                period: period.toISOString(),
             };
+            console.log('Params in datapoints:', params);
 
             const baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
             const response = await axios.get(`${baseUrl}/api/dataPoints/allDataPoints`, { params });

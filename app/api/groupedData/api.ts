@@ -10,7 +10,9 @@ export const GroupedDataApi = {
         return response.json();
     },
     getGroupedDataWhereRecordsAreFound: async (period: Date): Promise<GroupedData[]> => {
-        const response = await fetch(`/api/groupedData/whereRecordsAreFound?period=${period}`);
+        const response = await fetch(
+            `/api/groupedData/whereRecordsAreFound?period=${period.toISOString()}`
+        );
         return response.json();
     },
     createGroupedData: async (data: any): Promise<GroupedData> => {

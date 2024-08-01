@@ -8,11 +8,12 @@ const prisma = new PrismaClient();
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        const startDate = searchParams.get('startDate');
+        console.log('searchParams on allDataPoints:', searchParams);
+        const period = searchParams.get('period');
 
         const whereClause: any = {
             date: {
-                gte: startDate,
+                gte: period,
             },
         };
 
