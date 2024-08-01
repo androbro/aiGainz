@@ -9,7 +9,6 @@ const prisma = new PrismaClient();
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        console.log('searchParams on allDataPoints:', searchParams);
         const period = searchParams.get('period');
 
         const exercisesDataPoints = await prisma.chartDataPoint.findMany({
@@ -42,9 +41,6 @@ export async function GET(request: NextRequest) {
                 },
             },
         });
-
-        console.log('workoutEquipmentDataPoints.length: ', workoutEquipmentDataPoints.length);
-
         const response: groupedDataPoints = {
             exercises: exercisesDataPoints,
             muscleTypes: muscleTypeDataPoints,
