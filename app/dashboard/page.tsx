@@ -29,14 +29,7 @@ export default function Dashboard() {
         if (initialCards) {
             setCards(initialCards);
         }
-    }, [initialCards]);
-
-    const handleAddCard = useCallback(
-        (newCard: CreateCard) => {
-            createCard(newCard);
-        },
-        [createCard]
-    );
+    }, [initialCards.length]);
 
     useEffect(() => {
         if (createdCard) {
@@ -44,9 +37,9 @@ export default function Dashboard() {
         }
     }, [createdCard]);
 
-    const handleDeleteCard = useCallback((id: number) => {
+    const handleDeleteCard = (id: number) => {
         setCards((prevCards) => prevCards.filter((card) => card.id !== id));
-    }, []);
+    };
 
     const renderCard = (card: ExtendedCard) => (
         <div key={card.id} className="sm:col-6 md:col-6 lg:col-3 p-2">
@@ -56,7 +49,7 @@ export default function Dashboard() {
 
     const renderAddButton = () => (
         <div className="sm:col-6 md:col-6 lg:col-3 p-2">
-            <AddCardButton onCardAdd={handleAddCard} />
+            <AddCardButton onCardAdd={createCard} />
         </div>
     );
 

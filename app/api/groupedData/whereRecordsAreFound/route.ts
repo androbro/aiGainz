@@ -13,48 +13,58 @@ export async function GET(request: NextRequest) {
         const periodString = searchParams.get('period') as string;
         const period = new Date(periodString);
 
-        const exercises = await prisma.exercise.findMany();
-        const muscleTypes = await prisma.muscleType.findMany();
-        const workoutEquipments = await prisma.workoutEquipment.findMany();
-
         //fetch data from the dataPoints table
         const dataPoints = await DataPointsApi.getAllDataPoints(period);
 
-        console.log('Data points:', dataPoints);
+        const exercises = await prisma.exercise.findMany({
+            where: {
+                id: {
+                    in: dataPoints.exercises.map((dataPoint) => dataPoint.id),
+                },
+            },
+        });
+        const muscleTypes = await prisma.muscleType.findMany({
+            where: {
+                id: {
+                    in: dataPoints.muscleTypes.map((dataPoint) => dataPoint.id),
+                },
+            },
+        });
+        const workoutEquipments = await prisma.workoutEquipment.findMany({
+            where: {
+                id: {
+                    in: dataPoints.workoutEquipments.map((dataPoint) => dataPoint.id),
+                },
+            },
+        });
 
         const groupedData: GroupedData[] = [
             {
                 key: 'exercises',
                 label: 'Exercises',
-                children: exercises
-                    .filter((exercise) => exercise !== null)
-                    .map((exercise) => ({
-                        key: `exercise_${exercise.id}`,
-                        label: exercise.name,
-                        data: exercise,
-                    })),
+                children: exercises.map((exercise) => ({
+                    key: `exercise_${exercise.id}`,
+                    label: exercise.name,
+                    data: exercise,
+                })),
             },
             {
                 key: 'muscleTypes',
                 label: 'Muscle Types',
-                children: muscleTypes
-                    .filter((muscleType) => muscleType !== null)
-                    .map((muscleType) => ({
-                        key: `muscleType_${muscleType.id}`,
-                        label: muscleType.name,
-                        data: muscleType,
-                    })),
+                children: muscleTypes.map((muscleType) => ({
+                    key: `muscleType_${muscleType.id}`,
+                    label: muscleType.name,
+                    data: muscleType,
+                })),
             },
             {
                 key: 'workoutEquipments',
                 label: 'Workout Equipments',
-                children: workoutEquipments
-                    .filter((equipment) => equipment !== null)
-                    .map((equipment) => ({
-                        key: `equipment_${equipment.id}`,
-                        label: equipment.name,
-                        data: equipment,
-                    })),
+                children: workoutEquipments.map((equipment) => ({
+                    key: `equipment_${equipment.id}`,
+                    label: equipment.name,
+                    data: equipment,
+                })),
             },
         ].filter((group) => group.children.length > 0);
 

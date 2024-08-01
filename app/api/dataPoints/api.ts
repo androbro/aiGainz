@@ -1,5 +1,6 @@
 import { ChartDataType } from '@prisma/client';
 import axios from 'axios';
+import { groupedDataPoints } from '@/app/api/dataPoints/interfaces';
 
 export interface DataPoint {
     id: number;
@@ -10,7 +11,7 @@ export interface DataPoint {
 
 //use http://localhost:3000/api/dataPoints/allDataPoints?period=2024-01-01T00:00:00.000Z to test
 export const DataPointsApi = {
-    getAllDataPoints: async (period: Date): Promise<DataPoint[]> => {
+    getAllDataPoints: async (period: Date): Promise<groupedDataPoints> => {
         try {
             const params = {
                 period: period.toISOString(),
@@ -19,8 +20,6 @@ export const DataPointsApi = {
 
             const baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
             const response = await axios.get(`${baseUrl}/api/dataPoints/allDataPoints`, { params });
-
-            console.log('Response received:', response.status, response.statusText);
 
             if (response.status !== 200) {
                 throw new Error(`HTTP error! status: ${response.status}`);
