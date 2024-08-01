@@ -19,6 +19,9 @@
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^3.5.0",
+    "@builder.io/dev-tools": "^1.0.19",
+    "@builder.io/react": "^4.0.1",
+    "@builder.io/sdk": "^2.2.6",
     "@faker-js/faker": "^8.4.1",
     "@neondatabase/serverless": "^0.9.4",
     "@prisma/client": "^5.17.0",
