@@ -11,20 +11,41 @@ export async function GET(request: NextRequest) {
         console.log('searchParams on allDataPoints:', searchParams);
         const period = searchParams.get('period');
 
-        const whereClause: any = {
-            date: {
-                gte: period,
+        const exercisesDataPoints = await prisma.chartDataPoint.findMany({
+            where: {
+                date: {
+                    gte: period!,
+                },
+                exerciseId: {
+                    not: null,
+                },
             },
-        };
-
-        const exercises = await prisma.exercise.findMany(whereClause);
-        const muscleTypes = await prisma.muscleType.findMany(whereClause);
-        const workoutEquipments = await prisma.workoutEquipment.findMany(whereClause);
+        });
+        const muscleTypeDataPoints = await prisma.chartDataPoint.findMany({
+            where: {
+                date: {
+                    gte: period!,
+                },
+                muscleTypeId: {
+                    not: null,
+                },
+            },
+        });
+        const workoutEquipmentDataPoints = await prisma.chartDataPoint.findMany({
+            where: {
+                date: {
+                    gte: period!,
+                },
+                workoutEquipmentId: {
+                    not: null,
+                },
+            },
+        });
 
         return NextResponse.json({
-            exercises: exercises,
-            muscleTypes: muscleTypes,
-            workoutEquipments: workoutEquipments,
+            exercises: exercisesDataPoints,
+            muscleTypes: muscleTypeDataPoints,
+            workoutEquipments: workoutEquipmentDataPoints,
         });
     } catch (error) {
         console.error('Error fetching grouped data:', error);

@@ -8,7 +8,7 @@ export interface DataPoint {
     // Add other fields as necessary
 }
 
-//use http://localhost:3000/api/dataPoints/allDataPoints?period=2024-07-31T22:00:00.000Z to test
+//use http://localhost:3000/api/dataPoints/allDataPoints?period=2024-01-01T00:00:00.000Z to test
 export const DataPointsApi = {
     getAllDataPoints: async (period: Date): Promise<DataPoint[]> => {
         try {

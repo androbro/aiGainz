@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Calendar } from 'primereact/calendar';
 import { TreeSelect, TreeSelectSelectionKeysType } from 'primereact/treeselect';
 import { Button } from 'primereact/button';
 import { ChartDataType } from '@prisma/client';
 import { CreateCard } from '@/app/api/card/interfaces';
-import { CreateChart, ExtendedChart } from '@/app/api/chart/interfaces';
-import { string } from 'prop-types';
+import { CreateChart } from '@/app/api/chart/interfaces';
 import { useGroupedData } from '@/hooks/useGroupedData';
 
 interface AddCardFormProps {
@@ -27,25 +26,6 @@ export const AddCardForm: React.FC<AddCardFormProps> = ({ onSubmit }) => {
         period: period || new Date(),
     });
 
-    // useEffect(() => {
-    //     const fetchGroupedData = async () => {
-    //         try {
-    //             const response = await fetch('/api/groupedData');
-    //             if (response.ok) {
-    //                 const data = await response.json();
-    //                 console.log('Grouped data:', data);
-    //                 setGroupedData(data);
-    //             } else {
-    //                 console.error('Failed to fetch grouped data');
-    //             }
-    //         } catch (error) {
-    //             console.error('Error fetching grouped data:', error);
-    //         }
-    //     };
-    //
-    //     fetchGroupedData();
-    // }, []);
-
     const handleSubmit = () => {
         if (!name || !period || !selectedDataSource || !selectedGroup) {
             console.error('Missing required fields');
@@ -63,7 +43,7 @@ export const AddCardForm: React.FC<AddCardFormProps> = ({ onSubmit }) => {
             maintainAspectRatio: false,
             responsive: true,
             width: null,
-            height: 200,
+            height: 75,
             dataType: selectedGroup,
             dataSourceId: parseInt(selectedDataSource),
         };
@@ -92,11 +72,8 @@ export const AddCardForm: React.FC<AddCardFormProps> = ({ onSubmit }) => {
                 value={selectedValue}
                 options={groupedData}
                 onChange={(e) => {
-                    // e.value is ChartDataType_DataSourceId (e.g. "exercise_2") so we need to split it
                     if (!e.value) return;
-                    const [group, dataSource] = e.value.toString().split('_');
-                    console.log('Selected group:', group);
-                    console.log('Selected data source:', dataSource);
+                    const [group, dataSource] = (e.value as string).split('_');
                     setSelectedGroup(group as ChartDataType);
                     setSelectedDataSource(dataSource);
                     setSelectedValue(e.value);
