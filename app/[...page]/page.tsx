@@ -1,5 +1,6 @@
 import { builder } from '@builder.io/sdk';
 import { RenderBuilderContent } from '@/components/builder';
+import { useCards } from '@/hooks/useCards';
 
 // Builder Public API Key set in .env file
 builder.init(process.env.NEXT_PUBLIC_BUILDER_API_KEY!);
@@ -12,22 +13,22 @@ interface PageProps {
 
 export default async function Page(props: PageProps) {
     const builderModelName = 'page';
+    const urlPath = '/' + (props?.params?.page?.join('/') || '');
+    const { cards } = useCards({}); // Use your existing hook to fetch cards
 
     const content = await builder
-        // Get the page content from Builder with the specified options
         .get(builderModelName, {
             userAttributes: {
-                // Use the page path specified in the URL to fetch the content
-                urlPath: '/' + (props?.params?.page?.join('/') || ''),
+                urlPath: urlPath,
             },
         })
-        // Convert the result to a promise
         .toPromise();
 
     return (
-        <>
-            {/* Render the Builder page */}
-            <RenderBuilderContent content={content} model={builderModelName} />
-        </>
+        <RenderBuilderContent
+            content={content}
+            model={builderModelName}
+            data={{ cards }} // Pass fetched cards to Builder content
+        />
     );
 }

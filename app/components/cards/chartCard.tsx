@@ -13,12 +13,11 @@ import { ExtendedChart } from '@/app/api/chart/interfaces';
 import { CustomContextMenu } from '@/app/components/customContextMenu';
 
 interface ChartCardProps {
-    card: ExtendedCard;
-    onDelete: (id: number) => void;
+    cardData: ExtendedCard;
 }
 
-export function ChartCard({ card, onDelete }: ChartCardProps) {
-    const [cardInfo, setCardInfo] = useState<ExtendedCard>(card);
+export function ChartCard({ cardData }: ChartCardProps) {
+    const [cardInfo, setCardInfo] = useState<ExtendedCard>(cardData);
     const [chartData, setChartData] = useState<ExtendedChart | null>(null);
     const [months, setMonths] = useState<number>(1);
     const [lastDataPoint, setLastDataPoint] = useState<{ date: Date; score: number } | null>(null);
@@ -78,8 +77,6 @@ export function ChartCard({ card, onDelete }: ChartCardProps) {
 
     const handleDelete = () => {
         deleteCard(cardInfo.id.toString());
-        //optimistically remove card
-        onDelete(cardInfo.id);
     };
 
     if (!chartData) {
