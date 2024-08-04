@@ -1,33 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { useUser, UserProfile } from '@auth0/nextjs-auth0/client';
+import React, { useEffect } from 'react';
+import { useUser } from '@auth0/nextjs-auth0/client';
 import { Button } from 'primereact/button';
 import { useLoaderStore } from '@/app/store/loaderStore';
 import { ReactQueryProvider } from './reactQueryProvider';
-import { mockUser } from './mockUser';
 
 interface AuthenticatedQueryProviderProps {
     children: React.ReactNode;
 }
-
 export const AuthenticatedQueryProvider = ({ children }: AuthenticatedQueryProviderProps) => {
-    console.log('AuthenticatedQueryProvider rendering');
     const { user, isLoading } = useUser();
     const { setIsLoading } = useLoaderStore();
-    const [devUser, setDevUser] = useState<UserProfile | null>(null);
-
-    useEffect(() => {
-        console.log('AuthenticatedQueryProvider useEffect');
-        console.log('NODE_ENV:', process.env.NODE_ENV);
-        console.log('SKIP_AUTH:', process.env.NEXT_PUBLIC_SKIP_AUTH);
-        if (
-            process.env.NODE_ENV === 'development' &&
-            process.env.NEXT_PUBLIC_SKIP_AUTH === 'true'
-        ) {
-            console.log('Setting devUser');
-            setDevUser(mockUser as UserProfile);
-        }
-    }, []);
-
     useEffect(() => {
         console.log('isLoading', isLoading);
         if (isLoading) {
@@ -35,17 +17,9 @@ export const AuthenticatedQueryProvider = ({ children }: AuthenticatedQueryProvi
         } else {
             setIsLoading(false);
         }
-    }, [isLoading, setIsLoading]);
+    }, []);
 
-    const activeUser =
-        process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_SKIP_AUTH === 'true'
-            ? devUser
-            : user;
-
-    console.log('activeUser', activeUser);
-
-    if (!activeUser && !isLoading) {
-        console.log('No active user and not loading, showing login screen');
+    if (!user && !isLoading) {
         // User is not authenticated, render a fallback or redirect to login
         return (
             <div>
@@ -105,7 +79,6 @@ export const AuthenticatedQueryProvider = ({ children }: AuthenticatedQueryProvi
         );
     }
 
-    // User is authenticated (or using mock user in dev mode), render the ReactQueryProvider and its children
-    console.log('Rendering children with ReactQueryProvider');
+    // User is authenticated, render the ReactQueryProvider and its children
     return <ReactQueryProvider>{children}</ReactQueryProvider>;
 };
