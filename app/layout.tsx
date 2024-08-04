@@ -67,28 +67,39 @@ export default function RootLayout({
                         <meta name="Reason Codes" content="width=device-width, initial-scale=1.0" />
                         <title>{APP_NAME}</title>
                     </head>
-                    <body className="surface-100">
+                    <body className="surface-100 m-0">
                         <AuthenticatedQueryProvider>
-                            <div>
-                                <div>
-                                    {showNav && <SideNav navClosed={() => setShowNav(false)} />}
-                                    <div className="flex m-4">
-                                        <Button
-                                            type="button"
-                                            onClick={() => setShowNav(!showNav)}
-                                            icon="pi pi-bars"
-                                            rounded
-                                            text
-                                            raised
-                                            className="h-2rem w-2rem"
-                                        />
-                                        <div className="w-full">
-                                            <TopBar />
-                                        </div>
-                                    </div>
-                                    <div className="w-full">{children}</div>
+                            <div style={{ minHeight: '100vh' }}>
+                                <TopBar />
+                                <div
+                                    style={{
+                                        position: 'absolute',
+                                        top: 100,
+                                        left: 0,
+                                        right: 0,
+                                        zIndex: 1,
+                                    }}
+                                >
+                                    <div className="w-full m-2">{children}</div>
                                 </div>
                             </div>
+                            {/*<div>*/}
+                            {/*    <TopBar />*/}
+                            {/*    /!*<div className="flex m-4">*!/*/}
+                            {/*    /!*    <Button*!/*/}
+                            {/*    /!*        type="button"*!/*/}
+                            {/*    /!*        onClick={() => setShowNav(!showNav)}*!/*/}
+                            {/*    /!*        icon="pi pi-bars"*!/*/}
+                            {/*    /!*        rounded*!/*/}
+                            {/*    /!*        text*!/*/}
+                            {/*    /!*        raised*!/*/}
+                            {/*    /!*        className="h-2rem w-2rem"*!/*/}
+                            {/*    /!*    />*!/*/}
+                            {/*    /!*    <div className="w-full">{children}</div>*!/*/}
+                            {/*    /!*</div>*!/*/}
+                            {/*    /!*{showNav && <SideNav navClosed={() => setShowNav(false)} />}*!/*/}
+                            {/*    <div className="w-full m-2">{children}</div>*/}
+                            {/*</div>*/}
                         </AuthenticatedQueryProvider>
                         <div>
                             {initialLoad ||
