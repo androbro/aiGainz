@@ -1,3 +1,4 @@
+'use client';
 interface SideBarProps {}
 
 export default function Aside({}: SideBarProps) {

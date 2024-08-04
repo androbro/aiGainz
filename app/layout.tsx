@@ -80,7 +80,7 @@ export default function RootLayout({
                                         zIndex: 1,
                                     }}
                                 >
-                                    <div className="w-full m-2">{children}</div>
+                                    <div className="m-2">{children}</div>
                                 </div>
                             </div>
                             {/*<div>*/}

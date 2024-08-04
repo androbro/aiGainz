@@ -1,15 +1,13 @@
 'use client';
 import React from 'react';
-import Dashboard from '@/app/dashboard/page';
-import { useUser } from '@auth0/nextjs-auth0/client';
+import Home from '@/app/home/page';
 
-export default function Home() {
-    const { user } = useUser();
+export default function App() {
     return (
         <div className="m-4">
             <div className="">
                 <div>
-                    <Dashboard />
+                    <Home />
                 </div>
             </div>
         </div>
