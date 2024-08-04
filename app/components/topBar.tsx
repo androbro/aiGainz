@@ -53,7 +53,7 @@ export default function TopBar() {
         >
             <div className="w-full flex justify-content-between align-items-center">
                 <div className="flex align-items-center">
-                    <span className="text-xl font-bold text-white mr-4">aiGainz</span>
+                    <span className="text-xl font-bold text-white mr-4 ml-2">aiGainz</span>
                 </div>
                 <div className="flex align-items-center">
                     <span className="p-input-icon-left mr-3">
@@ -89,7 +89,7 @@ export default function TopBar() {
                         <li key={link.name} className="mr-3">
                             <Link
                                 href={link.href}
-                                className={`no-underline transition-colors duration-200 ${
+                                className={`no-underline transition-colors duration-200 font-semibold ${
                                     activeLink === link.name
                                         ? 'text-cyan-500 uppercase'
                                         : 'text-gray-400 hover:text-cyan-900'

@@ -70,7 +70,7 @@ export default function MainContent() {
                             <div className="w-full xl:max-w-110rem px-4">
                                 <div className="flex flex-wrap justify-content-start">
                                     {cards.map(renderCard)}
-                                    {renderAddButton()}
+                                    {/*{renderAddButton()}*/}
                                 </div>
                             </div>
                         </div>
