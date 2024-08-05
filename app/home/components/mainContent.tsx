@@ -4,10 +4,12 @@ import { ChartCard } from '@/app/components/cards/chartCard';
 import AddCardButton from '@/app/components/addCardButton';
 import { useCards } from '@/hooks/useCards';
 import { ExtendedCard } from '@/app/api/card/interfaces';
+import { NaturalLanguagePeriodPicker } from '@/app/components/naturalLanguagePeriodPicker';
 
 export default function MainContent() {
     const { createCard, cards: initialCards, createdCard } = useCards({});
     const [cards, setCards] = useState<ExtendedCard[]>([]);
+    const [pickedDate, setPickedDate] = useState<Date | null>(null);
 
     useEffect(() => {
         if (initialCards) {
@@ -37,7 +39,10 @@ export default function MainContent() {
                 <div className="text-2xl" style={{ fontWeight: 500 }}>
                     Home
                 </div>
-                <div>Dropdown</div>
+                <div>
+                    {pickedDate && pickedDate.toDateString()}
+                    <NaturalLanguagePeriodPicker onChange={setPickedDate} />
+                </div>
             </div>
             <section className="flex-column w-full" style={{ minHeight: '400px' }}>
                 <div className="grid m-4">
