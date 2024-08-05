@@ -88,7 +88,7 @@ export function ChartCard({ card, onDelete }: ChartCardProps) {
 
     return (
         <CustomContextMenu onRename={handleRename} onDelete={handleDelete}>
-            <div className="bg-green-400 border-round-3xl mt-5">
+            <div className="bg-green-400 border-round-3xl">
                 <div className="grid p-3">
                     <div className="col-12 ">
                         <CardHeader title={cardInfo.title} />
