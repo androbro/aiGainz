@@ -94,7 +94,6 @@ export function ChartCard({ card, onDelete }: ChartCardProps) {
                 className="border-round-3xl text-white"
                 style={{
                     ...gradientStyle,
-                    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)'
                 }}
             >
                 <div className="grid">
@@ -118,12 +117,23 @@ export function ChartCard({ card, onDelete }: ChartCardProps) {
 
 function getGradientStyle(id: number): React.CSSProperties {
     const gradients = [
-        { from: '#FF8008', to: '#FFC837' },  // Orange to Yellow
-        { from: '#2193b0', to: '#6dd5ed' },  // Blue to Cyan
-        { from: '#06beb6', to: '#48b1bf' }   // Cyan to Teal
+        { from: 'rgb(255, 128, 8)', to: 'rgb(255, 200, 55)' }, // Orange to Yellow
+        { from: 'rgb(33, 147, 176)', to: 'rgb(109, 213, 237)' }, // Blue to Cyan
+        { from: 'rgb(6, 190, 182)', to: 'rgb(72, 177, 191)' }, // Cyan to Teal
     ];
     const { from, to } = gradients[id % gradients.length];
+
+    // Extract the RGB values from the 'from' color
+    const matches = from.match(/\d+/g);
+    if (!matches || matches.length !== 3) {
+        console.error('Invalid color format');
+        return {};
+    }
+
+    const [r, g, b] = matches.map(Number);
+
     return {
         background: `linear-gradient(135deg, ${from} 0%, ${to} 100%)`,
+        boxShadow: `0 4px 10px rgba(${r}, ${g}, ${b}, 0.5)`,
     };
 }
