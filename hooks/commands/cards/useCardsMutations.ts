@@ -26,16 +26,25 @@ export const useCardsMutations = () => {
                 return Promise.reject(new Error('Invalid data'));
             }
         },
-        onSuccess: (updatedCard) => {
-            //fetch all cached data
-            console.log('updatedCard', updatedCard);
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['cards'] });
             infoNotification('Card has been updated', 'success');
         },
     });
 
-    function isExtendedCard(card: Partial<ExtendedCard> & { id?: number }): card is ExtendedCard {
-        return card.id !== undefined;
-    }
+    const updateCardsMutation = useMutation<ExtendedCard[], Error, { cards: Card[] }>({
+        mutationFn: ({ cards }) => {
+            const extendedCards = cards.map((card) => ({
+                ...card,
+                id: card.id,
+            }));
+            return CardApi.updateCards(extendedCards);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['cards'] });
+            infoNotification('Cards have been updated', 'success');
+        },
+    });
 
     const createCardMutation = useMutation<ExtendedCard, Error, CreateCard>({
         mutationFn: (data) => CardApi.createCard(data),
@@ -52,6 +61,10 @@ export const useCardsMutations = () => {
             infoNotification('Card has been deleted', 'success');
         },
     });
+
+    function isExtendedCard(card: Partial<ExtendedCard> & { id?: number }): card is ExtendedCard {
+        return card.id !== undefined;
+    }
 
     useDataStateHandler({
         isLoading: updateCardMutation.isPending,
@@ -74,6 +87,13 @@ export const useCardsMutations = () => {
         errorMessage: 'Error deleting card',
     });
 
+    useDataStateHandler({
+        isLoading: updateCardsMutation.isPending,
+        isError: updateCardsMutation.isError,
+        error: updateCardsMutation.error,
+        errorMessage: 'Error updating cards',
+    });
+
     const debouncedUpdateCard = useCallback(debounce(updateCardMutation.mutate, 500), [
         updateCardMutation.mutate,
     ]);
@@ -86,10 +106,17 @@ export const useCardsMutations = () => {
         deleteCardMutation.mutate,
     ]);
 
+    const debouncedUpdateCards = useCallback(debounce(updateCardsMutation.mutate, 500), [
+        updateCardsMutation.mutate,
+    ]);
+
     return {
         updateCard: debouncedUpdateCard,
         isUpdatingCard: updateCardMutation.isPending,
         updatedCard: updateCardMutation.data,
+        updateCards: debouncedUpdateCards,
+        isUpdatingCards: updateCardsMutation.isPending,
+        updatedCards: updateCardsMutation.data,
         createCard: debouncedCreateCard,
         isCreatingCard: createCardMutation.isPending,
         createdCard: createCardMutation.data,

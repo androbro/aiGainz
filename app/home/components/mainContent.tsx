@@ -6,7 +6,14 @@ import { NaturalLanguagePeriodPicker } from '@/app/components/naturalLanguagePer
 import { CardApi } from '@/app/api/card/api';
 
 export default function MainContent() {
-    const { createCard, cards: initialCards, createdCard } = useCards({});
+    const {
+        createCard,
+        cards: initialCards,
+        createdCard,
+        updateCards,
+        updatedCards,
+        refetchCards,
+    } = useCards({});
     const [cards, setCards] = useState<ExtendedCard[]>([]);
     const [pickedDate, setPickedDate] = useState<Date | null>(null);
     const [generatedPeriod, setGeneratedPeriod] = useState<Date | null>(null);
@@ -23,20 +30,24 @@ export default function MainContent() {
         }
     }, [createdCard]);
 
+    useEffect(() => {
+        refetchCards();
+    }, [updatedCards]);
+
     const handleDeleteCard = (id: number) => {
         setCards((prevCards) => prevCards.filter((card) => card.id !== id));
     };
 
     const updateCardsWithNewPeriod = async () => {
         if (generatedPeriod) {
-            const newCards = cards.map((card) => ({
-                ...card,
-                id: card.id,
-                period: generatedPeriod,
-            }));
-            setCards(newCards);
             try {
-                await CardApi.updateCards(newCards);
+                const newCards: ExtendedCard[] = cards.map((card) => ({
+                    ...card,
+                    period: generatedPeriod,
+                }));
+                setCards(newCards);
+                updateCards({ cards: newCards });
+                // await CardApi.updateCards(cards);
                 setPickedDate(generatedPeriod);
             } catch (error) {
                 console.error('Failed to update cards:', error);

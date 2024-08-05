@@ -4,14 +4,17 @@ import { useCardsMutations } from '@/hooks/commands/cards/useCardsMutations';
 export const useCards = (props: UseCardsQueryProps) => {
     const { cards, isLoadingCards, refetchCards, errorCards } = useCardsQuery(props);
     const {
-        updateCard,
-        isUpdatingCard,
-        updatedCard,
         createCard,
         createdCard,
-        isCreatingCard,
         deleteCard,
+        isCreatingCard,
         isDeletingCard,
+        isUpdatingCard,
+        isUpdatingCards,
+        updateCard,
+        updateCards,
+        updatedCard,
+        updatedCards,
     } = useCardsMutations();
 
     return {
@@ -19,13 +22,16 @@ export const useCards = (props: UseCardsQueryProps) => {
         isLoadingCards,
         refetchCards,
         errorCards,
-        updateCard,
-        isUpdatingCard,
         createCard,
         createdCard,
-        isCreatingCard,
         deleteCard,
+        isCreatingCard,
         isDeletingCard,
+        isUpdatingCard,
+        isUpdatingCards,
+        updateCard,
+        updateCards,
         updatedCard,
+        updatedCards,
     };
 };
