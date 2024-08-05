@@ -6,7 +6,6 @@ import { useCards } from '@/hooks/useCards';
 import { ExtendedCard } from '@/app/api/card/interfaces';
 
 export default function MainContent() {
-    const isMobile = useMobileChecker();
     const { createCard, cards: initialCards, createdCard } = useCards({});
     const [cards, setCards] = useState<ExtendedCard[]>([]);
 
@@ -33,13 +32,19 @@ export default function MainContent() {
     );
 
     return (
-        <section className="flex flex-col w-full">
-            <div className="surface-0 border-round-2xl w-full" style={{ minHeight: '400px' }}>
+        <div className="flex flex-column w-full surface-0 border-round-3xl ">
+            <div className="flex gap-3 m-4 p-2 mb-0 pb-0">
+                <div className="text-2xl" style={{ fontWeight: 500 }}>
+                    Home
+                </div>
+                <div>Dropdown</div>
+            </div>
+            <section className="flex-column w-full" style={{ minHeight: '400px' }}>
                 <div className="grid m-4">
                     {cards.map(renderCard)}
                     {/*{renderAddButton()}*/}
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
     );
 }
