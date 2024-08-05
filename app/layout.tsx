@@ -14,7 +14,21 @@ import { AuthenticatedQueryProvider } from '@/app/providers/authenticatedQueryPr
 import { ReactQueryProvider } from '@/app/providers/reactQueryProvider';
 // import 'primereact/resources/themes/lara-dark-purple/theme.css';
 
-const inter = Inter({ subsets: ['latin'] });
+import localFont from 'next/font/local';
+
+const inter = localFont({
+    src: [
+        {
+            path: '../public/fonts/Inter-VariableFont_opsz,wght.ttf',
+            style: 'normal',
+        },
+        {
+            path: '../public/fonts/Inter-Italic-VariableFont_opsz,wght.ttf',
+            style: 'italic',
+        },
+    ],
+    variable: '--font-inter',
+});
 
 export default function RootLayout({
     children,
@@ -59,7 +73,7 @@ export default function RootLayout({
     }, [initialLoad]);
 
     return (
-        <html lang="en">
+        <html lang="en" className={`${inter.variable} ${inter.className}`}>
             <UserProvider>
                 <PrimeReactProvider>
                     <head>
