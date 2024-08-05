@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ChartDataType, PrismaClient } from '@prisma/client';
-import { CreateCard } from '@/app/api/card/interfaces';
+import { CreateCard, ExtendedCard } from '@/app/api/card/interfaces';
 import { DataPointsApi } from '@/app/api/dataPoints/api';
 
 const prisma = new PrismaClient();
@@ -125,70 +125,130 @@ export async function POST(request: NextRequest) {
     }
 }
 
-//url = /api/card?id=1
 export async function PUT(req: NextRequest) {
     const url = new URL(req.url);
     const id = url.searchParams.get('id');
 
-    if (!id) {
-        return NextResponse.json({ error: 'ID is required' }, { status: 400 });
-    }
+    if (id) {
+        // Existing single card update logic
+        try {
+            const body = await req.json();
+            // console.log('Received body:', JSON.stringify(body, null, 2));
 
-    try {
-        const body = await req.json();
-        // console.log('Received body:', JSON.stringify(body, null, 2));
-
-        console.log('Attempting to update card with ID:', id);
-        const updatedCard = await prisma.card.update({
-            where: { id: parseInt(id) },
-            data: {
-                title: body.title,
-                period: new Date(body.period),
-                chart: {
-                    update: {
-                        label: body.chart.label,
-                        fill: body.chart.fill,
-                        borderColor: body.chart.borderColor,
-                        tension: body.chart.tension,
-                        pointRadius: body.chart.pointRadius,
-                        showLegend: body.chart.showLegend,
-                        showXAxis: body.chart.showXAxis,
-                        showYAxis: body.chart.showYAxis,
-                        maintainAspectRatio: body.chart.maintainAspectRatio,
-                        responsive: body.chart.responsive,
-                        width: body.chart.width,
-                        height: body.chart.height,
-                        dataType: body.chart.dataType,
-                        dataSourceId: body.chart.dataSourceId,
+            console.log('Attempting to update card with ID:', id);
+            const updatedCard = await prisma.card.update({
+                where: { id: parseInt(id) },
+                data: {
+                    title: body.title,
+                    period: new Date(body.period),
+                    chart: {
+                        update: {
+                            label: body.chart.label,
+                            fill: body.chart.fill,
+                            borderColor: body.chart.borderColor,
+                            tension: body.chart.tension,
+                            pointRadius: body.chart.pointRadius,
+                            showLegend: body.chart.showLegend,
+                            showXAxis: body.chart.showXAxis,
+                            showYAxis: body.chart.showYAxis,
+                            maintainAspectRatio: body.chart.maintainAspectRatio,
+                            responsive: body.chart.responsive,
+                            width: body.chart.width,
+                            height: body.chart.height,
+                            dataType: body.chart.dataType,
+                            dataSourceId: body.chart.dataSourceId,
+                        },
                     },
                 },
-            },
-            include: { chart: true },
-        });
+                include: { chart: true },
+            });
 
-        // Fetch updated data points
-        const dataPoints = await DataPointsApi.getDataPoints(
-            updatedCard.chart.dataType,
-            updatedCard.chart.dataSourceId,
-            updatedCard.period!
-        );
+            // Fetch updated data points
+            const dataPoints = await DataPointsApi.getDataPoints(
+                updatedCard.chart.dataType,
+                updatedCard.chart.dataSourceId,
+                updatedCard.period!
+            );
 
-        const updatedCardWithDataPoints = {
-            ...updatedCard,
-            chart: {
-                ...updatedCard.chart,
-                dataPoints: dataPoints,
-            },
-        };
+            const updatedCardWithDataPoints = {
+                ...updatedCard,
+                chart: {
+                    ...updatedCard.chart,
+                    dataPoints: dataPoints,
+                },
+            };
 
-        console.log('Card updated successfully:', updatedCardWithDataPoints);
-        return NextResponse.json(updatedCardWithDataPoints);
-    } catch (error) {
-        console.error('Error updating card:', error);
-        return NextResponse.json(
-            { error: 'Card not found or update failed', details: error },
-            { status: 500 }
-        );
+            console.log('Card updated successfully:', updatedCardWithDataPoints);
+            return NextResponse.json(updatedCardWithDataPoints);
+        } catch (error) {
+            console.error('Error updating card:', error);
+            return NextResponse.json(
+                { error: 'Card not found or update failed', details: error },
+                { status: 500 }
+            );
+        }
+    } else {
+        // New logic for updating multiple cards
+        try {
+            const cards: ExtendedCard[] = await req.json();
+            const updatedCards = await Promise.all(
+                cards.map(async (card) => {
+                    if (!card.chart) {
+                        throw new Error(`Chart data missing for card with ID: ${card.id}`);
+                    }
+                    const updatedCard = await prisma.card.update({
+                        where: { id: card.id },
+                        data: {
+                            title: card.title,
+                            period: card.period ? new Date(card.period) : undefined,
+                            chart: {
+                                update: {
+                                    label: card.chart.label,
+                                    fill: card.chart.fill,
+                                    borderColor: card.chart.borderColor,
+                                    tension: card.chart.tension,
+                                    pointRadius: card.chart.pointRadius,
+                                    showLegend: card.chart.showLegend,
+                                    showXAxis: card.chart.showXAxis,
+                                    showYAxis: card.chart.showYAxis,
+                                    maintainAspectRatio: card.chart.maintainAspectRatio,
+                                    responsive: card.chart.responsive,
+                                    width: card.chart.width,
+                                    height: card.chart.height,
+                                    dataType: card.chart.dataType,
+                                    dataSourceId: card.chart.dataSourceId,
+                                },
+                            },
+                        },
+                        include: { chart: true },
+                    });
+
+                    // Fetch updated data points
+                    const dataPoints = await DataPointsApi.getDataPoints(
+                        updatedCard.chart.dataType,
+                        updatedCard.chart.dataSourceId,
+                        updatedCard.period || new Date()
+                    );
+
+                    return {
+                        ...updatedCard,
+                        chart: {
+                            ...updatedCard.chart,
+                            dataPoints: dataPoints,
+                        },
+                    };
+                })
+            );
+
+            console.log('Cards updated successfully:', updatedCards);
+            return NextResponse.json(updatedCards);
+        } catch (error) {
+            console.error('Error updating cards:', error);
+            return NextResponse.json(
+                { error: 'Failed to update cards', details: error },
+                { status: 500 }
+            );
+        }
     }
 }
 

@@ -29,6 +29,16 @@ export const CardApi = {
         });
         return response.json();
     },
+    updateCards: async (data: ExtendedCard[]): Promise<ExtendedCard[]> => {
+        const response = await fetch('/api/card', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+        return response.json();
+    },
     deleteCard: async (id: string): Promise<void> => {
         const response = await fetch(`/api/card?id=${id}`, {
             method: 'DELETE',
