@@ -86,9 +86,17 @@ export function ChartCard({ card, onDelete }: ChartCardProps) {
         return <CardSkeleton />;
     }
 
+    const gradientStyle = getGradientStyle(card.id);
+
     return (
         <CustomContextMenu onRename={handleRename} onDelete={handleDelete}>
-            <div className="bg-green-400 border-round-3xl">
+            <div
+                className="border-round-3xl text-white"
+                style={{
+                    ...gradientStyle,
+                    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)'
+                }}
+            >
                 <div className="grid">
                     <div className="col-12 p-3 pb-0 mt-1">
                         <CardHeader title={cardInfo.title} />
@@ -98,12 +106,6 @@ export function ChartCard({ card, onDelete }: ChartCardProps) {
                             score={lastDataPoint ? lastDataPoint.score : 0}
                             percentageChange={percentageChange}
                         />
-                        {/*<PeriodSelector*/}
-                        {/*    months={months}*/}
-                        {/*    period={cardInfo.period}*/}
-                        {/*    onChange={handlePeriodChange}*/}
-                        {/*    isMobile={isMobile}*/}
-                        {/*/>*/}
                     </div>
                     <div className="col-6">
                         <ChartDisplay chartData={chartData} />
@@ -112,4 +114,16 @@ export function ChartCard({ card, onDelete }: ChartCardProps) {
             </div>
         </CustomContextMenu>
     );
+}
+
+function getGradientStyle(id: number): React.CSSProperties {
+    const gradients = [
+        { from: '#FF8008', to: '#FFC837' },  // Orange to Yellow
+        { from: '#2193b0', to: '#6dd5ed' },  // Blue to Cyan
+        { from: '#06beb6', to: '#48b1bf' }   // Cyan to Teal
+    ];
+    const { from, to } = gradients[id % gradients.length];
+    return {
+        background: `linear-gradient(135deg, ${from} 0%, ${to} 100%)`,
+    };
 }
