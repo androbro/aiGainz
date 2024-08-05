@@ -21,9 +21,12 @@ export const ChartDisplay: React.FC<ChartDisplayProps> = ({ chartData }) => {
                         label: chartData.label,
                         data: chartData.dataPoints?.map((dp) => dp.score) || [],
                         fill: chartData.fill,
-                        borderColor: chartData.borderColor || undefined,
-                        tension: chartData.tension,
-                        pointRadius: chartData.pointRadius,
+                        // borderColor: chartData.borderColor || undefined,
+                        // tension: chartData.tension,
+                        // pointRadius: chartData.pointRadius,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        borderColor: '#fff',
                     },
                 ],
             });
@@ -56,7 +59,7 @@ export const ChartDisplay: React.FC<ChartDisplayProps> = ({ chartData }) => {
     }, [chartData]);
 
     return (
-        <div>
+        <div className="mr-2">
             {chartData.dataPoints?.length === 0 && <div>No data available</div>}
             <Chart
                 type="line"

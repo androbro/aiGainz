@@ -88,7 +88,7 @@ export function ChartCard({ card, onDelete }: ChartCardProps) {
 
     return (
         <CustomContextMenu onRename={handleRename} onDelete={handleDelete}>
-            <Card>
+            <div className="bg-green-400 border-round-3xl mt-5">
                 <div className="grid">
                     <CardHeader title={cardInfo.title} />
                     <div className="col-6 flex flex-column justify-content-center">
@@ -96,18 +96,18 @@ export function ChartCard({ card, onDelete }: ChartCardProps) {
                             score={lastDataPoint ? lastDataPoint.score : 0}
                             percentageChange={percentageChange}
                         />
-                        <PeriodSelector
-                            months={months}
-                            period={cardInfo.period}
-                            onChange={handlePeriodChange}
-                            isMobile={isMobile}
-                        />
+                        {/*<PeriodSelector*/}
+                        {/*    months={months}*/}
+                        {/*    period={cardInfo.period}*/}
+                        {/*    onChange={handlePeriodChange}*/}
+                        {/*    isMobile={isMobile}*/}
+                        {/*/>*/}
                     </div>
                     <div className="col-6">
                         <ChartDisplay chartData={chartData} />
                     </div>
                 </div>
-            </Card>
+            </div>
         </CustomContextMenu>
     );
 }

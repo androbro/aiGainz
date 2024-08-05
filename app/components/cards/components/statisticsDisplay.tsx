@@ -18,14 +18,15 @@ export const StatisticsDisplay: React.FC<StatisticsDisplayProps> = ({
         if (percentageChange === undefined) {
             return;
         }
-        setTextColorClass(percentageChange >= 0 ? 'text-green-500' : 'text-red-500');
+        // setTextColorClass(percentageChange >= 0 ? 'text-green-500' : 'text-red-500');
+        setTextColorClass('text-0');
         setIconClass(percentageChange >= 0 ? 'pi pi-arrow-up' : 'pi pi-arrow-down');
         setFormattedPercentageChange(Math.abs(percentageChange).toFixed(0));
         setFormattedScore(score.toFixed(0));
     }, [score, percentageChange]);
 
     return (
-        <div className="font-bold text-lg mb-2">
+        <div className="font-bold text-lg m-2 text-0">
             {formattedScore}
             <div className={`${textColorClass} mt-2 flex`}>
                 <div>{percentageChange! >= 0 ? '+' : '-'}</div>
