@@ -26,15 +26,17 @@ export const StatisticsDisplay: React.FC<StatisticsDisplayProps> = ({
     }, [score, percentageChange]);
 
     return (
-        <div className="font-bold text-lg m-2 text-0">
-            {formattedScore}
-            <div className={`${textColorClass} mt-2 flex`}>
+        <div className="text-0">
+            <div className="text-2xl" style={{ fontWeight: 600 }}>
+                {formattedScore}
+            </div>
+            <div className="flex text-sm">
                 <div>{percentageChange! >= 0 ? '+' : '-'}</div>
                 <div>{formattedPercentageChange}</div>
                 <div>%</div>
-                <div>
-                    <i className={iconClass}></i>
-                </div>
+                {/*<div>*/}
+                {/*    <i className={iconClass}></i>*/}
+                {/*</div>*/}
             </div>
         </div>
     );
