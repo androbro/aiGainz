@@ -59,7 +59,7 @@ export const ChartDisplay: React.FC<ChartDisplayProps> = ({ chartData }) => {
     }, [chartData]);
 
     return (
-        <div className="mr-2">
+        <div>
             {chartData.dataPoints?.length === 0 && <div>No data available</div>}
             <Chart
                 type="line"

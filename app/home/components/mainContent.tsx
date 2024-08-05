@@ -42,7 +42,7 @@ export default function MainContent() {
     };
 
     const renderCard = (card: ExtendedCard) => (
-        <div key={card.id} className="sm:col-6 md:col-6 lg:col-3 p-2">
+        <div key={card.id} className="col-12 sm:col-6 lg:col-4 xl:col-3 p-2">
             <ChartCard card={card} onDelete={handleDeleteCard} />
         </div>
     );
@@ -54,27 +54,17 @@ export default function MainContent() {
     );
 
     return (
-        <section className="flex flex-column w-full ">
-            <div className="surface-0 border-round-2xl" style={{ height: '400px' }}>
+        <section className="flex flex-column w-full">
+            <div className="surface-0 border-round-2xl" style={{ minHeight: '400px' }}>
                 <div className="layout-container layout-light layout-colorscheme-menu layout-static layout-static-inactive p-ripple-disabled">
-                    {isMobile ? (
-                        <Carousel
-                            value={[...cards.map(renderCard), renderAddButton()]}
-                            numVisible={1}
-                            numScroll={1}
-                            responsiveOptions={responsiveOptions}
-                            itemTemplate={(item) => item}
-                        />
-                    ) : (
-                        <div className="xl:center-horizontally flex">
-                            <div className="w-full xl:max-w-110rem px-4">
-                                <div className="flex flex-wrap justify-content-start">
-                                    {cards.map(renderCard)}
-                                    {/*{renderAddButton()}*/}
-                                </div>
+                    <div className="xl:center-horizontally flex">
+                        <div className="w-full xl:max-w-110rem px-4">
+                            <div className="flex flex-wrap justify-content-between">
+                                {cards.map(renderCard)}
+                                {/*{renderAddButton()}*/}
                             </div>
                         </div>
-                    )}
+                    </div>
                 </div>
             </div>
         </section>

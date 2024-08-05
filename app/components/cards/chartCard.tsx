@@ -89,8 +89,10 @@ export function ChartCard({ card, onDelete }: ChartCardProps) {
     return (
         <CustomContextMenu onRename={handleRename} onDelete={handleDelete}>
             <div className="bg-green-400 border-round-3xl mt-5">
-                <div className="grid">
-                    <CardHeader title={cardInfo.title} />
+                <div className="grid p-3">
+                    <div className="col-12 ">
+                        <CardHeader title={cardInfo.title} />
+                    </div>
                     <div className="col-6 flex flex-column justify-content-center">
                         <StatisticsDisplay
                             score={lastDataPoint ? lastDataPoint.score : 0}

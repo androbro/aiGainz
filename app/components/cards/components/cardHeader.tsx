@@ -5,8 +5,8 @@ type CardHeaderProps = {
 };
 
 export const CardHeader: React.FC<CardHeaderProps> = ({ title }) => (
-    <div className="col-12 ml-3">
-        <div className="text-md text-0" style={{ fontWeight: 600 }}>
+    <div>
+        <div className="text-sm text-0" style={{ fontWeight: 600 }}>
             {title}
         </div>
     </div>
