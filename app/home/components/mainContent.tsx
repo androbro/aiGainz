@@ -27,7 +27,7 @@ export default function MainContent() {
     };
 
     const renderCard = (card: ExtendedCard) => (
-        <div key={card.id}>
+        <div className="col-12 md:col-12 lg:col-4" key={card.id}>
             <ChartCard card={card} onDelete={handleDeleteCard} />
         </div>
     );
@@ -35,11 +35,9 @@ export default function MainContent() {
     return (
         <section className="flex flex-col w-full">
             <div className="surface-0 border-round-2xl w-full" style={{ minHeight: '400px' }}>
-                <div className="w-full  px-4">
-                    <div className="flex flex-row gap-4 justify-between">
-                        {cards.map(renderCard)}
-                        {/*{renderAddButton()}*/}
-                    </div>
+                <div className="grid m-4">
+                    {cards.map(renderCard)}
+                    {/*{renderAddButton()}*/}
                 </div>
             </div>
         </section>
