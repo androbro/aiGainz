@@ -26,7 +26,7 @@ export const StatisticsDisplay: React.FC<StatisticsDisplayProps> = ({
     }, [score, percentageChange]);
 
     return (
-        <div className="text-0">
+        <div className="text-0ds">
             <div className="text-2xl" style={{ fontWeight: 600 }}>
                 {formattedScore}
             </div>
