@@ -127,3 +127,7 @@ a {
     margin-left: 0;
     margin-right: 0;
 }
+
+.p-dropdown-items{
+    padding:0;
+}

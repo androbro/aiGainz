@@ -18,14 +18,15 @@ export default function MainContent() {
     const [cards, setCards] = useState<ExtendedCard[]>([]);
     const [pickedDate, setPickedDate] = useState<Date | null>(null);
     const [generatedPeriod, setGeneratedPeriod] = useState<Date | null>(null);
-    const [options, setOptions] = useState([
+    const options = [
         { label: 'Last 7 days', value: 7 },
         { label: 'Last 14 days', value: 14 },
         { label: 'Last month', value: 30 },
         { label: 'Last 3 months', value: 90 },
         { label: 'Last 6 months', value: 180 },
         { label: 'Last year', value: 365 },
-    ]);
+        { label: 'All time', value: 0 },
+    ];
 
     useEffect(() => {
         if (initialCards) {
@@ -78,7 +79,7 @@ export default function MainContent() {
                     <div className="text-2xl" style={{ fontWeight: 600 }}>
                         Home
                     </div>
-                    <CustomDropdown options={options} />
+                    <CustomDropdown options={options} onChange={setPickedDate} />
                     {/*<NaturalLanguagePeriodPicker*/}
                     {/*    initialDate={pickedDate || undefined}*/}
                     {/*    onChange={setGeneratedPeriod}*/}
@@ -95,7 +96,9 @@ export default function MainContent() {
                     {/*)}*/}
                 </div>
                 <div className="text-sm mt-3 text-400" style={{ fontWeight: 500 }}>
-                    <div>This is a title that should be small</div>
+                    <div>
+                        This is a title that should be small {pickedDate?.toLocaleDateString()}
+                    </div>
                 </div>
             </div>
             <section className="flex-column w-full" style={{ minHeight: '400px' }}>
