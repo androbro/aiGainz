@@ -2,8 +2,6 @@
 import { ChartCard } from '@/app/components/cards/chartCard';
 import { useCards } from '@/hooks/useCards';
 import { ExtendedCard } from '@/app/api/card/interfaces';
-import { NaturalLanguagePeriodPicker } from '@/app/components/naturalLanguagePeriodPicker';
-import { CardApi } from '@/app/api/card/api';
 import CustomDropdown from '@/app/components/formElements/customDropdown';
 
 export default function MainContent() {
@@ -16,8 +14,7 @@ export default function MainContent() {
         refetchCards,
     } = useCards({});
     const [cards, setCards] = useState<ExtendedCard[]>([]);
-    const [pickedDate, setPickedDate] = useState<Date | null>(null);
-    const [generatedPeriod, setGeneratedPeriod] = useState<Date | null>(null);
+    const [selectedDays, setSelectedDays] = useState<number>(30); // Default to 30 days
     const options = [
         { label: 'Last 7 days', value: 7 },
         { label: 'Last 14 days', value: 14 },
@@ -49,21 +46,23 @@ export default function MainContent() {
     };
 
     const updateCardsWithNewPeriod = async () => {
-        if (generatedPeriod) {
-            try {
-                const newCards: ExtendedCard[] = cards.map((card) => ({
-                    ...card,
-                    period: generatedPeriod,
-                }));
-                setCards(newCards);
-                updateCards({ cards: newCards });
-                // await CardApi.updateCards(cards);
-                setPickedDate(generatedPeriod);
-            } catch (error) {
-                console.error('Failed to update cards:', error);
-                // Optionally, revert the state or show an error message
-            }
+        try {
+            const date = new Date();
+            date.setDate(date.getDate() - selectedDays);
+            const newCards: ExtendedCard[] = cards.map((card) => ({
+                ...card,
+                period: date,
+            }));
+            setCards(newCards);
+            updateCards({ cards: newCards });
+        } catch (error) {
+            console.error('Failed to update cards:', error);
         }
+    };
+
+    const handlePeriodChange = (days: number) => {
+        setSelectedDays(days);
+        updateCardsWithNewPeriod();
     };
 
     const renderCard = (card: ExtendedCard) => (
@@ -79,26 +78,14 @@ export default function MainContent() {
                     <div className="text-2xl" style={{ fontWeight: 600 }}>
                         Home
                     </div>
-                    <CustomDropdown options={options} onChange={setPickedDate} />
-                    {/*<NaturalLanguagePeriodPicker*/}
-                    {/*    initialDate={pickedDate || undefined}*/}
-                    {/*    onChange={setGeneratedPeriod}*/}
-                    {/*    onSearch={updateCardsWithNewPeriod}*/}
-                    {/*/>*/}
-                    {/*{generatedPeriod && (*/}
-                    {/*    <span className="text-sm">*/}
-                    {/*        {generatedPeriod.toLocaleDateString('en-US', {*/}
-                    {/*            year: 'numeric',*/}
-                    {/*            month: 'long',*/}
-                    {/*            day: 'numeric',*/}
-                    {/*        })}*/}
-                    {/*    </span>*/}
-                    {/*)}*/}
+                    <CustomDropdown
+                        options={options}
+                        onChange={handlePeriodChange}
+                        initialDays={selectedDays}
+                    />
                 </div>
                 <div className="text-sm mt-3 text-400" style={{ fontWeight: 500 }}>
-                    <div>
-                        This is a title that should be small {pickedDate?.toLocaleDateString()}
-                    </div>
+                    <div>Showing data for the last {selectedDays} days</div>
                 </div>
             </div>
             <section className="flex-column w-full" style={{ minHeight: '400px' }}>

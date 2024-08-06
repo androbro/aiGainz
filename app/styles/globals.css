@@ -131,3 +131,7 @@ a {
 .p-dropdown-items{
     padding:0;
 }
+
+.p-dropdown-panel{
+    margin-top:0.5em;
+}

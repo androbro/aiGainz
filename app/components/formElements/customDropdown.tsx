@@ -1,70 +1,88 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
-import { formatDate, parseNaturalLanguageDate } from '@/app/utils/dateParser';
+import { parseNaturalLanguageDate } from '@/app/utils/dateParser';
 
 interface CustomDropdownProps {
     options: { label: string; value: number }[];
     placeholder?: string;
     className?: string;
-    onChange?: (date: Date | null) => void;
-    initialDate?: Date;
+    onChange?: (days: number) => void;
+    initialDays: number;
 }
 
 export default function CustomDropdown({
     options,
-    placeholder = 'Select or type a date',
+    placeholder = 'Select or type a period',
     className = '',
     onChange,
-    initialDate,
+    initialDays,
 }: CustomDropdownProps) {
-    const [inputValue, setInputValue] = useState<string>('');
-    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+    const [selectedDays, setSelectedDays] = useState<number>(initialDays);
+    const [displayValue, setDisplayValue] = useState<string>('');
 
     useEffect(() => {
-        if (initialDate) {
-            setInputValue(formatDate(initialDate));
-            setSelectedDate(initialDate);
+        setSelectedDays(initialDays);
+        setDisplayValue(formatPeriod(initialDays));
+    }, [initialDays]);
+
+    const formatPeriod = (days: number): string => {
+        if (days < 7) {
+            return `Last ${days} day${days > 1 ? 's' : ''}`;
+        } else if (days < 14) {
+            return days === 7 ? 'Last week' : '~Last week';
+        } else if (days < 31) {
+            const weeks = Math.round(days / 7);
+            return days % 7 === 0
+                ? `Last ${weeks} week${weeks > 1 ? 's' : ''}`
+                : `~Last ${weeks} week${weeks > 1 ? 's' : ''}`;
+        } else if (days < 60) {
+            return days === 30 ? 'Last month' : '~Last month';
+        } else if (days < 365) {
+            const months = Math.round(days / 30);
+            return days % 30 === 0
+                ? `Last ${months} month${months > 1 ? 's' : ''}`
+                : `~Last ${months} month${months > 1 ? 's' : ''}`;
+        } else {
+            const years = Math.round(days / 365);
+            return days === 365 ? 'Last year' : `~Last ${years} year${years > 1 ? 's' : ''}`;
         }
-    }, [initialDate]);
+    };
 
     const handleChange = (e: DropdownChangeEvent) => {
         const value = e.value;
-        setInputValue(value);
 
         if (typeof value === 'string') {
             const parsedDate = parseNaturalLanguageDate(value);
-            setSelectedDate(parsedDate);
-            if (onChange) {
-                onChange(parsedDate);
+            if (parsedDate) {
+                const days = Math.round(
+                    (new Date().getTime() - parsedDate.getTime()) / (1000 * 3600 * 24)
+                );
+                setSelectedDays(days);
+                setDisplayValue(formatPeriod(days));
+                if (onChange) {
+                    onChange(days);
+                }
+            } else {
+                setDisplayValue(value);
             }
-        } else if (value && typeof value === 'number') {
-            // Handle selection from predefined options
-            const date = new Date();
-            date.setDate(date.getDate() - value);
-            setSelectedDate(date);
-            setInputValue(formatDate(date));
+        } else if (typeof value === 'number') {
+            setSelectedDays(value);
+            setDisplayValue(formatPeriod(value));
             if (onChange) {
-                onChange(date);
+                onChange(value);
             }
         }
     };
 
     return (
         <Dropdown
-            value={inputValue}
+            value={displayValue}
             onChange={handleChange}
             options={options}
             optionLabel="label"
             placeholder={placeholder}
             editable
-            className={`
-                cursor-pointer inline-flex relative select-none border-round-2xl
-                bg-gray-100  border border-gray-100 transition-colors duration-200 ease-in-out rounded-md 
-                dark:bg-gray-900 dark:border-blue-900/40 dark:hover:border-blue-300
-                w-full md:w-56
-                hover:border-blue-500 focus:outline-none focus:outline-offset-0 focus:shadow-[0_0_0_0.2rem_rgba(191,219,254,1)] dark:focus:shadow-[0_0_0_0.2rem_rgba(147,197,253,0.5)]
-                ${className}
-            `}
+            className={`border-round-2xl bg-gray-100 border-gray-100 ${className}`}
         />
     );
 }
