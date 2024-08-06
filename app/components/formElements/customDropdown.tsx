@@ -54,9 +54,7 @@ export default function CustomDropdown({
         if (typeof value === 'string') {
             const parsedDate = parseNaturalLanguageDate(value);
             if (parsedDate) {
-                const days = Math.round(
-                    (new Date().getTime() - parsedDate.getTime()) / (1000 * 3600 * 24)
-                );
+                const days = Math.round((Date.now() - parsedDate.getTime()) / (1000 * 3600 * 24));
                 setSelectedDays(days);
                 setDisplayValue(formatPeriod(days));
                 if (onChange) {
