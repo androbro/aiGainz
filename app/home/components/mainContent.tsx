@@ -26,6 +26,7 @@ export default function MainContent() {
     ];
 
     useEffect(() => {
+        fetchSelectedDays();
         if (initialCards) {
             setCards(initialCards);
         }
@@ -40,6 +41,28 @@ export default function MainContent() {
     useEffect(() => {
         refetchCards();
     }, [updatedCards]);
+
+    const fetchSelectedDays = async () => {
+        try {
+            const response = await fetch('/api/globalSettings');
+            const data = await response.json();
+            setSelectedDays(data.value);
+        } catch (error) {
+            console.error('Failed to fetch selected days:', error);
+        }
+    };
+
+    const saveSelectedDays = async (days: number) => {
+        try {
+            await fetch('/api/globalSettings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ value: days }),
+            });
+        } catch (error) {
+            console.error('Failed to save selected days:', error);
+        }
+    };
 
     const handleDeleteCard = (id: number) => {
         setCards((prevCards) => prevCards.filter((card) => card.id !== id));
@@ -62,6 +85,7 @@ export default function MainContent() {
 
     const handlePeriodChange = (days: number) => {
         setSelectedDays(days);
+        saveSelectedDays(days);
         updateCardsWithNewPeriod();
     };
 

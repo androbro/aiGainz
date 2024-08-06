@@ -111,6 +111,15 @@ model ChartDataPoint {
   workoutExercise    WorkoutExercise?  @relation(fields: [workoutExerciseId], references: [id])
 }
 
+model GlobalSetting {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
 enum EquipmentType {
   MACHINE
   CABLE
