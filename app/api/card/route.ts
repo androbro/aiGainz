@@ -6,7 +6,6 @@ import { DataPointsApi } from '@/app/api/dataPoints/api';
 const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
-    console.log('test, inside card get route: ', request.url);
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
@@ -34,7 +33,6 @@ export async function GET(request: NextRequest) {
             card.period?.toISOString() || new Date().toISOString()
         );
 
-        console.log('Fetching data points with URL in card.route:', dataPointsUrl.toString());
         const dataPointsResponse = await fetch(dataPointsUrl);
         const dataPoints = await dataPointsResponse.json();
 
@@ -45,7 +43,6 @@ export async function GET(request: NextRequest) {
                 dataPoints: dataPoints,
             },
         };
-        console.log('Test: Card with data points:', cardWithDataPoints);
 
         return NextResponse.json(cardWithDataPoints);
     } else {
@@ -129,7 +126,6 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-    console.log('Test: inside card put route: ', JSON.stringify(req));
     const url = new URL(req.url);
     const id = url.searchParams.get('id');
 
@@ -182,7 +178,6 @@ export async function PUT(req: NextRequest) {
                 },
             };
 
-            console.log('Test: Card updated successfully:', updatedCardWithDataPoints);
             return NextResponse.json(updatedCardWithDataPoints);
         } catch (error) {
             console.error('Error updating card:', error);
