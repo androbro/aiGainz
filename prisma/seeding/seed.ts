@@ -5,6 +5,7 @@ import {
     EquipmentLocation,
     Exercise,
     $Enums,
+    GlobalSetting,
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { workoutEquipment } from '../testData/workoutEquipment';
@@ -21,6 +22,9 @@ function generateRandomFloat(min: number, max: number): number {
 
 async function main() {
     console.log('Starting database seeding...');
+
+    //seed settings
+    await seedSettings();
 
     // Seed MuscleTypes
     for (const groupName of muscleGroups) {
@@ -55,6 +59,20 @@ async function main() {
     await seedChartsAndCards();
 
     console.log('Database seeding completed successfully.');
+}
+
+async function seedSettings() {
+    console.log('Seeding settings...');
+    const settings: GlobalSetting[] = [
+        { id: 1, key: 'period', value: '30', createdAt: new Date(), updatedAt: new Date() },
+    ];
+
+    for (const setting of settings) {
+        await prisma.globalSetting.create({
+            data: setting,
+        });
+    }
+    console.log('Seeded settings');
 }
 
 async function seedExercises(): Promise<Exercise[]> {

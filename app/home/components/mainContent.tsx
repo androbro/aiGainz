@@ -3,6 +3,7 @@ import { ChartCard } from '@/app/components/cards/chartCard';
 import { useCards } from '@/hooks/useCards';
 import { ExtendedCard } from '@/app/api/card/interfaces';
 import CustomDropdown from '@/app/components/formElements/customDropdown';
+import { settingsApi } from '@/app/api/globalSettings/api';
 
 export default function MainContent() {
     const {
@@ -26,7 +27,7 @@ export default function MainContent() {
     ];
 
     useEffect(() => {
-        fetchSelectedDays();
+        setPeriod();
         if (initialCards) {
             setCards(initialCards);
         }
@@ -42,27 +43,29 @@ export default function MainContent() {
         refetchCards();
     }, [updatedCards]);
 
-    const fetchSelectedDays = async () => {
-        try {
-            const response = await fetch('/api/globalSettings');
-            const data = await response.json();
-            setSelectedDays(data.value);
-        } catch (error) {
-            console.error('Failed to fetch selected days:', error);
+    const setPeriod = async () => {
+        const period = await settingsApi.getSettingByName('period');
+        if (period) {
+            const parsedValue = parseInt(period.value);
+            if (!parsedValue) {
+                return;
+            }
+            setSelectedDays(parsedValue);
+            console.log('Selected days:', parsedValue);
         }
     };
 
-    const saveSelectedDays = async (days: number) => {
-        try {
-            await fetch('/api/globalSettings', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ value: days }),
-            });
-        } catch (error) {
-            console.error('Failed to save selected days:', error);
-        }
-    };
+    // const saveSelectedDays = async (days: number) => {
+    //     try {
+    //         await fetch('/api/globalSettings', {
+    //             method: 'POST',
+    //             headers: { 'Content-Type': 'application/json' },
+    //             body: JSON.stringify({ value: days }),
+    //         });
+    //     } catch (error) {
+    //         console.error('Failed to save selected days:', error);
+    //     }
+    // };
 
     const handleDeleteCard = (id: number) => {
         setCards((prevCards) => prevCards.filter((card) => card.id !== id));
@@ -85,7 +88,6 @@ export default function MainContent() {
 
     const handlePeriodChange = (days: number) => {
         setSelectedDays(days);
-        saveSelectedDays(days);
         updateCardsWithNewPeriod();
     };
 

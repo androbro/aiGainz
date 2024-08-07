@@ -7,6 +7,7 @@ const prisma = new PrismaClient();
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
+    const key = searchParams.get('key');
     if (id) {
         const setting = await prisma.globalSetting.findUnique({
             where: { id: parseInt(id) },
@@ -14,6 +15,16 @@ export async function GET(request: Request) {
         return setting
             ? NextResponse.json(setting)
             : NextResponse.json({ error: 'Setting not found' }, { status: 404 });
+    } else if (key) {
+        const setting = await prisma.globalSetting.findUnique({
+            where: { key: key },
+        });
+        return setting
+            ? NextResponse.json(setting)
+            : NextResponse.json({ error: 'Setting not found' }, { status: 404 });
+    } else {
+        const settings = await prisma.globalSetting.findMany();
+        return NextResponse.json(settings);
     }
 }
 export async function POST(request: Request) {
