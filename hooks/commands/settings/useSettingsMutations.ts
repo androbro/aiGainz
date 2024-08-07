@@ -4,7 +4,7 @@ import { useDataStateHandler } from '@/hooks/useDataStateHandler';
 import { useCallback } from 'react';
 import { GlobalSetting } from '@prisma/client';
 import debounce from 'lodash/debounce';
-import { settingsApi } from '@/app/api/globalSetting/api';
+import { settingsApi } from '@/app/api/globalSettings/api';
 
 export const useSettingsMutations = () => {
     const queryClient = useQueryClient();

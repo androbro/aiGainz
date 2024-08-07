@@ -36,8 +36,8 @@ export async function POST(request: Request) {
 }
 export async function PUT(request: Request) {
     const url = new URL(request.url);
-    const id = url.searchParams.get('id');
     const body = await request.json();
+    const id = body.id || url.searchParams.get('id');
 
     if (!id) {
         return NextResponse.json({ error: 'ID is required' }, { status: 400 });

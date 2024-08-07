@@ -17,11 +17,9 @@ export default function CustomDropdown({
     onChange,
     initialDays,
 }: CustomDropdownProps) {
-    const [selectedDays, setSelectedDays] = useState<number>(initialDays);
     const [displayValue, setDisplayValue] = useState<string>('');
 
     useEffect(() => {
-        setSelectedDays(initialDays);
         setDisplayValue(formatPeriod(initialDays));
     }, [initialDays]);
 
@@ -55,7 +53,6 @@ export default function CustomDropdown({
             const parsedDate = parseNaturalLanguageDate(value);
             if (parsedDate) {
                 const days = Math.round((Date.now() - parsedDate.getTime()) / (1000 * 3600 * 24));
-                setSelectedDays(days);
                 setDisplayValue(formatPeriod(days));
                 if (onChange) {
                     onChange(days);
@@ -64,7 +61,6 @@ export default function CustomDropdown({
                 setDisplayValue(value);
             }
         } else if (typeof value === 'number') {
-            setSelectedDays(value);
             setDisplayValue(formatPeriod(value));
             if (onChange) {
                 onChange(value);

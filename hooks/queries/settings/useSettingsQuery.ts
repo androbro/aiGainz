@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { settingsApi } from '@/app/api/globalSetting/api';
+import { settingsApi } from '@/app/api/globalSettings/api';
 import { GlobalSetting } from '@prisma/client';
 import { useDataStateHandler } from '@/hooks/useDataStateHandler';
 
@@ -42,5 +42,24 @@ export const useSettingsQuery = ({
         errorMessage,
     });
 
-    return { settings: Settings || [], isLoadingSettings, refetchSettings, errorSettings };
+    const {
+        data: periodSetting,
+        isLoading: isLoadingPeriodSetting,
+        refetch: refetchPeriodSetting,
+        error: errorPeriodSetting,
+        isError: isErrorPeriodSetting,
+    } = useQuery<GlobalSetting, Error>({
+        queryKey: ['PERIOD_SETTING'],
+        queryFn: () => settingsApi.getSettingByName('period'),
+        retry: 0,
+        enabled,
+    });
+
+    return {
+        settings: Settings || [],
+        isLoadingSettings,
+        refetchSettings,
+        errorSettings,
+        periodSetting,
+    };
 };

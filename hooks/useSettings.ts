@@ -2,7 +2,8 @@ import { useSettingsQuery, UseSettingsQueryProps } from '@/hooks/queries/setting
 import { useSettingsMutations } from '@/hooks/commands/settings/useSettingsMutations';
 
 export const useSettings = (props: UseSettingsQueryProps) => {
-    const { settings, isLoadingSettings, refetchSettings, errorSettings } = useSettingsQuery(props);
+    const { settings, periodSetting, isLoadingSettings, refetchSettings, errorSettings } =
+        useSettingsQuery(props);
     const {
         createSetting,
         createdSetting,
@@ -16,6 +17,7 @@ export const useSettings = (props: UseSettingsQueryProps) => {
 
     return {
         settings,
+        periodSetting,
         isLoadingSettings,
         refetchSettings,
         errorSettings,

@@ -4,6 +4,10 @@ import { useCards } from '@/hooks/useCards';
 import { ExtendedCard } from '@/app/api/card/interfaces';
 import CustomDropdown from '@/app/components/formElements/customDropdown';
 import { settingsApi } from '@/app/api/globalSettings/api';
+import { GlobalSetting } from '@prisma/client';
+import { Simulate } from 'react-dom/test-utils';
+import error = Simulate.error;
+import { useSettings } from '@/hooks/useSettings';
 
 export default function MainContent() {
     const {
@@ -14,8 +18,9 @@ export default function MainContent() {
         updatedCards,
         refetchCards,
     } = useCards({});
+    const { periodSetting, updateSetting } = useSettings({});
+    const [period, setPeriod] = useState<number>(30);
     const [cards, setCards] = useState<ExtendedCard[]>([]);
-    const [selectedDays, setSelectedDays] = useState<number>(30); // Default to 30 days
     const options = [
         { label: 'Last 7 days', value: 7 },
         { label: 'Last 14 days', value: 14 },
@@ -26,69 +31,48 @@ export default function MainContent() {
         { label: 'All time', value: 0 },
     ];
 
+    //this makes the cards available locally
     useEffect(() => {
-        setPeriod();
         if (initialCards) {
             setCards(initialCards);
         }
     }, [initialCards.length]);
 
+    //this updates the cards when we updated a card and received a notification the card was updated
     useEffect(() => {
-        if (createdCard) {
-            setCards((prevCards) => [...prevCards, createdCard]);
-        }
-    }, [createdCard]);
-
-    useEffect(() => {
-        refetchCards();
+        const updatedCards = refetchCards();
+        setCards(updatedCards);
     }, [updatedCards]);
 
-    const setPeriod = async () => {
-        const period = await settingsApi.getSettingByName('period');
-        if (period) {
-            const parsedValue = parseInt(period.value);
-            if (!parsedValue) {
-                return;
-            }
-            setSelectedDays(parsedValue);
-            console.log('Selected days:', parsedValue);
+    useEffect(() => {
+        if (periodSetting) {
+            setPeriod(parseInt(periodSetting.value));
         }
-    };
-
-    // const saveSelectedDays = async (days: number) => {
-    //     try {
-    //         await fetch('/api/globalSettings', {
-    //             method: 'POST',
-    //             headers: { 'Content-Type': 'application/json' },
-    //             body: JSON.stringify({ value: days }),
-    //         });
-    //     } catch (error) {
-    //         console.error('Failed to save selected days:', error);
-    //     }
-    // };
+    }, [periodSetting]);
 
     const handleDeleteCard = (id: number) => {
         setCards((prevCards) => prevCards.filter((card) => card.id !== id));
     };
 
-    const updateCardsWithNewPeriod = async () => {
+    const updateCardsWithNewPeriod = async (days: number) => {
         try {
             const date = new Date();
-            date.setDate(date.getDate() - selectedDays);
+            date.setDate(date.getDate() - days);
             const newCards: ExtendedCard[] = cards.map((card) => ({
                 ...card,
                 period: date,
             }));
             setCards(newCards);
             updateCards({ cards: newCards });
+            if (periodSetting) {
+                updateSetting({ data: { ...periodSetting, value: days.toString() } });
+                setPeriod(days);
+            } else {
+                console.error('Failed to update cards with new period:', error);
+            }
         } catch (error) {
             console.error('Failed to update cards:', error);
         }
-    };
-
-    const handlePeriodChange = (days: number) => {
-        setSelectedDays(days);
-        updateCardsWithNewPeriod();
     };
 
     const renderCard = (card: ExtendedCard) => (
@@ -106,12 +90,12 @@ export default function MainContent() {
                     </div>
                     <CustomDropdown
                         options={options}
-                        onChange={handlePeriodChange}
-                        initialDays={selectedDays}
+                        onChange={updateCardsWithNewPeriod}
+                        initialDays={periodSetting ? period : 30}
                     />
                 </div>
                 <div className="text-sm mt-3 text-400" style={{ fontWeight: 500 }}>
-                    <div>Showing data for the last {selectedDays} days</div>
+                    <div>Showing data for the last {periodSetting ? period : 30} days</div>
                 </div>
             </div>
             <section className="flex-column w-full" style={{ minHeight: '400px' }}>
