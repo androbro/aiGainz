@@ -1,4 +1,4 @@
-import { QueryCache, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { CardApi } from '@/app/api/card/api';
 import { Card } from '@prisma/client';
 import { useDataStateHandler } from '@/hooks/useDataStateHandler';
@@ -7,9 +7,17 @@ import { useCallback } from 'react';
 import { CreateCard, ExtendedCard } from '@/app/api/card/interfaces';
 import { infoNotification, successNotification } from '@/app/functions/notifications';
 
+// Helper function to check if a card is an ExtendedCard
+function isExtendedCard(card: Partial<ExtendedCard> & { id?: number }): card is ExtendedCard {
+    return card.id !== undefined;
+}
+
 export const useCardsMutations = () => {
     const queryClient = useQueryClient();
 
+    // 1. Define mutations for CRUD operations on cards
+
+    // Update a single card
     const updateCardMutation = useMutation<
         ExtendedCard,
         Error,
@@ -32,6 +40,7 @@ export const useCardsMutations = () => {
         },
     });
 
+    // Update multiple cards at once
     const updateCardsMutation = useMutation<ExtendedCard[], Error, { cards: Card[] }>({
         mutationFn: ({ cards }) => {
             const extendedCards = cards.map((card) => ({
@@ -46,6 +55,7 @@ export const useCardsMutations = () => {
         },
     });
 
+    // Create a new card
     const createCardMutation = useMutation<ExtendedCard, Error, CreateCard>({
         mutationFn: (data) => CardApi.createCard(data),
         onSuccess: () => {
@@ -54,6 +64,7 @@ export const useCardsMutations = () => {
         },
     });
 
+    // Delete a card
     const deleteCardMutation = useMutation<void, Error, string>({
         mutationFn: (id) => CardApi.deleteCard(id),
         onSuccess: () => {
@@ -62,10 +73,7 @@ export const useCardsMutations = () => {
         },
     });
 
-    function isExtendedCard(card: Partial<ExtendedCard> & { id?: number }): card is ExtendedCard {
-        return card.id !== undefined;
-    }
-
+    // 2. Set up error and loading state handlers for each mutation
     useDataStateHandler({
         isLoading: updateCardMutation.isPending,
         isError: updateCardMutation.isError,
@@ -94,6 +102,8 @@ export const useCardsMutations = () => {
         errorMessage: 'Error updating cards',
     });
 
+    // 3. Create debounced versions of the mutation functions
+    // This prevents rapid successive calls to the API
     const debouncedUpdateCard = useCallback(debounce(updateCardMutation.mutate, 500), [
         updateCardMutation.mutate,
     ]);
@@ -110,16 +120,21 @@ export const useCardsMutations = () => {
         updateCardsMutation.mutate,
     ]);
 
+    // 4. Return an object with all the mutation functions and their states
     return {
+        // Update operations
         updateCard: debouncedUpdateCard,
         isUpdatingCard: updateCardMutation.isPending,
         updatedCard: updateCardMutation.data,
         updateCards: debouncedUpdateCards,
         isUpdatingCards: updateCardsMutation.isPending,
         updatedCards: updateCardsMutation.data,
+        hasUpdatedCards: updateCardsMutation.isSuccess,
+        // Create operation
         createCard: debouncedCreateCard,
         isCreatingCard: createCardMutation.isPending,
         createdCard: createCardMutation.data,
+        // Delete operation
         deleteCard: debouncedDeleteCard,
         isDeletingCard: deleteCardMutation.isPending,
     };

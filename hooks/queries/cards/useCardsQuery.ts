@@ -25,6 +25,7 @@ export const useCardsQuery = ({ filterObject = undefined, enabled = true }: UseC
         refetch: refetchCards,
         error: errorCards,
         isError: isErrorCards,
+        isFetched: isFetchedCards,
     } = useQuery<Card[], Error>({
         queryKey: ['cards'],
         queryFn: getFilteredCards,
@@ -39,5 +40,5 @@ export const useCardsQuery = ({ filterObject = undefined, enabled = true }: UseC
         errorMessage,
     });
 
-    return { cards: cards || [], isLoadingCards, refetchCards, errorCards };
+    return { cards: cards || [], isLoadingCards, refetchCards, errorCards, isFetchedCards };
 };

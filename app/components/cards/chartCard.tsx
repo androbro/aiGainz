@@ -20,30 +20,22 @@ interface ChartCardProps {
 export function ChartCard({ card, onDelete }: ChartCardProps) {
     const [cardInfo, setCardInfo] = useState<ExtendedCard>(card);
     const [chartData, setChartData] = useState<ExtendedChart | null>(null);
-    const [months, setMonths] = useState<number>(1);
     const [lastDataPoint, setLastDataPoint] = useState<{ date: Date; score: number } | null>(null);
     const [percentageChange, setPercentageChange] = useState<number>(0);
-    const isMobile = useMobileChecker();
 
     const { updateCard, updatedCard, deleteCard } = useCards({});
+
+    useEffect(() => {
+        if (card != cardInfo) {
+            setCardInfo(card);
+        }
+    }, [card]);
 
     useEffect(() => {
         if (updatedCard && updatedCard.id === cardInfo.id) {
             setCardInfo(updatedCard);
         }
     }, [updatedCard]);
-
-    useEffect(() => {
-        if (cardInfo.period) {
-            const current = new Date();
-            const cardPeriod = parseDate(cardInfo.period);
-            const monthsDiff =
-                (cardPeriod.getFullYear() - current.getFullYear()) * 12 +
-                cardPeriod.getMonth() -
-                current.getMonth();
-            setMonths(Math.abs(monthsDiff));
-        }
-    }, [cardInfo.period]);
 
     useEffect(() => {
         if (cardInfo.chart) {

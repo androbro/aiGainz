@@ -2,7 +2,8 @@ import { useCardsQuery, UseCardsQueryProps } from '@/hooks/queries/cards/useCard
 import { useCardsMutations } from '@/hooks/commands/cards/useCardsMutations';
 
 export const useCards = (props: UseCardsQueryProps) => {
-    const { cards, isLoadingCards, refetchCards, errorCards } = useCardsQuery(props);
+    const { cards, isLoadingCards, refetchCards, errorCards, isFetchedCards } =
+        useCardsQuery(props);
     const {
         createCard,
         createdCard,
@@ -15,6 +16,7 @@ export const useCards = (props: UseCardsQueryProps) => {
         updateCards,
         updatedCard,
         updatedCards,
+        hasUpdatedCards,
     } = useCardsMutations();
 
     return {
@@ -33,5 +35,7 @@ export const useCards = (props: UseCardsQueryProps) => {
         updateCards,
         updatedCard,
         updatedCards,
+        isFetchedCards,
+        hasUpdatedCards,
     };
 };

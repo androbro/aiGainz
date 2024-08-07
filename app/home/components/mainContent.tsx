@@ -3,21 +3,10 @@ import { ChartCard } from '@/app/components/cards/chartCard';
 import { useCards } from '@/hooks/useCards';
 import { ExtendedCard } from '@/app/api/card/interfaces';
 import CustomDropdown from '@/app/components/formElements/customDropdown';
-import { settingsApi } from '@/app/api/globalSettings/api';
-import { GlobalSetting } from '@prisma/client';
-import { Simulate } from 'react-dom/test-utils';
-import error = Simulate.error;
 import { useSettings } from '@/hooks/useSettings';
 
 export default function MainContent() {
-    const {
-        createCard,
-        cards: initialCards,
-        createdCard,
-        updateCards,
-        updatedCards,
-        refetchCards,
-    } = useCards({});
+    const { cards: initialCards, updateCards, refetchCards, updatedCards } = useCards({});
     const { periodSetting, updateSetting } = useSettings({});
     const [period, setPeriod] = useState<number>(30);
     const [cards, setCards] = useState<ExtendedCard[]>([]);
@@ -31,18 +20,17 @@ export default function MainContent() {
         { label: 'All time', value: 0 },
     ];
 
-    //this makes the cards available locally
     useEffect(() => {
-        if (initialCards) {
+        if (updatedCards) {
+            setCards(updatedCards);
+        }
+    }, [updatedCards]);
+
+    useEffect(() => {
+        if (initialCards.length > 0) {
             setCards(initialCards);
         }
     }, [initialCards.length]);
-
-    //this updates the cards when we updated a card and received a notification the card was updated
-    useEffect(() => {
-        const updatedCards = refetchCards();
-        setCards(updatedCards);
-    }, [updatedCards]);
 
     useEffect(() => {
         if (periodSetting) {
@@ -62,14 +50,12 @@ export default function MainContent() {
                 ...card,
                 period: date,
             }));
-            setCards(newCards);
             updateCards({ cards: newCards });
             if (periodSetting) {
                 updateSetting({ data: { ...periodSetting, value: days.toString() } });
                 setPeriod(days);
-            } else {
-                console.error('Failed to update cards with new period:', error);
             }
+            await refetchCards();
         } catch (error) {
             console.error('Failed to update cards:', error);
         }
@@ -91,11 +77,11 @@ export default function MainContent() {
                     <CustomDropdown
                         options={options}
                         onChange={updateCardsWithNewPeriod}
-                        initialDays={periodSetting ? period : 30}
+                        initialDays={period}
                     />
                 </div>
                 <div className="text-sm mt-3 text-400" style={{ fontWeight: 500 }}>
-                    <div>Showing data for the last {periodSetting ? period : 30} days</div>
+                    <div>Showing data for the last {period} days</div>
                 </div>
             </div>
             <section className="flex-column w-full" style={{ minHeight: '400px' }}>

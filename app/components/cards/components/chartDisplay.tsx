@@ -60,14 +60,17 @@ export const ChartDisplay: React.FC<ChartDisplayProps> = ({ chartData }) => {
 
     return (
         <div>
-            {chartData.dataPoints?.length === 0 && <div>No data available</div>}
-            <Chart
-                type="line"
-                data={data}
-                options={options}
-                width={chartData.width?.toString() || '100%'}
-                height={chartData.height?.toString() || '75px'}
-            />
+            {chartData.dataPoints?.length! <= 1 ? (
+                <div>No data available</div>
+            ) : (
+                <Chart
+                    type="line"
+                    data={data}
+                    options={options}
+                    width={chartData.width?.toString() || '100%'}
+                    height={chartData.height?.toString() || '75px'}
+                />
+            )}
         </div>
     );
 };
