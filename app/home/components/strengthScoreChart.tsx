@@ -1,5 +1,3 @@
-// components/StrengthScoreChart.tsx
-
 import React, { useEffect, useRef, useState } from 'react';
 import { ExtendedChart } from '@/app/api/chart/interfaces';
 import { Exercise, Workout, WorkoutExercise } from '@prisma/client';
@@ -27,8 +25,7 @@ export default function StrengthScoreChart({ period }: { period: string }) {
                 startDate.setDate(startDate.getDate() - parseInt(period));
                 const workouts: ExtendedWorkout[] = await WorkoutApi.getWorkoutsInRange(startDate);
 
-                // Get the primary color
-                let primaryColor = '#000000'; // default fallback color
+                let primaryColor = '#000000';
                 if (chartRef.current) {
                     const computedStyle = getComputedStyle(chartRef.current);
                     primaryColor = computedStyle.getPropertyValue('--primary-color');
@@ -44,10 +41,9 @@ export default function StrengthScoreChart({ period }: { period: string }) {
         };
 
         fetchWorkoutExercises();
-    }, []);
+    }, [period]);
 
     const processWorkoutData = (workouts: ExtendedWorkout[], borderColor: string) => {
-        // Flatten workout exercises
         const workoutExercises = workouts.flatMap((workout) =>
             workout.WorkoutExercise.map((we) => ({
                 ...we,
@@ -55,27 +51,20 @@ export default function StrengthScoreChart({ period }: { period: string }) {
             }))
         );
 
-        // Group workout exercises by date
-        const groupedExercises = workoutExercises.reduce(
-            (acc, we) => {
-                const date = new Date(we.workout.createdAt).toDateString();
-                if (!acc[date]) acc[date] = [];
-                acc[date].push(we as ExtendedWorkoutExercise);
-                return acc;
-            },
-            {} as Record<string, ExtendedWorkoutExercise[]>
-        );
+        const groupedExercises: Record<string, ExtendedWorkoutExercise[]> = {};
+        for (const we of workoutExercises) {
+            const date = new Date(we.workout.createdAt).toDateString();
+            if (!groupedExercises[date]) groupedExercises[date] = [];
+            groupedExercises[date].push(we as ExtendedWorkoutExercise);
+        }
 
-        // Calculate daily strength scores
         const dataPoints = Object.entries(groupedExercises).map(([date, exercises]) => ({
             date: new Date(date),
             score: calculateDailyStrengthScore(exercises),
         }));
 
-        // Sort data points by date
         dataPoints.sort((a, b) => a.date.getTime() - b.date.getTime());
 
-        // Create chart data
         const newChartData: ExtendedChart = {
             id: 1,
             label: 'Total Strength Score',
@@ -98,17 +87,9 @@ export default function StrengthScoreChart({ period }: { period: string }) {
         setChartData(newChartData);
     };
 
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
-
-    if (error) {
-        return <div>Error: {error}</div>;
-    }
-
-    if (!chartData) {
-        return <div>No data available</div>;
-    }
+    if (isLoading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error}</div>;
+    if (!chartData) return <div>No data available</div>;
 
     return (
         <div ref={chartRef}>
