@@ -5,6 +5,7 @@ import { ExtendedCard } from '@/app/api/card/interfaces';
 import CustomDropdown from '@/app/components/formElements/customDropdown';
 import { useSettings } from '@/hooks/useSettings';
 import { CardType } from '@prisma/client';
+import StrengthScoreChart from '@/app/home/components/strengthScoreChart';
 
 export default function MainContent() {
     const {
@@ -90,8 +91,11 @@ export default function MainContent() {
                     <div>Showing data for the last {period} days</div>
                 </div>
             </div>
-            <section className="flex-column w-full" style={{ minHeight: '400px' }}>
+            <section className="flex flex-column w-full">
                 <div className="grid m-4 mt-0">{cards.map(renderCard)}</div>
+            </section>
+            <section className="flex flex-column w-full">
+                <StrengthScoreChart />
             </section>
         </div>
     );
