@@ -39,7 +39,19 @@ export function ChartCard({ card, onDelete }: ChartCardProps) {
 
     useEffect(() => {
         if (cardInfo.chart) {
-            setChartData(cardInfo.chart);
+            const customChartOptions: ExtendedChart = {
+                ...cardInfo.chart,
+                tension: 0.4,
+                pointRadius: 0,
+                borderColor: '#fff',
+                fill: false,
+                showLegend: false,
+                showXAxis: false,
+                showYAxis: false,
+                maintainAspectRatio: false,
+                responsive: true,
+            };
+            setChartData(customChartOptions);
 
             if (!(cardInfo.chart.dataPoints && cardInfo.chart.dataPoints.length > 0)) {
                 return;

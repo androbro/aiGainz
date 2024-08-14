@@ -21,18 +21,15 @@ export const ChartDisplay: React.FC<ChartDisplayProps> = ({ chartData }) => {
                         label: chartData.label,
                         data: chartData.dataPoints?.map((dp) => dp.score) || [],
                         fill: chartData.fill,
-                        // borderColor: chartData.borderColor || undefined,
-                        // tension: chartData.tension,
-                        // pointRadius: chartData.pointRadius,
-                        tension: 0.4,
-                        pointRadius: 0,
-                        borderColor: '#fff',
+                        borderColor: chartData.borderColor || undefined,
+                        tension: chartData.tension,
+                        pointRadius: chartData.pointRadius,
                     },
                 ],
             });
 
             // Use this line to switch between database options and preset configurations
-            const usePresetConfigs = true; // Set to false to use database options
+            const usePresetConfigs = false; // Set to false to use database options
 
             setOptions(
                 usePresetConfigs

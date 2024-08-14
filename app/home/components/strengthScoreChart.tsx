@@ -70,7 +70,7 @@ export default function StrengthScoreChart({ period }: { period: string }) {
         const newChartData: ExtendedChart = {
             id: 1,
             label: 'Total Strength Score',
-            fill: true,
+            fill: false,
             borderColor: '#4CAF50',
             tension: 0.4,
             pointRadius: 4,
@@ -79,7 +79,7 @@ export default function StrengthScoreChart({ period }: { period: string }) {
             showYAxis: true,
             maintainAspectRatio: false,
             responsive: true,
-            width: 600,
+            width: 10,
             height: 300,
             dataType: 'WORKOUT_EXERCISE',
             dataSourceId: 1,
