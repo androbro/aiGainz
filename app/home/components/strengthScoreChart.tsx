@@ -1,8 +1,8 @@
 // components/StrengthScoreChart.tsx
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ExtendedChart } from '@/app/api/chart/interfaces';
-import { WorkoutExercise, Exercise, Workout } from '@prisma/client';
+import { Exercise, Workout, WorkoutExercise } from '@prisma/client';
 import { calculateDailyStrengthScore } from '@/app/utils/strengthScoreCalculator';
 import { ChartDisplay } from '@/app/components/cards/components/chartDisplay';
 import { WorkoutApi } from '@/app/api/workout/api';
@@ -17,6 +17,7 @@ export default function StrengthScoreChart({ period }: { period: string }) {
     const [chartData, setChartData] = useState<ExtendedChart | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const chartRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const fetchWorkoutExercises = async () => {
@@ -25,7 +26,15 @@ export default function StrengthScoreChart({ period }: { period: string }) {
                 const startDate = new Date();
                 startDate.setDate(startDate.getDate() - parseInt(period));
                 const workouts: ExtendedWorkout[] = await WorkoutApi.getWorkoutsInRange(startDate);
-                processWorkoutData(workouts);
+
+                // Get the primary color
+                let primaryColor = '#000000'; // default fallback color
+                if (chartRef.current) {
+                    const computedStyle = getComputedStyle(chartRef.current);
+                    primaryColor = computedStyle.getPropertyValue('--primary-color');
+                }
+
+                processWorkoutData(workouts, primaryColor);
             } catch (error) {
                 console.error('Failed to fetch workouts:', error);
                 setError('Failed to fetch workout data');
@@ -37,7 +46,7 @@ export default function StrengthScoreChart({ period }: { period: string }) {
         fetchWorkoutExercises();
     }, []);
 
-    const processWorkoutData = (workouts: ExtendedWorkout[]) => {
+    const processWorkoutData = (workouts: ExtendedWorkout[], borderColor: string) => {
         // Flatten workout exercises
         const workoutExercises = workouts.flatMap((workout) =>
             workout.WorkoutExercise.map((we) => ({
@@ -71,8 +80,8 @@ export default function StrengthScoreChart({ period }: { period: string }) {
             id: 1,
             label: 'Total Strength Score',
             fill: false,
-            borderColor: '#4CAF50',
-            tension: 0.4,
+            borderColor: borderColor,
+            tension: 0,
             pointRadius: 4,
             showLegend: false,
             showXAxis: true,
@@ -101,5 +110,9 @@ export default function StrengthScoreChart({ period }: { period: string }) {
         return <div>No data available</div>;
     }
 
-    return <ChartDisplay chartData={chartData} />;
+    return (
+        <div ref={chartRef}>
+            <ChartDisplay chartData={chartData} />
+        </div>
+    );
 }

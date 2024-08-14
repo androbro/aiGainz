@@ -6,12 +6,14 @@ import { InputText } from 'primereact/inputtext';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import styles from '../styles/topBar.module.css';
 
 export default function TopBar() {
     const { user } = useUser();
     const menuRight = useRef<Menu>(null);
     const pathname = usePathname();
     const [activeLink, setActiveLink] = useState('');
+    const navRef = useRef<HTMLDivElement>(null);
 
     const items = [
         {
@@ -83,16 +85,16 @@ export default function TopBar() {
                     <Menu model={items} popup ref={menuRight} />
                 </div>
             </div>
-            <div className="flex align-self-start ml-4 mt-4">
+            <div className="flex align-self-start ml-4 mt-4" ref={navRef}>
                 <ul className="flex list-none p-0 m-0">
                     {navLinks.map((link) => (
                         <li key={link.name} className="mr-3">
                             <Link
                                 href={link.href}
-                                className={`no-underline transition-colors duration-200 font-semibold ${
+                                className={`${styles.navLink} no-underline transition-colors duration-200 font-semibold ${
                                     activeLink === link.name
-                                        ? 'text-cyan-500 uppercase'
-                                        : 'text-gray-400 hover:text-cyan-900'
+                                        ? `${styles.activeLink} uppercase`
+                                        : styles.inactiveLink
                                 }`}
                             >
                                 {link.name}

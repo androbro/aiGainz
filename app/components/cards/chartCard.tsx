@@ -41,7 +41,7 @@ export function ChartCard({ card, onDelete }: ChartCardProps) {
         if (cardInfo.chart) {
             const customChartOptions: ExtendedChart = {
                 ...cardInfo.chart,
-                tension: 0.4,
+                tension: 0.45,
                 pointRadius: 0,
                 borderColor: '#fff',
                 fill: false,

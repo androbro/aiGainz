@@ -1,0 +1,16 @@
+/* TopBar.module.css */
+.navLink {
+    transition: color 0.2s;
+}
+
+.navLink:hover {
+    color: var(--primary-color);
+}
+
+.activeLink {
+    color: var(--primary-color);
+}
+
+.inactiveLink {
+    color: var(--text-color-secondary);
+}
