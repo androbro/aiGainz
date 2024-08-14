@@ -72,6 +72,7 @@ model Card {
   id        Int       @id @default(autoincrement())
   title     String
   period    DateTime?
+  type      CardType  @default(EMPTY)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   chart     Chart     @relation(fields: [chartId], references: [id], onDelete: Cascade)
@@ -119,7 +120,6 @@ model GlobalSetting {
   updatedAt DateTime @updatedAt
 }
 
-
 enum EquipmentType {
   MACHINE
   CABLE
@@ -157,4 +157,9 @@ enum ChartDataType {
   WORKOUT_EXERCISE
   EQUIPMENT_TYPE
   EQUIPMENT_CATEGORY
+}
+
+enum CardType {
+  EMPTY
+  MAIN
 }

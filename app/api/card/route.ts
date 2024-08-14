@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ChartDataType, PrismaClient } from '@prisma/client';
+import { CardType, ChartDataType, PrismaClient } from '@prisma/client';
 import { CreateCard, ExtendedCard } from '@/app/api/card/interfaces';
 import { DataPointsApi } from '@/app/api/dataPoints/api';
 
@@ -8,6 +8,7 @@ const prisma = new PrismaClient();
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
+    const type = searchParams.get('type');
 
     // Get the base URL from the request
     const baseUrl = `${request.nextUrl.protocol}//${request.nextUrl.host}`;
@@ -45,6 +46,39 @@ export async function GET(request: NextRequest) {
         };
 
         return NextResponse.json(cardWithDataPoints);
+    } else if (type) {
+        console.log('Fetching cards by type:', type);
+        const cards = await prisma.card.findMany({
+            where: { type: type as CardType },
+            include: {
+                chart: true,
+            },
+        });
+
+        const cardsWithDataPoints = await Promise.all(
+            cards.map(async (card) => {
+                const dataPointsUrl = new URL('/api/dataPoints', baseUrl);
+                dataPointsUrl.searchParams.set('dataType', card.chart.dataType);
+                dataPointsUrl.searchParams.set('dataSourceId', card.chart.dataSourceId.toString());
+                dataPointsUrl.searchParams.set(
+                    'period',
+                    card.period?.toISOString() || new Date().toISOString()
+                );
+
+                const dataPointsResponse = await fetch(dataPointsUrl);
+                const dataPoints = await dataPointsResponse.json();
+
+                return {
+                    ...card,
+                    chart: {
+                        ...card.chart,
+                        dataPoints: dataPoints,
+                    },
+                };
+            })
+        );
+
+        return NextResponse.json(cardsWithDataPoints);
     } else {
         const cards = await prisma.card.findMany({
             include: {

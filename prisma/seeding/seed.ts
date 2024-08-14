@@ -6,6 +6,7 @@ import {
     Exercise,
     $Enums,
     GlobalSetting,
+    CardType,
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { workoutEquipment } from '../testData/workoutEquipment';
@@ -266,6 +267,7 @@ async function seedChartsAndCards() {
                     title: chartType.title,
                     period: startDate,
                     chartId: chart.id,
+                    type: CardType.MAIN,
                 },
             });
 

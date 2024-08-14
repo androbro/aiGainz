@@ -4,18 +4,26 @@ import { Card } from '@prisma/client';
 import { useDataStateHandler } from '@/hooks/useDataStateHandler';
 
 export interface UseCardsQueryProps {
-    filterObject?: { id: string; [key: string]: any } | undefined;
+    id?: number | undefined;
+    type?: string;
     enabled?: boolean;
 }
 
-export const useCardsQuery = ({ filterObject = undefined, enabled = true }: UseCardsQueryProps) => {
+export const useCardsQuery = ({
+    id = undefined,
+    type = undefined,
+    enabled = true,
+}: UseCardsQueryProps) => {
     const errorMessage = 'Error Fetching Cards';
 
     const getFilteredCards = async (): Promise<Card[]> => {
-        if (Object.keys(filterObject || {}).length === 0 || filterObject === undefined) {
+        if (id === undefined) {
+            if (type) {
+                return await CardApi.getCardsByType(type);
+            }
             return await CardApi.getCards();
         }
-        const card = await CardApi.getCard(filterObject.id);
+        const card = await CardApi.getCard(id);
         return card ? [card] : [];
     };
 

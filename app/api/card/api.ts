@@ -5,7 +5,11 @@ export const CardApi = {
         const response = await fetch('/api/card');
         return response.json();
     },
-    getCard: async (id: string): Promise<ExtendedCard> => {
+    getCardsByType: async (type: string): Promise<ExtendedCard[]> => {
+        const response = await fetch(`/api/card?type=${type}`);
+        return response.json();
+    },
+    getCard: async (id: number): Promise<ExtendedCard> => {
         const response = await fetch(`/api/card?id=${id}`);
         return response.json();
     },

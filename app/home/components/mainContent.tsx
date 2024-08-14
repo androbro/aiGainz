@@ -4,9 +4,15 @@ import { useCards } from '@/hooks/useCards';
 import { ExtendedCard } from '@/app/api/card/interfaces';
 import CustomDropdown from '@/app/components/formElements/customDropdown';
 import { useSettings } from '@/hooks/useSettings';
+import { CardType } from '@prisma/client';
 
 export default function MainContent() {
-    const { cards: initialCards, updateCards, refetchCards, updatedCards } = useCards({});
+    const {
+        cards: initialCards,
+        updateCards,
+        refetchCards,
+        updatedCards,
+    } = useCards({ type: CardType.MAIN });
     const { periodSetting, updateSetting } = useSettings({});
     const [period, setPeriod] = useState<number>(30);
     const [cards, setCards] = useState<ExtendedCard[]>([]);
@@ -17,7 +23,7 @@ export default function MainContent() {
         { label: 'Last 3 months', value: 90 },
         { label: 'Last 6 months', value: 180 },
         { label: 'Last year', value: 365 },
-        { label: 'All time', value: 0 },
+        { label: 'All time', value: 999 },
     ];
 
     useEffect(() => {
