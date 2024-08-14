@@ -95,7 +95,7 @@ export default function MainContent() {
                 <div className="grid m-4 mt-0">{cards.map(renderCard)}</div>
             </section>
             <section className="flex flex-column w-full">
-                <StrengthScoreChart />
+                {periodSetting && <StrengthScoreChart period={periodSetting.value} />}
             </section>
         </div>
     );

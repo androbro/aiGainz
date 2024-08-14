@@ -13,7 +13,7 @@ type ExtendedWorkoutExercise = WorkoutExercise & {
     workout: Workout;
 };
 
-export default function StrengthScoreChart() {
+export default function StrengthScoreChart({ period }: { period: string }) {
     const [chartData, setChartData] = useState<ExtendedChart | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -23,7 +23,7 @@ export default function StrengthScoreChart() {
             try {
                 setIsLoading(true);
                 const startDate = new Date();
-                startDate.setMonth(startDate.getMonth() - 6); // Get workouts from the last 6 months
+                startDate.setDate(startDate.getDate() - parseInt(period));
                 const workouts: ExtendedWorkout[] = await WorkoutApi.getWorkoutsInRange(startDate);
                 processWorkoutData(workouts);
             } catch (error) {
