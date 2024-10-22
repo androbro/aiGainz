@@ -28,7 +28,7 @@ export default function MainContent() {
     ];
 
     useEffect(() => {
-        if (updatedCards) {
+        if (updatedCards && updatedCards.length > 0) {
             setCards(updatedCards);
         }
     }, [updatedCards]);
@@ -92,7 +92,7 @@ export default function MainContent() {
                 </div>
             </div>
             <section className="flex flex-column w-full">
-                <div className="grid m-4 mt-0">{cards.map(renderCard)}</div>
+                <div className="grid m-4 mt-0">{cards && cards.length > 0 && (cards.map(renderCard))}</div>
             </section>
             <section className="flex flex-column w-full">
                 {periodSetting && (
